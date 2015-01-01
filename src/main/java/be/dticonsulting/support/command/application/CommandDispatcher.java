@@ -1,4 +1,4 @@
-package be.scp.command.application;
+package be.dticonsulting.support.command.application;
 
 /**
  * The basic contract of the CommandDispatcher.

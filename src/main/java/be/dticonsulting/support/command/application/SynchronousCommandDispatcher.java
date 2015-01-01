@@ -1,4 +1,4 @@
-package be.scp.command.application;
+package be.dticonsulting.support.command.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;

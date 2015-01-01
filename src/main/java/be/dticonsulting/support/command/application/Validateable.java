@@ -1,4 +1,4 @@
-package be.scp.command.application;
+package be.dticonsulting.support.command.application;
 
 /**
  * Interface which should be implemented by Command implementations if they require a validation step before being executed.

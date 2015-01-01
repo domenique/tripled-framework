@@ -1,4 +1,4 @@
-package be.scp.command;
+package be.dticonsulting.support.command;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

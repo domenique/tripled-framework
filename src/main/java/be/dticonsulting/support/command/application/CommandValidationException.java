@@ -1,4 +1,4 @@
-package be.scp.command.application;
+package be.dticonsulting.support.command.application;
 
 public class CommandValidationException extends RuntimeException {
 }
