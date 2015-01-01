@@ -9,9 +9,10 @@ package be.dticonsulting.support.command.application;
 public interface CommandDispatcher {
 
   /**
-   * dispatches the command and executes it.
-   *
-   * @param command The command to execute.
+   * Dispatches the given command, returning a response object.
+   * @param command
+   * @param <ReturnType>
+   * @return
    */
-  void dispatch(Command command);
+  <ReturnType> ReturnType dispatch(Command<ReturnType> command);
 }

@@ -8,11 +8,15 @@ package be.dticonsulting.support.command.application;
  * {@link be.dticonsulting.support.command.application.Validateable} interface.
  * <p/>
  * The CommandDispatcher is responsible of executing the validation step if there is any, and then the command itself.
+ *
+ * @param <ReturnType> The Type of the response object.
  */
-public interface Command {
+public interface Command<ReturnType> {
 
   /**
    * Method called by the CommandDispatcher to execute the command.
+   *
+   * @return the response.
    */
-  void execute();
+  ReturnType execute();
 }

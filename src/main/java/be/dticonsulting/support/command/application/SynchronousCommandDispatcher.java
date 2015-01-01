@@ -15,7 +15,7 @@ public class SynchronousCommandDispatcher implements CommandDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(SynchronousCommandDispatcher.class);
 
   @Override
-  public void dispatch(Command command) {
+  public <T> T dispatch(Command<T> command) {
     Assert.notNull(command, "The command cannot be null.");
     LOGGER.debug("Received a command to dispatch: {}", command.getClass().getSimpleName());
 
@@ -25,14 +25,16 @@ public class SynchronousCommandDispatcher implements CommandDispatcher {
       isValid = validate(command);
     }
 
+    T response;
     if (isValid) {
       LOGGER.debug("Executing command {}", command.getClass().getSimpleName());
-      command.execute();
+      response = command.execute();
     } else {
       throw new CommandValidationException();
     }
 
     LOGGER.debug("Finished executing command {}", command.getClass().getSimpleName());
+    return response;
   }
 
   private boolean validate(Command command) {
