@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.eveoh.nl/content/repositories/releases"
+        }
+    }
+    dependencies {
+        classpath("io.spring.gradle:dependency-management-plugin:0.5.0.RELEASE")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'io.spring.dependency-management'
+
+jar {
+    baseName = 'command-support'
+    version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
+    }
+}
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-logging")
+    compile("com.google.guava:guava")
+
+    testCompile("org.assertj:assertj-core:1.6.1")
+    testCompile("org.assertj:assertj-guava:1.2.0")
+    testCompile("org.assertj:assertj-joda-time:1.1.0")
+    testCompile("junit:junit")
+}

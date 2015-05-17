@@ -1,11 +1,16 @@
 package be.dticonsulting.support.command.application;
 
+import be.dticonsulting.support.command.application.callback.CommandFailedException;
+import be.dticonsulting.support.command.application.callback.CommandValidationException;
+import be.dticonsulting.support.command.application.callback.ExceptionThrowingCommandCallback;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class SynchronousCommandDispatcherTest {
 
@@ -22,13 +27,11 @@ public class SynchronousCommandDispatcherTest {
   @Test
   public void whenGivenNothing_shouldThrowException() throws Exception {
     // given
-    Command nullCommand = null;
-
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("The command cannot be null.");
 
     // when
-    synchronousCommandDispatcher.dispatch(nullCommand);
+    synchronousCommandDispatcher.dispatch(null);
 
     // then -> Exception
   }
@@ -84,63 +87,44 @@ public class SynchronousCommandDispatcherTest {
     MyCommandWithReturnType command = new MyCommandWithReturnType(expectedResponse);
 
     // when
-    String response = synchronousCommandDispatcher.dispatch(command);
+    ExceptionThrowingCommandCallback<String> callback = new ExceptionThrowingCommandCallback<>();
+    synchronousCommandDispatcher.dispatch(command, callback);
 
     // then
-    assertThat(response).isEqualTo(expectedResponse);
+    assertThat(callback.getResult()).isEqualTo(expectedResponse);
     assertThat(command.isExecuteCalled).isEqualTo(true);
   }
 
-  private class MyCommand implements Command<Void>, Validateable {
+  @Test
+  public void whenGivenACommandWhichFails_shouldWrapException() throws Exception {
+    // given
+    MyCommandWhichFailsWithException command = new MyCommandWhichFailsWithException(true);
 
-    private boolean isValidateCalled;
-    private boolean isExecuteCalled;
-    private boolean validationOutcome;
-
-    private MyCommand(boolean validationOutcome) {
-      this.validationOutcome = validationOutcome;
-    }
-
-    @Override
-    public boolean validate() {
-      isValidateCalled = true;
-      return validationOutcome;
-    }
-
-    @Override
-    public Void execute() {
-      isExecuteCalled = true;
-      return null;
+    // when
+    try {
+      synchronousCommandDispatcher.dispatch(command);
+      fail("The command should not pass.");
+    } catch (Throwable exception) {
+      assertThat(exception)
+          .isInstanceOf(CommandFailedException.class)
+          .hasCauseInstanceOf(IllegalStateException.class);
     }
   }
 
-  private class MyCommandWithReturnType implements Command<String> {
+  @Test
+  public void whenGivenACommandAndInterceptor_interceptorShouldBeCalled() throws Exception {
+    // given
+    TestCommandDispatcherInterceptor interceptor = new TestCommandDispatcherInterceptor();
+    SynchronousCommandDispatcher dispatcher = new SynchronousCommandDispatcher(Lists.newArrayList(interceptor));
+    MyCommand command = new MyCommand(true);
 
-    private boolean isExecuteCalled;
-    private String response;
+    // when
+    dispatcher.dispatch(command);
 
-    public MyCommandWithReturnType(String response) {
-      this.response = response;
-    }
+    // then
+    assertThat(interceptor.isInterceptorCalled).isEqualTo(true);
+    assertThat(command.isExecuteCalled).isEqualTo(true);
+    assertThat(command.isValidateCalled).isEqualTo(true);
 
-    @Override
-    public String execute() {
-      isExecuteCalled = true;
-      return response;
-    }
-  }
-
-  private class MyCommandWithoutValidation implements Command<Void> {
-
-    private boolean isExecuteCalled;
-
-    private MyCommandWithoutValidation() {
-    }
-
-    @Override
-    public Void execute() {
-      isExecuteCalled = true;
-      return null;
-    }
   }
 }
