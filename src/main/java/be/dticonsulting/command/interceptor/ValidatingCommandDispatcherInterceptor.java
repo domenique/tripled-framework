@@ -1,10 +1,10 @@
-package be.dticonsulting.support.command.application.interceptor;
+package be.dticonsulting.command.interceptor;
 
-import be.dticonsulting.support.command.application.Command;
-import be.dticonsulting.support.command.application.CommandDispatcherInterceptor;
-import be.dticonsulting.support.command.application.InterceptorChain;
-import be.dticonsulting.support.command.application.callback.CommandValidationException;
-import be.dticonsulting.support.command.application.Validateable;
+import be.dticonsulting.command.Command;
+import be.dticonsulting.command.CommandDispatcherInterceptor;
+import be.dticonsulting.command.InterceptorChain;
+import be.dticonsulting.command.callback.CommandValidationException;
+import be.dticonsulting.command.Validateable;
 
 public class ValidatingCommandDispatcherInterceptor implements CommandDispatcherInterceptor {
 

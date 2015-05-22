@@ -1,4 +1,7 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
+
+import be.dticonsulting.command.Command;
+import be.dticonsulting.command.Validateable;
 
 class MyCommand implements Command<Void>, Validateable {
 

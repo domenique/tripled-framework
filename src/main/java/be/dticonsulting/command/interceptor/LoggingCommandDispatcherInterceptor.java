@@ -1,8 +1,8 @@
-package be.dticonsulting.support.command.application.interceptor;
+package be.dticonsulting.command.interceptor;
 
-import be.dticonsulting.support.command.application.Command;
-import be.dticonsulting.support.command.application.CommandDispatcherInterceptor;
-import be.dticonsulting.support.command.application.InterceptorChain;
+import be.dticonsulting.command.Command;
+import be.dticonsulting.command.CommandDispatcherInterceptor;
+import be.dticonsulting.command.InterceptorChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

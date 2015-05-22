@@ -1,4 +1,4 @@
-package be.dticonsulting.support.command.application.callback;
+package be.dticonsulting.command.callback;
 
 public class CommandFailedException extends RuntimeException {
 

@@ -1,9 +1,7 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
 
-import be.dticonsulting.support.command.application.callback.CommandValidationException;
-import be.dticonsulting.support.command.application.callback.ExceptionThrowingCommandCallback;
-import be.dticonsulting.support.command.application.interceptor.LoggingCommandDispatcherInterceptor;
-import be.dticonsulting.support.command.application.interceptor.ValidatingCommandDispatcherInterceptor;
+import be.dticonsulting.command.callback.CommandValidationException;
+import be.dticonsulting.command.callback.ExceptionThrowingCommandCallback;
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

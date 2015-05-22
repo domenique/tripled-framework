@@ -1,4 +1,8 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
+
+import be.dticonsulting.command.Command;
+import be.dticonsulting.command.CommandDispatcherInterceptor;
+import be.dticonsulting.command.InterceptorChain;
 
 public class TestCommandDispatcherInterceptor implements CommandDispatcherInterceptor {
 

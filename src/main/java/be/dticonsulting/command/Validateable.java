@@ -1,4 +1,4 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
 
 /**
  * Interface which should be implemented by Command implementations if they require a validation step before being executed.

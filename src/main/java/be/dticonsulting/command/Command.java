@@ -1,11 +1,11 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
 
 /**
  * Interface to indicate that the implementer is a Command.
  * <p/>
- * A command has a single method called execute and is being executed by a {@link be.dticonsulting.support.command.application.CommandDispatcher}. If the
+ * A command has a single method called execute and is being executed by a {@link CommandDispatcher}. If the
  * command should pass a validation step before being executed, then it should also implement the
- * {@link be.dticonsulting.support.command.application.Validateable} interface.
+ * {@link Validateable} interface.
  * <p/>
  * The CommandDispatcher is responsible of executing the validation step if there is any, and then the command itself.
  *

@@ -1,4 +1,4 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
 
 class MyCommandWhichFailsWithException extends MyCommand {
 

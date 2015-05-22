@@ -1,4 +1,4 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +9,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import be.dticonsulting.support.command.application.callback.CommandFailedException;
-import be.dticonsulting.support.command.application.callback.CommandValidationException;
-import be.dticonsulting.support.command.application.callback.ExceptionThrowingCommandCallback;
-import be.dticonsulting.support.command.application.interceptor.LoggingCommandDispatcherInterceptor;
-import be.dticonsulting.support.command.application.interceptor.ValidatingCommandDispatcherInterceptor;
+import be.dticonsulting.command.callback.CommandFailedException;
+import be.dticonsulting.command.callback.CommandValidationException;
+import be.dticonsulting.command.callback.ExceptionThrowingCommandCallback;
+import be.dticonsulting.command.interceptor.LoggingCommandDispatcherInterceptor;
+import be.dticonsulting.command.interceptor.ValidatingCommandDispatcherInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;

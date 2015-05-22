@@ -1,7 +1,7 @@
-package be.dticonsulting.support.command.application.callback;
+package be.dticonsulting.command.callback;
 
-import be.dticonsulting.support.command.application.Command;
-import be.dticonsulting.support.command.application.CommandCallback;
+import be.dticonsulting.command.Command;
+import be.dticonsulting.command.CommandCallback;
 
 public class ExceptionThrowingCommandCallback<ReturnType> implements CommandCallback<ReturnType> {
 

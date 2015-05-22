@@ -1,4 +1,4 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
 
 /**
  * Interface which defines an interceptor which is being called by a CommandDispatcher when executing a command.

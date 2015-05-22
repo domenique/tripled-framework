@@ -1,4 +1,6 @@
-package be.dticonsulting.support.command.application;
+package be.dticonsulting.command;
+
+import be.dticonsulting.command.Command;
 
 class MyCommandWithReturnType implements Command<String> {
 

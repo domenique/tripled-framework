@@ -1,6 +1,6 @@
-package be.dticonsulting.support.command.application.statistic;
+package be.dticonsulting.command.statistic;
 
-import be.dticonsulting.support.command.application.Command;
+import be.dticonsulting.command.Command;
 
 public class CommandDispatcherStatistic<T extends Command> {
 
