@@ -1,15 +1,26 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath("io.spring.gradle:dependency-management-plugin:0.5.0.RELEASE")
+        classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1")
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
 
 jar {
     baseName = 'command-dispatcher'
