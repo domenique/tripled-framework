@@ -1,9 +1,6 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            url "https://maven.eveoh.nl/content/repositories/releases"
-        }
     }
     dependencies {
         classpath("io.spring.gradle:dependency-management-plugin:0.5.0.RELEASE")
@@ -15,7 +12,7 @@ apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
 
 jar {
-    baseName = 'command-support'
+    baseName = 'command-dispatcher'
     version = '0.0.1-SNAPSHOT'
 }
 sourceCompatibility = 1.8
