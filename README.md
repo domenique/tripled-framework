@@ -4,9 +4,9 @@ A command dispatcher written java which can be used in a CQRS based application.
 ## Build status
 Builds are performed by Travis CI. Below is a list of builds:
 
-| Branch | Status |
-| ------ |:------:| 
-| master | [![build status](https://travis-ci.org/domenique/command-dispatcher.svg?branch=master)](https://travis-ci.org/domenique/command-dispatcher)|
+| Branch | Status | Coverage |
+| ------ |:------:| :-------:|
+| master | [![build status](https://travis-ci.org/domenique/command-dispatcher.svg?branch=master)](https://travis-ci.org/domenique/command-dispatcher)|[![Coverage Status](https://coveralls.io/repos/domenique/command-dispatcher/badge.svg?branch=master)](https://coveralls.io/r/domenique/command-dispatcher?branch=master)|
 
 ## Goal
 CQRS stands for Command Query Responsibilty segregation. Which is just a fancy acronym to say that the actions which change the state of your application should be seperated from actions querying the state of your application. 
