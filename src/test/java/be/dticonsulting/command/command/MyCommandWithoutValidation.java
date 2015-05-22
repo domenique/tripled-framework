@@ -1,12 +1,12 @@
-package be.dticonsulting.command;
+package be.dticonsulting.command.command;
 
 import be.dticonsulting.command.Command;
 
-class MyCommandWithoutValidation implements Command<Void> {
+public class MyCommandWithoutValidation implements Command<Void> {
 
   public boolean isExecuteCalled;
 
-  MyCommandWithoutValidation() {
+  public MyCommandWithoutValidation() {
   }
 
   @Override

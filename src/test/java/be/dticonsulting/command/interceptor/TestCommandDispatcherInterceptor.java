@@ -1,4 +1,4 @@
-package be.dticonsulting.command;
+package be.dticonsulting.command.interceptor;
 
 import be.dticonsulting.command.Command;
 import be.dticonsulting.command.CommandDispatcherInterceptor;

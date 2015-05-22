@@ -1,22 +1,26 @@
-package be.dticonsulting.command;
+package be.dticonsulting.command.dispatcher;
+
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import be.dticonsulting.command.*;
+import be.dticonsulting.command.callback.CommandFailedException;
+import be.dticonsulting.command.callback.CommandValidationException;
+import be.dticonsulting.command.callback.ExceptionThrowingCommandCallback;
+import be.dticonsulting.command.command.MyCommand;
+import be.dticonsulting.command.command.MyCommandWhichFailsWithException;
+import be.dticonsulting.command.command.MyCommandWithReturnType;
+import be.dticonsulting.command.command.MyCommandWithoutValidation;
+import be.dticonsulting.command.interceptor.LoggingCommandDispatcherInterceptor;
+import be.dticonsulting.command.interceptor.TestCommandDispatcherInterceptor;
+import be.dticonsulting.command.interceptor.ValidatingCommandDispatcherInterceptor;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import be.dticonsulting.command.callback.CommandFailedException;
-import be.dticonsulting.command.callback.CommandValidationException;
-import be.dticonsulting.command.callback.ExceptionThrowingCommandCallback;
-import be.dticonsulting.command.interceptor.LoggingCommandDispatcherInterceptor;
-import be.dticonsulting.command.interceptor.ValidatingCommandDispatcherInterceptor;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 public class SynchronousCommandDispatcherTest {
 

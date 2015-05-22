@@ -1,8 +1,8 @@
-package be.dticonsulting.command;
+package be.dticonsulting.command.statistic;
 
 import static org.assertj.core.api.Assertions.*;
 
-import be.dticonsulting.command.statistic.CommandDispatcherStatistic;
+import be.dticonsulting.command.Command;
 import org.junit.Test;
 
 public class CommandDispatcherStatisticTest {

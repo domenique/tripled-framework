@@ -1,7 +1,9 @@
-package be.dticonsulting.command;
+package be.dticonsulting.command.dispatcher;
 
+import be.dticonsulting.command.*;
 import be.dticonsulting.command.callback.CommandValidationException;
 import be.dticonsulting.command.callback.ExceptionThrowingCommandCallback;
+import be.dticonsulting.command.interceptor.SimpleInterceptorChain;
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +33,19 @@ public class SynchronousCommandDispatcher implements CommandDispatcher {
     Preconditions.checkArgument(callback != null, "The callback cannot be null.");
     LOGGER.debug("Received a command to dispatch: {}", command.getClass().getSimpleName());
 
-    InterceptorChain<ReturnType> chain = new InterceptorChain<>(command, interceptors);
+    dispatchInternal(command, callback);
+
+    LOGGER.debug("Finished executing command {}", command.getClass().getSimpleName());
+  }
+
+  @Override
+  public <ReturnType> void dispatch(Command<ReturnType> command) {
+    dispatch(command, new ExceptionThrowingCommandCallback<>());
+  }
+
+  protected <ReturnType> void dispatchInternal(Command<ReturnType> command, CommandCallback<ReturnType> callback) {
+    InterceptorChain<ReturnType> chain = createChain(command);
+
     try {
       ReturnType response = chain.proceed();
       callback.onSuccess(response);
@@ -40,13 +54,10 @@ public class SynchronousCommandDispatcher implements CommandDispatcher {
     } catch (Throwable exception) {
       callback.onFailure(exception);
     }
-
-    LOGGER.debug("Finished executing command {}", command.getClass().getSimpleName());
   }
 
-  @Override
-  public <ReturnType> void dispatch(Command<ReturnType> command) {
-    dispatch(command, new ExceptionThrowingCommandCallback<>());
+  protected <ReturnType> SimpleInterceptorChain<ReturnType> createChain(Command<ReturnType> command) {
+    return new SimpleInterceptorChain<>(command, interceptors);
   }
 
 

@@ -1,8 +1,8 @@
-package be.dticonsulting.command;
+package be.dticonsulting.command.command;
 
 import be.dticonsulting.command.Command;
 
-class MyCommandWithReturnType implements Command<String> {
+public class MyCommandWithReturnType implements Command<String> {
 
   public boolean isExecuteCalled;
   private String response;

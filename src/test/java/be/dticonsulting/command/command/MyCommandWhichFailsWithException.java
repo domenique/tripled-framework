@@ -1,6 +1,6 @@
-package be.dticonsulting.command;
+package be.dticonsulting.command.command;
 
-class MyCommandWhichFailsWithException extends MyCommand {
+public class MyCommandWhichFailsWithException extends MyCommand {
 
   public MyCommandWhichFailsWithException(boolean validationOutcome) {
     super(validationOutcome);
