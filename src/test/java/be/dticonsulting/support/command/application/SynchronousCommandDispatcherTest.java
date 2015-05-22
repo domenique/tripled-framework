@@ -1,13 +1,19 @@
 package be.dticonsulting.support.command.application;
 
-import be.dticonsulting.support.command.application.callback.CommandFailedException;
-import be.dticonsulting.support.command.application.callback.CommandValidationException;
-import be.dticonsulting.support.command.application.callback.ExceptionThrowingCommandCallback;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import be.dticonsulting.support.command.application.callback.CommandFailedException;
+import be.dticonsulting.support.command.application.callback.CommandValidationException;
+import be.dticonsulting.support.command.application.callback.ExceptionThrowingCommandCallback;
+import be.dticonsulting.support.command.application.interceptor.LoggingCommandDispatcherInterceptor;
+import be.dticonsulting.support.command.application.interceptor.ValidatingCommandDispatcherInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -21,7 +27,11 @@ public class SynchronousCommandDispatcherTest {
 
   @Before
   public void setUp() throws Exception {
-    synchronousCommandDispatcher = new SynchronousCommandDispatcher();
+    List<CommandDispatcherInterceptor> interceptors = new ArrayList<>();
+    interceptors.add(0, new LoggingCommandDispatcherInterceptor());
+    interceptors.add(1, new ValidatingCommandDispatcherInterceptor());
+
+    synchronousCommandDispatcher = new SynchronousCommandDispatcher(interceptors);
   }
 
   @Test
@@ -105,6 +115,7 @@ public class SynchronousCommandDispatcherTest {
       synchronousCommandDispatcher.dispatch(command);
       fail("The command should not pass.");
     } catch (Throwable exception) {
+      // then
       assertThat(exception)
           .isInstanceOf(CommandFailedException.class)
           .hasCauseInstanceOf(IllegalStateException.class);
@@ -124,7 +135,5 @@ public class SynchronousCommandDispatcherTest {
     // then
     assertThat(interceptor.isInterceptorCalled).isEqualTo(true);
     assertThat(command.isExecuteCalled).isEqualTo(true);
-    assertThat(command.isValidateCalled).isEqualTo(true);
-
   }
 }

@@ -21,13 +21,9 @@ public class SynchronousCommandDispatcher implements CommandDispatcher {
 
   public SynchronousCommandDispatcher() {
     this.interceptors = new ArrayList<>();
-    interceptors.add(0, new LoggingCommandDispatcherInterceptor());
-    interceptors.add(1, new ValidatingCommandDispatcherInterceptor());
   }
 
   public SynchronousCommandDispatcher(List<CommandDispatcherInterceptor> interceptors) {
-    interceptors.add(0, new LoggingCommandDispatcherInterceptor());
-    interceptors.add(1, new ValidatingCommandDispatcherInterceptor());
     this.interceptors = interceptors;
   }
 
