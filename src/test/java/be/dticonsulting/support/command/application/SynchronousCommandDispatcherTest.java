@@ -23,7 +23,7 @@ public class SynchronousCommandDispatcherTest {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  private SynchronousCommandDispatcher synchronousCommandDispatcher;
+  private CommandDispatcher dispatcherWithLoggingAndValidation;
 
   @Before
   public void setUp() throws Exception {
@@ -31,17 +31,18 @@ public class SynchronousCommandDispatcherTest {
     interceptors.add(0, new LoggingCommandDispatcherInterceptor());
     interceptors.add(1, new ValidatingCommandDispatcherInterceptor());
 
-    synchronousCommandDispatcher = new SynchronousCommandDispatcher(interceptors);
+    dispatcherWithLoggingAndValidation = new SynchronousCommandDispatcher(interceptors);
   }
 
   @Test
   public void whenGivenNothing_shouldThrowException() throws Exception {
     // given
+    CommandDispatcher dispatcherWithoutInterceptors = new SynchronousCommandDispatcher();
     expectedException.expect(IllegalArgumentException.class);
     expectedException.expectMessage("The command cannot be null.");
 
     // when
-    synchronousCommandDispatcher.dispatch(null);
+    dispatcherWithoutInterceptors.dispatch(null);
 
     // then -> Exception
   }
@@ -52,7 +53,7 @@ public class SynchronousCommandDispatcherTest {
     MyCommand command = new MyCommand(true);
 
     // when
-    synchronousCommandDispatcher.dispatch(command);
+    dispatcherWithLoggingAndValidation.dispatch(command);
 
     // then
     assertThat(command.isValidateCalled).isEqualTo(true);
@@ -65,7 +66,7 @@ public class SynchronousCommandDispatcherTest {
     MyCommandWithoutValidation command = new MyCommandWithoutValidation();
 
     // when
-    synchronousCommandDispatcher.dispatch(command);
+    dispatcherWithLoggingAndValidation.dispatch(command);
 
     // then
     assertThat(command.isExecuteCalled).isEqualTo(true);
@@ -79,7 +80,7 @@ public class SynchronousCommandDispatcherTest {
     // when
     Throwable exception = null;
     try {
-      synchronousCommandDispatcher.dispatch(command);
+      dispatcherWithLoggingAndValidation.dispatch(command);
     } catch (Exception e) {
       exception = e;
     }
@@ -98,7 +99,7 @@ public class SynchronousCommandDispatcherTest {
 
     // when
     ExceptionThrowingCommandCallback<String> callback = new ExceptionThrowingCommandCallback<>();
-    synchronousCommandDispatcher.dispatch(command, callback);
+    dispatcherWithLoggingAndValidation.dispatch(command, callback);
 
     // then
     assertThat(callback.getResult()).isEqualTo(expectedResponse);
@@ -112,7 +113,7 @@ public class SynchronousCommandDispatcherTest {
 
     // when
     try {
-      synchronousCommandDispatcher.dispatch(command);
+      dispatcherWithLoggingAndValidation.dispatch(command);
       fail("The command should not pass.");
     } catch (Throwable exception) {
       // then
