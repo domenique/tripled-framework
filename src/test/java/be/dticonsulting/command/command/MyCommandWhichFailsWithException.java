@@ -8,6 +8,7 @@ public class MyCommandWhichFailsWithException extends MyCommand {
 
   @Override
   public Void execute() {
+    super.execute();
     throw new IllegalStateException("command failed.");
   }
 }
