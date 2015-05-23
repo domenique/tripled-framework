@@ -62,12 +62,13 @@ public class AsynchronousCommandDispatcherTest {
   public void whenGivenAValidCommand_shouldBeExecutedAsynchronous() throws Exception {
     // given
     MyCommand command = new MyCommand(true);
+    FutureCommandCallback<Void> future = new FutureCommandCallback<>();
 
     // when
-    asynchronousDispatcher.dispatch(command);
+    asynchronousDispatcher.dispatch(command,future);
+    future.get();
 
     // then
-    Thread.sleep(50);
     assertThat(command.isValidateCalled).isEqualTo(false);
     assertThat(command.isExecuteCalled).isEqualTo(true);
     assertThat(command.threadNameForExecute).isEqualTo(THREAD_POOL_PREFIX + "0");
