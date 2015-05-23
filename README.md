@@ -1,4 +1,4 @@
-# command-dispatcher [![build status](https://travis-ci.org/domenique/command-dispatcher.svg?branch=master)](https://travis-ci.org/domenique/command-dispatcher) [![Coverage Status](https://coveralls.io/repos/domenique/command-dispatcher/badge.png?branch=master)](https://coveralls.io/r/domenique/command-dispatcher?branch=master)
+# command-dispatcher [![build status](https://travis-ci.org/domenique/command-dispatcher.svg?branch=master)](https://travis-ci.org/domenique/command-dispatcher) [![Coverage Status](https://coveralls.io/repos/domenique/command-dispatcher/badge.svg?branch=master)](https://coveralls.io/r/domenique/command-dispatcher?branch=master)
 A command dispatcher written java which can be used in a CQRS based application.
 
 ## Goal
