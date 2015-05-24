@@ -1,0 +1,3 @@
+include 'command-dispatcher-core'
+include 'command-dispatcher-autoconfigure'
+include 'spring-boot-command-dispatcher-starter'

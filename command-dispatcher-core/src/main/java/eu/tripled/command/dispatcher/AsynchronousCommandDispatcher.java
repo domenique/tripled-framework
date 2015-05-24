@@ -1,0 +1,55 @@
+package eu.tripled.command.dispatcher;
+
+import eu.tripled.command.Command;
+import eu.tripled.command.CommandCallback;
+import eu.tripled.command.CommandDispatcherInterceptor;
+
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+/**
+ * An Implementation of the CommandDispatcher which executes the command in an asynchronous fashion.
+ * This implementation uses a ThreadPool to dispatch events to separate threads.
+ */
+public class AsynchronousCommandDispatcher extends SynchronousCommandDispatcher {
+
+  private Executor executor;
+
+  public AsynchronousCommandDispatcher() {
+    super();
+    this.executor = Executors.newCachedThreadPool();
+  }
+
+  public AsynchronousCommandDispatcher(Executor executor) {
+    super();
+    this.executor = executor;
+  }
+
+  public AsynchronousCommandDispatcher(List<CommandDispatcherInterceptor> interceptors, Executor executor) {
+    super(interceptors);
+    this.executor = executor;
+  }
+
+
+  @Override
+  protected <ReturnType> void dispatchInternal(Command<ReturnType> command, CommandCallback<ReturnType> callback) {
+    executor.execute(new RunnableCommand<>(command, callback));
+  }
+
+  private class RunnableCommand<ReturnType> implements Runnable {
+
+    private final Command<ReturnType> command;
+    private final CommandCallback<ReturnType> callback;
+
+    public RunnableCommand(Command<ReturnType> command, CommandCallback<ReturnType> callback) {
+      this.command = command;
+      this.callback = callback;
+    }
+
+    @Override
+    public void run() {
+      AsynchronousCommandDispatcher.super.dispatchInternal(command, callback);
+    }
+  }
+}
