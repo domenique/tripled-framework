@@ -1,14 +1,19 @@
 buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("io.spring.gradle:dependency-management-plugin:0.5.0.RELEASE")
-        classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1")
-    }
+  repositories {
+    jcenter()
+    mavenCentral()
+    maven { url 'http://repo.spring.io/plugins-release' }
+  }
+  dependencies {
+    classpath("io.spring.gradle:dependency-management-plugin:0.5.0.RELEASE")
+    classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1")
+    classpath("org.springframework.build.gradle:propdeps-plugin:0.0.7")
+  }
 }
 
+apply plugin: 'maven-publish'
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-idea'
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
@@ -16,34 +21,59 @@ apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
 jacocoTestReport {
-    reports {
-        xml.enabled = true // coveralls plugin depends on xml format report
-        html.enabled = true
-    }
+  reports {
+    xml.enabled = true // coveralls plugin depends on xml format report
+    html.enabled = true
+  }
 }
 
 jar {
-    baseName = 'command-dispatcher'
-    version = '0.0.1-SNAPSHOT'
+  baseName = 'command-dispatcher'
+  version = '0.0.1-SNAPSHOT'
 }
+
+publishing {
+  publications {
+    maven(MavenPublication) {
+      groupId 'be.dticonsulting'
+      artifactId 'command-dispatcher'
+      version '0.0.1-SNAPSHOT'
+
+      from components.java
+    }
+  }
+  repositories {
+    maven {
+      // publish to the build dir.
+      url "$buildDir/repo"
+    }
+  }
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
+
+compileJava.dependsOn(processResources)
 
 dependencyManagement {
-    imports {
-        mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
-    }
+  imports {
+    mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
+  }
 }
-dependencies {
-    compile("org.springframework.boot:spring-boot-starter-logging")
-    compile("com.google.guava:guava")
 
-    testCompile("org.assertj:assertj-core:1.6.1")
-    testCompile("org.assertj:assertj-guava:1.2.0")
-    testCompile("org.assertj:assertj-joda-time:1.1.0")
-    testCompile("junit:junit")
+dependencies {
+  compile("org.springframework.boot:spring-boot-autoconfigure")
+  compile("org.springframework.boot:spring-boot-starter-logging")
+  compile("com.google.guava:guava")
+
+  testCompile("org.assertj:assertj-core:1.6.1")
+  testCompile("org.assertj:assertj-guava:1.2.0")
+  testCompile("org.assertj:assertj-joda-time:1.1.0")
+  testCompile("junit:junit")
+  optional("org.springframework.boot:spring-boot-configuration-processor")
 }
+

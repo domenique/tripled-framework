@@ -6,7 +6,6 @@ import be.dticonsulting.command.CommandDispatcherInterceptor;
 
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
@@ -27,7 +26,7 @@ public class AsynchronousCommandDispatcher extends SynchronousCommandDispatcher 
     this.executor = executor;
   }
 
-  public AsynchronousCommandDispatcher(List<CommandDispatcherInterceptor> interceptors, ExecutorService executor) {
+  public AsynchronousCommandDispatcher(List<CommandDispatcherInterceptor> interceptors, Executor executor) {
     super(interceptors);
     this.executor = executor;
   }
