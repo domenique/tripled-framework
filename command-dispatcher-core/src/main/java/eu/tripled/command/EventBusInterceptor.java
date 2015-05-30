@@ -10,7 +10,7 @@ package eu.tripled.command;
  * <p>
  * The command passed to the intercept method is the command that will eventually be executed.
  */
-public interface CommandDispatcherInterceptor {
+public interface EventBusInterceptor {
 
   /**
    * Intercepts the command dispatching.
@@ -25,6 +25,6 @@ public interface CommandDispatcherInterceptor {
    * @return The return object from the chain.proceed() command or, depending on the implementation, some other instance of the ReturnType.
    * @throws Throwable When an exception occurred.
    */
-  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Command<ReturnType> command) throws Throwable;
+  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Command command) throws Throwable;
 
 }

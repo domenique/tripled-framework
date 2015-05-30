@@ -1,9 +1,9 @@
 package eu.tripled.command.callback;
 
 import eu.tripled.command.Command;
-import eu.tripled.command.CommandCallback;
+import eu.tripled.command.EventCallback;
 
-public class ExceptionThrowingCommandCallback<ReturnType> implements CommandCallback<ReturnType> {
+public class ExceptionThrowingEventCallback<ReturnType> implements EventCallback<ReturnType> {
 
   private ReturnType result;
 
@@ -13,7 +13,7 @@ public class ExceptionThrowingCommandCallback<ReturnType> implements CommandCall
   }
 
   @Override
-  public void onValidationFailure(Command<ReturnType> command) {
+  public void onValidationFailure(Command command) {
     throw new CommandValidationException("The command failed the validation step.");
   }
 

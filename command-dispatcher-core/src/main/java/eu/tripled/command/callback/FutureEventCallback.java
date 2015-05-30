@@ -1,11 +1,11 @@
 package eu.tripled.command.callback;
 
 import eu.tripled.command.Command;
-import eu.tripled.command.CommandCallback;
+import eu.tripled.command.EventCallback;
 
 import java.util.concurrent.*;
 
-public class FutureCommandCallback<ReturnType> implements CommandCallback<ReturnType>, Future<ReturnType> {
+public class FutureEventCallback<ReturnType> implements EventCallback<ReturnType>, Future<ReturnType> {
 
   private ReturnType result;
   private Throwable exception;
@@ -18,7 +18,7 @@ public class FutureCommandCallback<ReturnType> implements CommandCallback<Return
   }
 
   @Override
-  public void onValidationFailure(Command<ReturnType> command) {
+  public void onValidationFailure(Command command) {
     this.exception = new CommandValidationException("The command failed the validation step.");
     countDownLatch.countDown();
   }

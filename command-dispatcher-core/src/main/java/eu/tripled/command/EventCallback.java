@@ -5,7 +5,7 @@ package eu.tripled.command;
  *
  * @param <ReturnType> The ReturnType of the command.
  */
-public interface CommandCallback<ReturnType> {
+public interface EventCallback<ReturnType> {
 
   /**
    * Called by CommandDispatcher when the command is executed successfully.
@@ -19,7 +19,7 @@ public interface CommandCallback<ReturnType> {
    *
    * @param command The command which failed.
    */
-  void onValidationFailure(Command<ReturnType> command);
+  void onValidationFailure(Command command);
 
   /**
    * Called when the command failed.

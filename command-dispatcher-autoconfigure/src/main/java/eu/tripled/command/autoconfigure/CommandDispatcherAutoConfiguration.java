@@ -1,11 +1,11 @@
 package eu.tripled.command.autoconfigure;
 
-import eu.tripled.command.CommandDispatcher;
-import eu.tripled.command.CommandDispatcherInterceptor;
-import eu.tripled.command.dispatcher.AsynchronousCommandDispatcher;
-import eu.tripled.command.dispatcher.SynchronousCommandDispatcher;
-import eu.tripled.command.interceptor.LoggingCommandDispatcherInterceptor;
-import eu.tripled.command.interceptor.ValidatingCommandDispatcherInterceptor;
+import eu.tripled.command.Publisher;
+import eu.tripled.command.EventBusInterceptor;
+import eu.tripled.command.dispatcher.AsynchronousEventBus;
+import eu.tripled.command.dispatcher.SynchronousEventBus;
+import eu.tripled.command.interceptor.LoggingEventBusInterceptor;
+import eu.tripled.command.interceptor.ValidatingEventBusInterceptor;
 import com.google.common.collect.Lists;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -22,28 +22,28 @@ import java.util.concurrent.Executor;
 public class CommandDispatcherAutoConfiguration {
 
   @Bean
-  @ConditionalOnMissingBean(CommandDispatcher.class)
-  @ConditionalOnProperty(value = "command-dispatcher.useAsync", havingValue = "false", matchIfMissing = true)
-  public CommandDispatcher synchronousCommandDispatcher() {
-    List<CommandDispatcherInterceptor> interceptors =
-        Lists.newArrayList(new LoggingCommandDispatcherInterceptor(), new ValidatingCommandDispatcherInterceptor());
+  @ConditionalOnMissingBean(Publisher.class)
+  @ConditionalOnProperty(value = "commandMessage-dispatcher.useAsync", havingValue = "false", matchIfMissing = true)
+  public Publisher synchronousCommandDispatcher() {
+    List<EventBusInterceptor> interceptors =
+        Lists.newArrayList(new LoggingEventBusInterceptor(), new ValidatingEventBusInterceptor());
 
-    return new SynchronousCommandDispatcher(interceptors);
+    return new SynchronousEventBus(interceptors);
   }
 
   @Bean
-  @ConditionalOnMissingBean(CommandDispatcher.class)
-  @ConditionalOnProperty(value = "command-dispatcher.useAsync", havingValue = "true")
-  public CommandDispatcher asynchronousCommandDispatcher(Executor executor) {
-    List<CommandDispatcherInterceptor> interceptors =
-        Lists.newArrayList(new LoggingCommandDispatcherInterceptor(), new ValidatingCommandDispatcherInterceptor());
+  @ConditionalOnMissingBean(Publisher.class)
+  @ConditionalOnProperty(value = "commandMessage-dispatcher.useAsync", havingValue = "true")
+  public Publisher asynchronousCommandDispatcher(Executor executor) {
+    List<EventBusInterceptor> interceptors =
+        Lists.newArrayList(new LoggingEventBusInterceptor(), new ValidatingEventBusInterceptor());
 
-    return new AsynchronousCommandDispatcher(interceptors, executor);
+    return new AsynchronousEventBus(interceptors, executor);
   }
 
   @Bean
   @ConditionalOnMissingBean(Executor.class)
-  @ConditionalOnProperty(value = "command-dispatcher.useAsync", havingValue = "true")
+  @ConditionalOnProperty(value = "commandMessage-dispatcher.useAsync", havingValue = "true")
   public Executor taskExecutor() {
     ThreadPoolTaskExecutor executorService = new ThreadPoolTaskExecutor();
     executorService.setCorePoolSize(5);

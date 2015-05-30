@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FutureCommandCallbackTest {
+public class FutureEventCallbackTest {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -17,7 +17,7 @@ public class FutureCommandCallbackTest {
   @Test
   public void whenCancelCalled_shouldReturnFalse() throws Exception {
     // given
-    FutureCommandCallback future = new FutureCommandCallback();
+    FutureEventCallback future = new FutureEventCallback();
 
     // when
     boolean cancel = future.cancel(true);
@@ -29,7 +29,7 @@ public class FutureCommandCallbackTest {
   @Test
   public void whenIsCancelledCalled_shouldReturnFalse() throws Exception {
     // given
-    FutureCommandCallback future = new FutureCommandCallback();
+    FutureEventCallback future = new FutureEventCallback();
 
     // when
     boolean cancel = future.isCancelled();
@@ -41,7 +41,7 @@ public class FutureCommandCallbackTest {
   @Test
   public void whenGetWithTimeoutCalled_shouldTimeout() throws Exception {
     // given
-    FutureCommandCallback future = new FutureCommandCallback();
+    FutureEventCallback future = new FutureEventCallback();
 
     expectedException.expect(TimeoutException.class);
 
@@ -55,7 +55,7 @@ public class FutureCommandCallbackTest {
   @Test
   public void whenGetWithTimeoutCalled_shouldNotTimeoutIfResponseAvailable() throws Exception {
     // given
-    FutureCommandCallback<String> future = new FutureCommandCallback();
+    FutureEventCallback<String> future = new FutureEventCallback();
     future.onSuccess("response");
 
     // when
