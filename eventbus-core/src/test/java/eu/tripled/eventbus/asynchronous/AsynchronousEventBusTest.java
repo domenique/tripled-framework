@@ -45,7 +45,7 @@ public class AsynchronousEventBusTest {
 
   }
 
-  @Test(timeout = 200)
+  @Test
   public void whenNotGivenAnExecutor_shouldCreateADefaultOneAndExecuteCommands() throws Exception {
     // given
     AsynchronousEventBus defaultPublisher = new AsynchronousEventBus();
@@ -63,7 +63,7 @@ public class AsynchronousEventBusTest {
     assertThat(eventHandler.isHelloCommandHandled).isTrue();
   }
 
-  @Test(timeout = 200)
+  @Test
   public void whenGivenAValidCommand_shouldBeExecutedAsynchronous() throws Exception {
     // given
     HelloCommand command = new HelloCommand("Domenique");
@@ -78,7 +78,7 @@ public class AsynchronousEventBusTest {
     assertThat(eventHandler.threadNameForExecute).isEqualTo(THREAD_POOL_PREFIX + "0");
   }
 
-  @Test(timeout = 200)
+  @Test
   public void whenGivenAValidCommandAndFutureCallback_waitForExecutionToFinish() throws Exception {
     // given
     HelloCommand command = new HelloCommand("Domenique");
@@ -94,7 +94,7 @@ public class AsynchronousEventBusTest {
     assertThat(eventHandler.threadNameForExecute).isEqualTo(THREAD_POOL_PREFIX + "0");
   }
 
-  @Test(timeout = 200)
+  @Test
   public void whenUsingADispatcherWithValidator_validationShouldBeDoneAsynchronous() throws Exception {
     // given
     FutureEventCallback<Void> future = new FutureEventCallback<>();
