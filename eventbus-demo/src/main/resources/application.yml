@@ -1,0 +1,3 @@
+command-eventbus:
+  useAsync: true
+

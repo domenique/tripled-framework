@@ -1,3 +1,4 @@
-include 'command-dispatcher-core'
-include 'command-dispatcher-autoconfigure'
-include 'spring-boot-command-dispatcher-starter'
+include 'eventbus-core'
+include 'eventbus-autoconfigure'
+include 'spring-boot-eventbus-starter'
+include 'eventbus-demo'
