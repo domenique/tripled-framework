@@ -1,5 +1,5 @@
 # TripleD [![build status](https://travis-ci.org/domenique/command-dispatcher.svg?branch=master)](https://travis-ci.org/domenique/command-dispatcher) [![Coverage Status](https://coveralls.io/repos/domenique/command-dispatcher/badge.svg?branch=master)](https://coveralls.io/r/domenique/command-dispatcher?branch=master)
-A very opinionated framework the build applications using CQRS, event sourcing and domain driven design.
+A very opinionated framework to build applications using CQRS, event sourcing and domain driven design.
 
 ## Goal
 The TripleD framework aims to take away as much boiler plate code as possible when building CQRS based applications which want to take advantage of event sourcing and domain driven design.
