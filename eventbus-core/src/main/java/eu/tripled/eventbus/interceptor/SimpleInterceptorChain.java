@@ -1,8 +1,8 @@
 package eu.tripled.eventbus.interceptor;
 
-import eu.tripled.eventbus.event.Event;
 import eu.tripled.eventbus.EventBusInterceptor;
 import eu.tripled.eventbus.InterceptorChain;
+import eu.tripled.eventbus.event.Event;
 import eu.tripled.eventbus.synchronous.EventHandlerInvoker;
 
 import java.util.List;

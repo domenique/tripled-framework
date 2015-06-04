@@ -1,17 +1,13 @@
 package eu.tripled.eventbus;
 
-public class ValidatingCommand implements Validateable {
+import javax.validation.constraints.NotNull;
 
-  private boolean validationOutcome = false;
-  public boolean isValidateCalled = false;
+public class ValidatingCommand {
 
-  public ValidatingCommand(boolean validationOutcome) {
-    this.validationOutcome = validationOutcome;
-  }
+  @NotNull
+  private String message;
 
-  @Override
-  public boolean validate() {
-    isValidateCalled = true;
-    return validationOutcome;
+  public ValidatingCommand(String message) {
+    this.message = message;
   }
 }

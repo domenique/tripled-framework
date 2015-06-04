@@ -1,6 +1,7 @@
 package eu.tripled.eventbus.synchronous;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import eu.tripled.eventbus.*;
 import eu.tripled.eventbus.annotation.Handles;
 import eu.tripled.eventbus.callback.CommandValidationException;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +37,7 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
 
   public SynchronousEventBus(List<EventBusInterceptor> interceptors) {
     this.eventHandlers = new ConcurrentHashMap<>();
-    this.interceptors = interceptors;
+    this.interceptors = Collections.unmodifiableList(interceptors);
   }
 
   @Override
@@ -96,6 +98,6 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
 
 
   protected <ReturnType> SimpleInterceptorChain<ReturnType> createChain(Event event, EventHandlerInvoker invoker) {
-    return new SimpleInterceptorChain<>(event, invoker, interceptors);
+    return new SimpleInterceptorChain<>(event, invoker, Lists.newArrayList(interceptors));
   }
 }

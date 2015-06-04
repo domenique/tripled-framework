@@ -1,12 +1,21 @@
 package eu.tripled.eventbus.interceptor;
 
-import eu.tripled.eventbus.event.Event;
 import eu.tripled.eventbus.EventBusInterceptor;
 import eu.tripled.eventbus.InterceptorChain;
 import eu.tripled.eventbus.callback.CommandValidationException;
-import eu.tripled.eventbus.Validateable;
+import eu.tripled.eventbus.event.Event;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.util.Set;
 
 public class ValidatingEventBusInterceptor implements EventBusInterceptor {
+
+  private Validator validator;
+
+  public ValidatingEventBusInterceptor(Validator validator) {
+    this.validator = validator;
+  }
 
   @Override
   public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Throwable {
@@ -18,14 +27,11 @@ public class ValidatingEventBusInterceptor implements EventBusInterceptor {
   }
 
   private boolean isValid(Event event) {
-    boolean isValid = true;
-    if (shouldPerformValidation(event)) {
-      isValid = ((Validateable) event.getBody()).validate();
-    }
+    Set<ConstraintViolation<Object>> validate = validator.validate(event.getBody());
+    // TODO: we need to provide these exceptions through the exception?
+    boolean isValid = validate.isEmpty();
+
     return isValid;
   }
 
-  private boolean shouldPerformValidation(Event event) {
-    return event.getBody() instanceof Validateable;
-  }
 }

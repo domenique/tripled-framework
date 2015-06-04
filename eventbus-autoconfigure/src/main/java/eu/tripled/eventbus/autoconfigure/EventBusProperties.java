@@ -3,7 +3,7 @@ package eu.tripled.eventbus.autoconfigure;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "eu.tripled.eventbus")
-public class CommandDispatcherProperties {
+public class EventBusProperties {
 
   private boolean useAsync;
 

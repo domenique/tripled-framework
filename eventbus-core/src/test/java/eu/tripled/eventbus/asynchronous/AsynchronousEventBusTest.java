@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import eu.tripled.eventbus.*;
 import eu.tripled.eventbus.callback.CommandValidationException;
 import eu.tripled.eventbus.callback.FutureEventCallback;
+import eu.tripled.eventbus.interceptor.TestValidator;
 import eu.tripled.eventbus.interceptor.ValidatingEventBusInterceptor;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +24,7 @@ public class AsynchronousEventBusTest {
   private EventPublisher asynchronousDispatcher;
   private EventPublisher dispatcherWithValidation;
   private TestEventHandler eventHandler;
+  private TestValidator validator;
 
   @Before
   public void setUp() throws Exception {
@@ -38,7 +40,8 @@ public class AsynchronousEventBusTest {
     ExecutorService executor2 = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
         .setNameFormat(THREAD_POOL_WITH_VALIDATION_PREFIX + "%d")
         .build());
-    List<EventBusInterceptor> interceptors = Lists.newArrayList(new ValidatingEventBusInterceptor());
+    validator = new TestValidator();
+    List<EventBusInterceptor> interceptors = Lists.newArrayList(new ValidatingEventBusInterceptor(validator));
     AsynchronousEventBus eventBus2 = new AsynchronousEventBus(interceptors, executor2);
     eventBus2.subscribe(eventHandler);
     dispatcherWithValidation = eventBus2;
@@ -98,7 +101,8 @@ public class AsynchronousEventBusTest {
   public void whenUsingADispatcherWithValidator_validationShouldBeDoneAsynchronous() throws Exception {
     // given
     FutureEventCallback<Void> future = new FutureEventCallback<>();
-    ValidatingCommand command = new ValidatingCommand(true);
+    ValidatingCommand command = new ValidatingCommand("should pass");
+    validator.shouldFailNextCall(false);
 
     // when
     dispatcherWithValidation.publish(command, future);
@@ -114,7 +118,8 @@ public class AsynchronousEventBusTest {
   public void whenGivenAnInvalidCommand_shouldFail() throws Exception {
     // given
     FutureEventCallback<Void> future = new FutureEventCallback<>();
-    ValidatingCommand command = new ValidatingCommand(false);
+    ValidatingCommand command = new ValidatingCommand(null);
+    validator.shouldFailNextCall(true);
 
     // when
     dispatcherWithValidation.publish(command, future);
@@ -125,7 +130,7 @@ public class AsynchronousEventBusTest {
       // then
       assertThat(future.isDone()).isEqualTo(true);
       assertThat(ex).hasCauseInstanceOf(CommandValidationException.class);
-      assertThat(command.isValidateCalled).isEqualTo(true);
+      assertThat(validator.isValidateCalled).isEqualTo(true);
       assertThat(eventHandler.isValidatingCommandHandled).isEqualTo(false);
     }
   }

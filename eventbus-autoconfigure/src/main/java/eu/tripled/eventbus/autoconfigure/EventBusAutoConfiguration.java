@@ -13,20 +13,22 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
+import javax.validation.Validator;
 import java.util.List;
 import java.util.concurrent.Executor;
 
 @Configuration
-@EnableConfigurationProperties(CommandDispatcherProperties.class)
-public class CommandDispatcherAutoConfiguration {
+@EnableConfigurationProperties(EventBusProperties.class)
+public class EventBusAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean(EventPublisher.class)
   @ConditionalOnProperty(value = "eu.tripled.eventbus.useAsync", havingValue = "false", matchIfMissing = true)
-  public SynchronousEventBus synchronousCommandDispatcher() {
+  public SynchronousEventBus synchronousCommandDispatcher(Validator validator) {
     List<EventBusInterceptor> interceptors =
-        Lists.newArrayList(new LoggingEventBusInterceptor(), new ValidatingEventBusInterceptor());
+        Lists.newArrayList(new LoggingEventBusInterceptor(), new ValidatingEventBusInterceptor(validator));
 
     return new SynchronousEventBus(interceptors);
   }
@@ -34,9 +36,9 @@ public class CommandDispatcherAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean(EventPublisher.class)
   @ConditionalOnProperty(value = "eu.tripled.eventbus.useAsync", havingValue = "true")
-  public AsynchronousEventBus asynchronousCommandDispatcher(Executor executor) {
+  public AsynchronousEventBus asynchronousCommandDispatcher(Executor executor, LocalValidatorFactoryBean validator) {
     List<EventBusInterceptor> interceptors =
-        Lists.newArrayList(new LoggingEventBusInterceptor(), new ValidatingEventBusInterceptor());
+        Lists.newArrayList(new LoggingEventBusInterceptor(), new ValidatingEventBusInterceptor(validator.getValidator()));
 
     return new AsynchronousEventBus(interceptors, executor);
   }
@@ -51,7 +53,12 @@ public class CommandDispatcherAutoConfiguration {
 
     executorService.afterPropertiesSet();
     return executorService;
+  }
 
+  @Bean
+  @ConditionalOnMissingBean(LocalValidatorFactoryBean.class)
+  public LocalValidatorFactoryBean localValidatorFactoryBean() {
+    return new LocalValidatorFactoryBean();
   }
 
 

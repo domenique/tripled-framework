@@ -37,6 +37,7 @@ configurations {
 dependencies {
     compile project(":spring-boot-eventbus-starter")
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.hibernate:hibernate-validator")
     runtime("org.hsqldb:hsqldb")
     // commented to resolve ELExpressionFactory class not found when launching the JAR.
     //providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")

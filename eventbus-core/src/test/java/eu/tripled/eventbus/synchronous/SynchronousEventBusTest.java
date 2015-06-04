@@ -6,6 +6,7 @@ import eu.tripled.eventbus.callback.CommandValidationException;
 import eu.tripled.eventbus.callback.ExceptionThrowingEventCallback;
 import eu.tripled.eventbus.event.Event;
 import eu.tripled.eventbus.interceptor.LoggingEventBusInterceptor;
+import eu.tripled.eventbus.interceptor.TestValidator;
 import eu.tripled.eventbus.interceptor.ValidatingEventBusInterceptor;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,12 +27,14 @@ public class SynchronousEventBusTest {
 
   private EventPublisher eventPublisher;
   private TestEventHandler eventHandler;
+  private TestValidator validator;
 
   @Before
   public void setUp() throws Exception {
     List<EventBusInterceptor> interceptors = new ArrayList<>();
     interceptors.add(0, new LoggingEventBusInterceptor());
-    interceptors.add(1, new ValidatingEventBusInterceptor());
+    validator = new TestValidator();
+    interceptors.add(1, new ValidatingEventBusInterceptor(validator));
 
     SynchronousEventBus eventBus = new SynchronousEventBus(interceptors);
 
@@ -95,7 +98,8 @@ public class SynchronousEventBusTest {
   @Test
   public void whenGivenCommandThatFailsValidation_shouldInvokeCallback() throws Exception {
     // given
-    ValidatingCommand validatingCommand = new ValidatingCommand(false);
+    ValidatingCommand validatingCommand = new ValidatingCommand(null);
+    validator.shouldFailNextCall(true);
 
     // when
     eventPublisher.publish(validatingCommand, new EventCallback<Void>() {
@@ -122,7 +126,8 @@ public class SynchronousEventBusTest {
   @Test(expected = CommandValidationException.class)
   public void whenGivenCommandThatFailsValidation_shouldThrowException() throws Exception {
     // given
-    ValidatingCommand validatingCommand = new ValidatingCommand(false);
+    ValidatingCommand validatingCommand = new ValidatingCommand(null);
+    validator.shouldFailNextCall(true);
 
     // when
     eventPublisher.publish(validatingCommand);
@@ -133,7 +138,8 @@ public class SynchronousEventBusTest {
   @Test
   public void whenGivenCommandThatSucceeds_shouldInvokeCallback() throws Exception {
     // given
-    ValidatingCommand validatingCommand = new ValidatingCommand(true);
+    ValidatingCommand validatingCommand = new ValidatingCommand("message");
+    validator.shouldFailNextCall(false);
 
     // when
     eventPublisher.publish(validatingCommand, new EventCallback<Void>() {
