@@ -174,19 +174,43 @@ public class SynchronousEventBusTest {
     // then --> exception
   }
 
-  @Test
-  public void whenRegisteringDuplicateEventHandler_alreadyRegisteredHandlerShouldNotBeInvoked() throws Exception {
+  @Test(expected = DuplicateEventHandlerRegistrationException.class)
+  public void whenRegisteringDuplicateEventHandlerWithReturnType_shouldFailWithException() throws Exception {
     // given
     SecondTestEventHandler secondEventHandler = new SecondTestEventHandler();
+
+    // when
     ((EventSubscriber) eventPublisher).subscribe(secondEventHandler);
-    HelloCommand command = new HelloCommand("domenique");
+
+    // then --> exception
+  }
+
+  @Test
+  public void whenGivenACommandWithMultipleHandlers_allHandlersShouldBeInvoked() throws Exception {
+    // given
+    ACommandHandledByMultipleHandlers command = new ACommandHandledByMultipleHandlers();
 
     // when
     eventPublisher.publish(command);
 
     // then
-    assertThat(eventHandler.isHelloCommandHandled).isFalse();
-    assertThat(secondEventHandler.isHelloCommandHandled).isTrue();
+    assertThat(eventHandler.handledByFirstCount).isEqualTo(1);
+    assertThat(eventHandler.handledbySecondCount).isEqualTo(1);
+  }
+
+  @Test
+  public void whenRegisteringADuplicateEventHandler_shouldNotInvokeTwice() throws Exception {
+    // given
+    ACommandHandledByMultipleHandlers command = new ACommandHandledByMultipleHandlers();
+    ((EventSubscriber) eventPublisher).subscribe(eventHandler);
+
+    // when
+    eventPublisher.publish(command);
+
+    // then
+    assertThat(eventHandler.handledByFirstCount).isEqualTo(1);
+    assertThat(eventHandler.handledbySecondCount).isEqualTo(1);
+
 
   }
 }

@@ -7,6 +7,8 @@ public class TestEventHandler {
   public boolean isHelloCommandHandled;
   public boolean isFailingCommandHandled;
   public boolean isValidatingCommandHandled;
+  public int handledByFirstCount;
+  public int handledbySecondCount;
   public String threadNameForExecute;
 
   @Handles(HelloCommand.class)
@@ -26,6 +28,17 @@ public class TestEventHandler {
   public void handleValidatingCommand(ValidatingCommand command) {
     threadNameForExecute = Thread.currentThread().getName();
     isValidatingCommandHandled = true;
+  }
+
+  @Handles(ACommandHandledByMultipleHandlers.class)
+  public void handleFirst(ACommandHandledByMultipleHandlers command) {
+    handledByFirstCount++;
+  }
+
+  @Handles(ACommandHandledByMultipleHandlers.class)
+  public String handleSecond(ACommandHandledByMultipleHandlers command) {
+    handledbySecondCount++;
+    return "Handled by second.";
   }
 
 }

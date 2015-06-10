@@ -68,14 +68,15 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
   }
 
   protected void subscribeInternal(Object eventHandler, Class<?> command, Method method) {
-    if (LOGGER.isWarnEnabled() && eventHandlers.containsKey(command)) {
-      LOGGER.warn("Subscription for {} already exists. Silently overwriting previous subscription.", command.getSimpleName());
+    if (eventHandlers.containsKey(command)) {
+      eventHandlers.get(command).addObjectMethodPair(eventHandler, method);
+    } else {
+      eventHandlers.put(command, new EventHandlerInvoker(eventHandler, method));
     }
-    eventHandlers.put(command, new EventHandlerInvoker(eventHandler, method));
   }
 
   protected <ReturnType> void dispatchInternal(Event event, EventCallback<ReturnType> callback) {
-    EventHandlerInvoker invoker = findEventHandler(event);
+    EventHandlerInvoker invoker = getInvoker(event);
     InterceptorChain<ReturnType> chain = createChain(event, invoker);
 
     try {
@@ -88,7 +89,7 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
     }
   }
 
-  private EventHandlerInvoker findEventHandler(Event event) {
+  private EventHandlerInvoker getInvoker(Event event) {
     EventHandlerInvoker invoker = eventHandlers.get(event.getBody().getClass());
     if (invoker == null) {
       throw new EventHandlerNotFoundException(String.format("Could not find a command handler for %s", event.getBody().getClass().getSimpleName()));
