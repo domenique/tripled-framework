@@ -5,18 +5,61 @@ A very opinionated framework to build applications using CQRS, event sourcing an
 The TripleD framework aims to take away as much boiler plate code as possible when building CQRS based applications which want to take advantage of event sourcing and domain driven design.
 
 This framework aims to facilitate the creation and execution of commands. The idea is to be able to dispatch commands so that they can be executed in an (a)synchronous fashion.
-
-> Note that this is just the first part. The idea would be to build some framework to facilitate development of the domain model including the  repositories.  
-
+ 
 ## Usage 
 The framework supports Spring boot. This implies that if you add this framework jar to your classpath, it will be auto-configured with sensible defaults.
 
 after adding the required dependencies, an `EventPublisher` and `EventSubscriber`  should be available in your application context.
 Alternatively, When annotatating an `@Configuration` class with `@EnableEventHandlerSupport` you should be able to annotate any spring service with `@EventHandler` and it will be registered automatically to the `EventBus`.
 
-You can find some examples in the test packages, they contain some tests on the basic usage of the command dispatcher.
+To get started with the EventBus the following dependencies should be added to your gradle configuration
+```groovy
+dependencies {
+    compile ("eu.tripled:spring-boot-eventbus-starter:0.0.1-SNAPSHOT")
+ }
+```
 
-> More information later when I've finished some more code.
+
+The following configuration annotations should be used if you which to automatically register spring services as eventHandlers.
+```java
+@EnableEventHandlerSupport(basePackage = "eu.tripled.demo")
+public class EventBusDemoApplication {
+    ....
+}
+```
+
+The below sample illustrates how a springMVC controller would typically fire a command.
+```java
+@RestController
+public class HelloController {
+
+  @Autowired
+  private EventPublisher eventPublisher;
+
+  @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
+  public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
+    FutureEventCallback<HelloResponse> future = new FutureEventCallback<>();
+    eventPublisher.publish(new HelloCommand(name), future);
+
+    return future.get();
+  }
+}
+```
+
+A commandHandler would then be implemented as following
+```java
+@EventHandler
+public class HelloCommandHandler {
+
+  @Handles(HelloCommand.class)
+  public HelloResponse handleHelloCommand(HelloCommand helloCommand) {
+    return new HelloResponse("Hello " + helloCommand.getName());
+  }
+}
+```
+
+
+> See the demo application which is incorporated in this repository as a sub project.
 
 ## Contribute
 The project is still in a very early stage, however if you feel like contributing or have some brilliant ideas how to make this a killer framework, just contact me! I'm open for suggestions!

@@ -24,7 +24,6 @@ public class HelloController {
     eventPublisher.publish(new HelloCommand(name), future);
 
     return future.get();
-
   }
 
 }
