@@ -195,7 +195,7 @@ public class SynchronousEventBusTest {
 
     // then
     assertThat(eventHandler.handledByFirstCount).isEqualTo(1);
-    assertThat(eventHandler.handledbySecondCount).isEqualTo(1);
+    assertThat(eventHandler.handledBySecondCount).isEqualTo(1);
   }
 
   @Test
@@ -209,7 +209,7 @@ public class SynchronousEventBusTest {
 
     // then
     assertThat(eventHandler.handledByFirstCount).isEqualTo(1);
-    assertThat(eventHandler.handledbySecondCount).isEqualTo(1);
+    assertThat(eventHandler.handledBySecondCount).isEqualTo(1);
 
 
   }
