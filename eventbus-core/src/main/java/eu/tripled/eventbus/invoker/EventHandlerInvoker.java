@@ -1,10 +1,15 @@
-package eu.tripled.eventbus.synchronous;
+package eu.tripled.eventbus.invoker;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
 public class EventHandlerInvoker {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(EventHandlerInvoker.class);
 
   private Class<?> eventType;
   private Object eventHandler;
@@ -20,12 +25,16 @@ public class EventHandlerInvoker {
     return this.eventType.isAssignableFrom(eventTypeToHandle);
   }
 
+  public Class<?> getEventType() {
+    return eventType;
+  }
+
   public boolean hasReturnType() {
     return !method.getReturnType().getName().equals("void");
   }
 
-
   public Object invoke(Object object) {
+    LOGGER.debug("About to invoke {}.{}() with event {}", eventHandler.getClass().getSimpleName(), method.getName(), object);
     try {
       return method.invoke(eventHandler, object);
     } catch (InvocationTargetException | IllegalAccessException e) {

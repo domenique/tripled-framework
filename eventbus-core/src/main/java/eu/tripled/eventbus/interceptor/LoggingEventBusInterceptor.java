@@ -11,7 +11,7 @@ public class LoggingEventBusInterceptor implements EventBusInterceptor {
   private static final Logger LOGGER = LoggerFactory.getLogger(LoggingEventBusInterceptor.class);
 
   @Override
-  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Throwable {
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Exception {
     LOGGER.debug("Executing command {}", event.getBody().getClass().getSimpleName());
     try {
       ReturnType proceed = chain.proceed();

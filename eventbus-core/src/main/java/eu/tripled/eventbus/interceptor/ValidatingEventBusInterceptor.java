@@ -18,20 +18,17 @@ public class ValidatingEventBusInterceptor implements EventBusInterceptor {
   }
 
   @Override
-  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Throwable {
-    if (!isValid(event)) {
-      throw new CommandValidationException("The command failed the validation step.");
-    } else {
-      return chain.proceed();
-    }
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Exception {
+    validate(event);
+    return chain.proceed();
   }
 
-  private boolean isValid(Event event) {
-    Set<ConstraintViolation<Object>> validate = validator.validate(event.getBody());
-    // TODO: we need to provide these exceptions through the exception?
-    boolean isValid = validate.isEmpty();
+  private void validate(Event event) {
+    Set<ConstraintViolation<Object>> constraintViolations = validator.validate(event.getBody());
+    if (!constraintViolations.isEmpty()) {
+      throw new CommandValidationException("The command failed the validation step.", constraintViolations);
+    }
 
-    return isValid;
   }
 
 }

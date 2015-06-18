@@ -1,7 +1,5 @@
 package eu.tripled.eventbus;
 
-import eu.tripled.eventbus.event.Event;
-
 /**
  * An interface to indicate that the implementing object is a callback.
  *
@@ -15,13 +13,6 @@ public interface EventCallback<ReturnType> {
    * @param result The result from the command.
    */
   void onSuccess(ReturnType result);
-
-  /**
-   * Called when the event did not pass validation.
-   *
-   * @param event The command which failed.
-   */
-  void onValidationFailure(Event event);
 
   /**
    * Called when the event failed.

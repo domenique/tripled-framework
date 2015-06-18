@@ -1,5 +1,7 @@
 package eu.tripled.eventbus;
 
+import java.util.concurrent.Future;
+
 /**
  * The basic contract of the EventBus when publishing events..
  * <p>
@@ -15,6 +17,14 @@ public interface EventPublisher {
    * @param <ReturnType>   The return type of the event handling.
    */
   <ReturnType> void publish(Object event, EventCallback<ReturnType> callback);
+
+  /**
+   * Dispatches the given Event and invokes the given callback with either success or failure.
+   *
+   * @param event The event to publish.
+   * @param <ReturnType>   The return type of the event handling.
+   */
+  <ReturnType> void publish(Object event, Future<ReturnType> callback);
 
   /**
    * Dispatches an event without returning any feedback.

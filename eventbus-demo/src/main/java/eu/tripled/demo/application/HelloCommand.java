@@ -1,13 +1,10 @@
 package eu.tripled.demo.application;
 
-import org.hibernate.validator.constraints.NotBlank;
-
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class HelloCommand {
 
-  @NotBlank
-  @NotNull
+  @Size(min = 2)
   private String name;
 
   public HelloCommand(String name) {

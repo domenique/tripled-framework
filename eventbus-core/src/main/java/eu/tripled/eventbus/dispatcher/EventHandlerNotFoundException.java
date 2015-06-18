@@ -1,4 +1,4 @@
-package eu.tripled.eventbus.synchronous;
+package eu.tripled.eventbus.dispatcher;
 
 public class EventHandlerNotFoundException extends RuntimeException {
 

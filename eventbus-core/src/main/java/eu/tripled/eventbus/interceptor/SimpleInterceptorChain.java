@@ -3,7 +3,7 @@ package eu.tripled.eventbus.interceptor;
 import eu.tripled.eventbus.EventBusInterceptor;
 import eu.tripled.eventbus.InterceptorChain;
 import eu.tripled.eventbus.event.Event;
-import eu.tripled.eventbus.synchronous.EventHandlerInvoker;
+import eu.tripled.eventbus.invoker.EventHandlerInvoker;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
   }
 
   @Override
-  public ReturnType proceed() throws Throwable {
+  public ReturnType proceed() throws Exception {
     if (interceptors.size() > 0) {
       EventBusInterceptor nextInterceptor = interceptors.remove(0);
       return nextInterceptor.intercept(this, event);

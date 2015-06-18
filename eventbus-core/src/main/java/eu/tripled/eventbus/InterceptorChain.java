@@ -13,5 +13,5 @@ public interface InterceptorChain<ReturnType> {
    * @return The return object of the command.
    * @throws Throwable The exception received from the command if it failed.
    */
-  ReturnType proceed() throws Throwable;
+  ReturnType proceed() throws Exception;
 }

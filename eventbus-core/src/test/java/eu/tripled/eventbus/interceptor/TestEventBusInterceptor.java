@@ -9,7 +9,7 @@ public class TestEventBusInterceptor implements EventBusInterceptor {
   public boolean isInterceptorCalled = false;
 
   @Override
-  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Throwable {
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Exception {
     isInterceptorCalled = true;
     return chain.proceed();
   }

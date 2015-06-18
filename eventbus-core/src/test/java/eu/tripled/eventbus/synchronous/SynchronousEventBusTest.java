@@ -4,7 +4,9 @@ import eu.tripled.eventbus.*;
 import eu.tripled.eventbus.callback.CommandFailedException;
 import eu.tripled.eventbus.callback.CommandValidationException;
 import eu.tripled.eventbus.callback.ExceptionThrowingEventCallback;
-import eu.tripled.eventbus.event.Event;
+import eu.tripled.eventbus.callback.FutureEventCallback;
+import eu.tripled.eventbus.dispatcher.EventHandlerNotFoundException;
+import eu.tripled.eventbus.invoker.DuplicateEventHandlerRegistrationException;
 import eu.tripled.eventbus.interceptor.LoggingEventBusInterceptor;
 import eu.tripled.eventbus.interceptor.TestValidator;
 import eu.tripled.eventbus.interceptor.ValidatingEventBusInterceptor;
@@ -15,9 +17,12 @@ import org.junit.rules.ExpectedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.hamcrest.CoreMatchers.instanceOf;
 
 
 public class SynchronousEventBusTest {
@@ -109,30 +114,48 @@ public class SynchronousEventBusTest {
       }
 
       @Override
-      public void onValidationFailure(Event event) {
-        // then
-        assertThat(event.getBody()).isSameAs(validatingCommand);
-      }
-
-      @Override
       public void onFailure(Throwable exception) {
-        fail("onFailure should not be called.");
+        if (!(exception instanceof CommandValidationException)) {
+          fail("onFailure should not be called.");
+        }
       }
     });
 
     assertThat(eventHandler.isValidatingCommandHandled).isFalse();
   }
 
-  @Test(expected = CommandValidationException.class)
+  @Test
   public void whenGivenCommandThatFailsValidation_shouldThrowException() throws Exception {
     // given
     ValidatingCommand validatingCommand = new ValidatingCommand(null);
     validator.shouldFailNextCall(true);
 
+    expectedException.expectCause(instanceOf(CommandValidationException.class));
+
     // when
     eventPublisher.publish(validatingCommand);
 
     // then --> exception
+  }
+
+  @Test
+  public void whenGivenACommandWhichFails_shouldFail() throws Exception {
+    // given
+    Future<Void> future = new FutureEventCallback<>();
+    FailingCommand command = new FailingCommand();
+
+    // when
+    eventPublisher.publish(command, future);
+
+    try {
+      future.get();
+    } catch (ExecutionException ex) {
+      assertThat(future.isDone()).isEqualTo(true);
+      assertThat(ex).hasRootCauseInstanceOf(IllegalStateException.class);
+      assertThat(eventHandler.isFailingCommandHandled).isEqualTo(true);
+    }
+
+
   }
 
   @Test
@@ -146,12 +169,6 @@ public class SynchronousEventBusTest {
       @Override
       public void onSuccess(Void result) {
         assertThat(result).isNull();
-      }
-
-      @Override
-      public void onValidationFailure(Event event) {
-        fail("onValidationFailure should not be called.");
-
       }
 
       @Override

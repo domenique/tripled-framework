@@ -1,4 +1,4 @@
-package eu.tripled.eventbus.synchronous;
+package eu.tripled.eventbus.invoker;
 
 public class EventHandlerInvocationException extends RuntimeException {
 

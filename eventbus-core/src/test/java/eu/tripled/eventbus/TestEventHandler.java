@@ -19,7 +19,7 @@ public class TestEventHandler {
   }
 
   @Handles(FailingCommand.class)
-  public void handleFailingCommand(FailingCommand failingCommand) {
+  public String handleFailingCommand(FailingCommand failingCommand) {
     isFailingCommandHandled = true;
     throw new IllegalStateException("could not execute command.");
   }

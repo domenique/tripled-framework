@@ -11,4 +11,5 @@ import java.lang.annotation.*;
 public @interface Handles {
 
   Class<?> value();
+
 }

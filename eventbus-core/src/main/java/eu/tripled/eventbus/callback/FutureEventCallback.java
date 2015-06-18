@@ -1,6 +1,5 @@
 package eu.tripled.eventbus.callback;
 
-import eu.tripled.eventbus.event.Event;
 import eu.tripled.eventbus.EventCallback;
 
 import java.util.concurrent.*;
@@ -14,12 +13,6 @@ public class FutureEventCallback<ReturnType> implements EventCallback<ReturnType
   @Override
   public void onSuccess(ReturnType result) {
     this.result = result;
-    countDownLatch.countDown();
-  }
-
-  @Override
-  public void onValidationFailure(Event event) {
-    this.exception = new CommandValidationException("The command failed the validation step.");
     countDownLatch.countDown();
   }
 

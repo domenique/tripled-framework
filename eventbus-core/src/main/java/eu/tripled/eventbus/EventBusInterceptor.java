@@ -27,6 +27,6 @@ public interface EventBusInterceptor {
    * @return The return object from the chain.proceed() command or, depending on the implementation, some other instance of the ReturnType.
    * @throws Throwable When an exception occurred.
    */
-  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Throwable;
+  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Exception;
 
 }
