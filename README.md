@@ -1,4 +1,4 @@
-# TripleD [![build status](https://travis-ci.org/domenique/tripled-framework.svg?branch=master)](https://travis-ci.org/domenique/tripled-framework) [![Coverage Status](https://coveralls.io/repos/domenique/command-dispatcher/badge.svg?branch=master)](https://coveralls.io/r/domenique/command-dispatcher?branch=master)
+# TripleD [![build status](https://travis-ci.org/domenique/tripled-framework.svg?branch=master)](https://travis-ci.org/domenique/tripled-framework) [![Coverage Status](https://coveralls.io/repos/domenique/tripled-framework/badge.svg?branch=master)](https://coveralls.io/r/domenique/tripled-framework?branch=master)
 A very opinionated framework to build applications using CQRS, event sourcing and domain driven design.
 
 ## Goal
