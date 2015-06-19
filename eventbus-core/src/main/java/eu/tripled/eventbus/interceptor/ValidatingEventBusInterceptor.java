@@ -2,7 +2,6 @@ package eu.tripled.eventbus.interceptor;
 
 import eu.tripled.eventbus.EventBusInterceptor;
 import eu.tripled.eventbus.InterceptorChain;
-import eu.tripled.eventbus.callback.CommandValidationException;
 import eu.tripled.eventbus.event.Event;
 
 import javax.validation.ConstraintViolation;
@@ -28,7 +27,6 @@ public class ValidatingEventBusInterceptor implements EventBusInterceptor {
     if (!constraintViolations.isEmpty()) {
       throw new CommandValidationException("The command failed the validation step.", constraintViolations);
     }
-
   }
 
 }

@@ -1,6 +1,7 @@
 package eu.tripled.demo.application;
 
 public class HelloResponse {
+
   private String message;
 
   public HelloResponse(String message) {

@@ -2,7 +2,7 @@ package eu.tripled.eventbus.synchronous;
 
 import eu.tripled.eventbus.*;
 import eu.tripled.eventbus.callback.CommandFailedException;
-import eu.tripled.eventbus.callback.CommandValidationException;
+import eu.tripled.eventbus.interceptor.CommandValidationException;
 import eu.tripled.eventbus.callback.ExceptionThrowingEventCallback;
 import eu.tripled.eventbus.callback.FutureEventCallback;
 import eu.tripled.eventbus.dispatcher.EventHandlerNotFoundException;

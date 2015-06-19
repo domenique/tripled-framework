@@ -37,12 +37,12 @@ public class HelloController {
   private EventPublisher eventPublisher;
 
   @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
-  public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
-    FutureEventCallback<HelloResponse> future = new FutureEventCallback<>();
-    eventPublisher.publish(new HelloCommand(name), future);
+    public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
+      Future<HelloResponse> future = FutureEventCallback.forType(HelloResponse.class);
+      eventPublisher.publish(new HelloCommand(name), future);
 
-    return future.get();
-  }
+      return future.get();
+    }
 }
 ```
 

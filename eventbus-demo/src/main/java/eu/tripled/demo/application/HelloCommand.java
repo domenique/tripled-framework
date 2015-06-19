@@ -4,7 +4,7 @@ import javax.validation.constraints.Size;
 
 public class HelloCommand {
 
-  @Size(min = 2)
+  @Size(min = 3)
   private String name;
 
   public HelloCommand(String name) {

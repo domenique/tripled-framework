@@ -1,4 +1,4 @@
-package eu.tripled.eventbus.callback;
+package eu.tripled.eventbus.interceptor;
 
 import javax.validation.ConstraintViolation;
 import java.util.Set;
@@ -10,5 +10,9 @@ public class CommandValidationException extends RuntimeException {
   public CommandValidationException(String message, Set<ConstraintViolation<Object>> constraintViolations) {
     super(message);
     this.constraintViolations = constraintViolations;
+  }
+
+  public Set<ConstraintViolation<Object>> getConstraintViolations() {
+    return constraintViolations;
   }
 }

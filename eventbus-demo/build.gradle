@@ -42,5 +42,6 @@ dependencies {
     // commented to resolve ELExpressionFactory class not found when launching the JAR.
     //providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 
-    testCompile("org.springframework.boot:spring-boot-starter-test") 
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("com.jayway.jsonpath:json-path")
 }
