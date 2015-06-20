@@ -53,7 +53,7 @@ public class AsynchronousEventBusTest {
     AsynchronousEventBus defaultPublisher = new AsynchronousEventBus();
     TestEventHandler eventHandler = new TestEventHandler();
     defaultPublisher.subscribe(eventHandler);
-    Future<Void> future = new FutureEventCallback<>();
+    Future<Void> future = FutureEventCallback.forType(Void.class);
     HelloCommand command = new HelloCommand("domenique");
 
     // when
@@ -69,7 +69,7 @@ public class AsynchronousEventBusTest {
   public void whenGivenAValidCommand_shouldBeExecutedAsynchronous() throws Exception {
     // given
     HelloCommand command = new HelloCommand("Domenique");
-    Future<Void> future = new FutureEventCallback<>();
+    Future<Void> future = FutureEventCallback.forType(Void.class);
 
     // when
     asynchronousDispatcher.publish(command, future);
@@ -84,7 +84,7 @@ public class AsynchronousEventBusTest {
   public void whenGivenAValidCommandAndFutureCallback_waitForExecutionToFinish() throws Exception {
     // given
     HelloCommand command = new HelloCommand("Domenique");
-    Future<Void> future = new FutureEventCallback<>();
+    Future<Void> future = FutureEventCallback.forType(Void.class);
 
     // when
     asynchronousDispatcher.publish(command, future);
@@ -99,7 +99,7 @@ public class AsynchronousEventBusTest {
   @Test
   public void whenUsingADispatcherWithValidator_validationShouldBeDoneAsynchronous() throws Exception {
     // given
-    Future<Void> future = new FutureEventCallback<>();
+    Future<Void> future = FutureEventCallback.forType(Void.class);
     ValidatingCommand command = new ValidatingCommand("should pass");
     validator.shouldFailNextCall(false);
 

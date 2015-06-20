@@ -141,7 +141,7 @@ public class SynchronousEventBusTest {
   @Test
   public void whenGivenACommandWhichFails_shouldFail() throws Exception {
     // given
-    Future<Void> future = new FutureEventCallback<>();
+    Future<Void> future = FutureEventCallback.forType(Void.class);
     FailingCommand command = new FailingCommand();
 
     // when
