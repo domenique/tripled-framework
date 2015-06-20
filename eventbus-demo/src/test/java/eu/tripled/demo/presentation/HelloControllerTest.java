@@ -16,6 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -44,6 +45,20 @@ public class HelloControllerTest {
     // then
     result.andExpect(status().is2xxSuccessful());
     result.andExpect(jsonPath("$.message", equalTo("Hello " + name)));
+  }
+
+  @Test
+  public void whenGivenAnInValidName_shouldBarf() throws Exception {
+    // given
+    String name = "dj";
+
+    // when
+    ResultActions result = sayHiTo(name);
+
+    // then
+    result.andDo(print());
+    result.andExpect(status().is4xxClientError());
+    result.andExpect(jsonPath("$.[0].message", equalTo("size must be between 3 and 2147483647")));
   }
 
   private ResultActions sayHiTo(String name) throws Exception {

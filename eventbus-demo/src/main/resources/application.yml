@@ -1,5 +1,6 @@
 eu.tripled.eventbus:
   useAsync: true
 
-logging.level.eu.tripled.eventbus: DEBUG
-logging.level.eu.tripled.demo: DEBUG
+logging.level:
+  eu.tripled.eventbus: DEBUG
+  eu.tripled.demo: DEBUG
