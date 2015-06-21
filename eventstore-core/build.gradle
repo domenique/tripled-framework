@@ -1,0 +1,23 @@
+apply plugin: 'maven-publish'
+apply plugin: 'io.spring.dependency-management'
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
+    }
+}
+
+dependencies {
+    compile("org.slf4j:slf4j-api")
+
+    testCompile("junit:junit")
+    testCompile("org.springframework.boot:spring-boot-starter-logging")
+}

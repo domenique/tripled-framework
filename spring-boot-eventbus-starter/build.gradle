@@ -1,13 +1,8 @@
 apply plugin: 'maven-publish'
-apply plugin: 'io.spring.dependency-management'
 
 publishing {
   publications {
     maven(MavenPublication) {
-      groupId 'eu.tripled'
-      artifactId 'spring-boot-eventbus-starter'
-      version '0.0.1-SNAPSHOT'
-
       from components.java
       // weird hack to mark dependencies as compile deps in the pom...
       // see https://discuss.gradle.org/t/maven-publish-plugin-generated-pom-making-dependency-scope-runtime/7494/3
@@ -21,12 +16,6 @@ publishing {
         }
       }
     }
-  }
-}
-
-dependencyManagement {
-  imports {
-    mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
   }
 }
 

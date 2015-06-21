@@ -1,6 +1,6 @@
-eu.tripled.eventbus:
+eu.tripledframework.eventbus:
   useAsync: true
 
 logging.level:
-  eu.tripled.eventbus: DEBUG
-  eu.tripled.demo: DEBUG
+  eu.tripledframework.eventbus: DEBUG
+  eu.tripledframework.demo: DEBUG

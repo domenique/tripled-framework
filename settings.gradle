@@ -2,3 +2,5 @@ include 'eventbus-core'
 include 'eventbus-autoconfigure'
 include 'spring-boot-eventbus-starter'
 include 'eventbus-demo'
+include 'eventstore-core'
+

@@ -15,14 +15,14 @@ Alternatively, When annotatating an `@Configuration` class with `@EnableEventHan
 To get started with the EventBus the following dependencies should be added to your gradle configuration
 ```groovy
 dependencies {
-    compile ("eu.tripled:spring-boot-eventbus-starter:0.0.1-SNAPSHOT")
+    compile ("eu.tripledframework:spring-boot-eventbus-starter:0.0.1-SNAPSHOT")
  }
 ```
 
 
 The following configuration annotations should be used if you which to automatically register spring services as eventHandlers.
 ```java
-@EnableEventHandlerSupport(basePackage = "eu.tripled.demo")
+@EnableEventHandlerSupport(basePackage = "eu.tripledframework.demo")
 public class EventBusDemoApplication {
     ....
 }
