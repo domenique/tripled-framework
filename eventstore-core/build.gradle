@@ -2,22 +2,23 @@ apply plugin: 'maven-publish'
 apply plugin: 'io.spring.dependency-management'
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-        }
+  publications {
+    maven(MavenPublication) {
+      from components.java
     }
+  }
 }
 
 dependencyManagement {
-    imports {
-        mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
-    }
+  imports {
+    mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
+  }
 }
 
 dependencies {
-    compile("org.slf4j:slf4j-api")
+  compile("org.slf4j:slf4j-api")
+  compile("org.mongodb:mongo-java-driver:3.0.2")
 
-    testCompile("junit:junit")
-    testCompile("org.springframework.boot:spring-boot-starter-logging")
+  testCompile("junit:junit")
+  testCompile("org.springframework.boot:spring-boot-starter-logging")
 }
