@@ -1,20 +1,73 @@
 buildscript {
+  ext {
+    springBootVersion = '1.2.3.RELEASE'
+  }
   repositories {
-    jcenter()
     mavenCentral()
     maven { url 'http://repo.spring.io/plugins-release' }
+    jcenter()
   }
   dependencies {
     classpath("io.spring.gradle:dependency-management-plugin:0.5.0.RELEASE")
     classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1")
     classpath("org.springframework.build.gradle:propdeps-plugin:0.0.7")
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+  }
+}
+
+allprojects {
+  apply plugin: 'java'
+  apply plugin: 'jacoco'
+  apply plugin: 'com.github.kt3k.coveralls'
+
+  repositories {
+    jcenter()
+  }
+
+  jacoco {
+    toolVersion = '0.7.1.201405082137'
   }
 }
 
 subprojects {
+
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+
   repositories {
+    mavenLocal()
     mavenCentral()
   }
 
+  jacocoTestReport {
+    additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+    classDirectories =  files(sourceSets.main.output)
+    reports {
+      html.enabled = true
+      xml.enabled = true
+      csv.enabled = false
+    }
+  }
 }
 
+task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+  dependsOn = subprojects.test
+  additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+  sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+  classDirectories = files(subprojects.sourceSets.main.output)
+  executionData = files(subprojects.jacocoTestReport.executionData)
+  reports {
+    html.enabled = true
+    xml.enabled = true
+    csv.enabled = false
+  }
+  onlyIf = {
+    true
+  }
+  doFirst {
+    executionData = files(executionData.findAll {
+      it.exists()
+    })
+  }
+}

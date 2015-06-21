@@ -2,18 +2,17 @@ package eu.tripled.eventbus.interceptor;
 
 import eu.tripled.eventbus.EventBusInterceptor;
 import eu.tripled.eventbus.InterceptorChain;
-import eu.tripled.eventbus.event.Event;
 import eu.tripled.eventbus.invoker.EventHandlerInvoker;
 
 import java.util.List;
 
 public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<ReturnType> {
 
-  private final Event event;
+  private final Object event;
   private final List<EventBusInterceptor> interceptors;
   private final EventHandlerInvoker invoker;
 
-  public SimpleInterceptorChain(Event event, EventHandlerInvoker invoker, List<EventBusInterceptor> interceptors) {
+  public SimpleInterceptorChain(Object event, EventHandlerInvoker invoker, List<EventBusInterceptor> interceptors) {
     this.event = event;
     this.invoker = invoker;
     this.interceptors = interceptors;
@@ -26,7 +25,7 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
       return nextInterceptor.intercept(this, event);
     } else {
       // TODO: Catch exceptions ?
-      return (ReturnType) invoker.invoke(event.getBody());
+      return (ReturnType) invoker.invoke(event);
     }
   }
 }

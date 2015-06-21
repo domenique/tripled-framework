@@ -8,10 +8,9 @@ import eu.tripled.eventbus.EventSubscriber;
 import eu.tripled.eventbus.annotation.Handles;
 import eu.tripled.eventbus.callback.ExceptionThrowingEventCallback;
 import eu.tripled.eventbus.dispatcher.EventDispatcher;
-import eu.tripled.eventbus.event.Event;
+import eu.tripled.eventbus.interceptor.InterceptorChainFactory;
 import eu.tripled.eventbus.invoker.EventHandlerInvoker;
 import eu.tripled.eventbus.invoker.EventHandlerInvokerRepository;
-import eu.tripled.eventbus.interceptor.InterceptorChainFactory;
 import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,18 +74,18 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
   }
 
   @Override
-  public <ReturnType> void publish(Object message, EventCallback<ReturnType> callback) {
-    Preconditions.checkArgument(message != null, "The message cannot be null.");
+  public <ReturnType> void publish(Object event, EventCallback<ReturnType> callback) {
+    Preconditions.checkArgument(event != null, "The event cannot be null.");
     Preconditions.checkArgument(callback != null, "The callback cannot be null.");
-    getLogger().debug("Received an event for publication: {}", message);
+    getLogger().debug("Received an event for publication: {}", event);
 
-    publishInternal(message, callback);
+    publishInternal(event, callback);
 
-    getLogger().debug("Dispatched event {}", message);
+    getLogger().debug("Dispatched event {}", event);
   }
 
-  protected <ReturnType> void publishInternal(Object message, EventCallback<ReturnType> callback) {
-    new EventDispatcher<>(new Event<>(message), callback, invokerRepository, interceptorChainFactory)
+  protected <ReturnType> void publishInternal(Object event, EventCallback<ReturnType> callback) {
+    new EventDispatcher<>(event, callback, invokerRepository, interceptorChainFactory)
         .dispatch();
   }
 

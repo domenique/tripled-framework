@@ -1,7 +1,5 @@
 package eu.tripled.eventbus;
 
-import eu.tripled.eventbus.event.Event;
-
 /**
  * Interface which defines an interceptor which is being called by the EventBus when executing a command.
  * <p>
@@ -22,11 +20,11 @@ public interface EventBusInterceptor {
    *
    * @param chain        The InterceptorChain which is being applied. The implementation is supposed to call the proceed()
    *                     method when it wishes to advance in the chain
-   * @param event      The event which will eventually be executed.
+   * @param event        The event which will eventually be executed.
    * @param <ReturnType> The return type of the event execution and by consequence this Interceptor.
    * @return The return object from the chain.proceed() command or, depending on the implementation, some other instance of the ReturnType.
    * @throws Throwable When an exception occurred.
    */
-  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Exception;
+  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) throws Exception;
 
 }

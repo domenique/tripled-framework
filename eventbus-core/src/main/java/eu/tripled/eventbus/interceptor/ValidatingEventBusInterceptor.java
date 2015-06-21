@@ -2,7 +2,6 @@ package eu.tripled.eventbus.interceptor;
 
 import eu.tripled.eventbus.EventBusInterceptor;
 import eu.tripled.eventbus.InterceptorChain;
-import eu.tripled.eventbus.event.Event;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -17,13 +16,13 @@ public class ValidatingEventBusInterceptor implements EventBusInterceptor {
   }
 
   @Override
-  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Event event) throws Exception {
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) throws Exception {
     validate(event);
     return chain.proceed();
   }
 
-  private void validate(Event event) {
-    Set<ConstraintViolation<Object>> constraintViolations = validator.validate(event.getBody());
+  private void validate(Object event) {
+    Set<ConstraintViolation<Object>> constraintViolations = validator.validate(event);
     if (!constraintViolations.isEmpty()) {
       throw new CommandValidationException("The command failed the validation step.", constraintViolations);
     }
