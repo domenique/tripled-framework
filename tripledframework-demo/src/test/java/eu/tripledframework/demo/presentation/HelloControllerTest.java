@@ -1,6 +1,9 @@
 package eu.tripledframework.demo.presentation;
 
 import eu.tripledframework.demo.CommandDispatcherDemoApplication;
+import eu.tripledframework.demo.SaidHelloDomainEvent;
+import eu.tripledframework.demo.infrastructure.InMemoryHelloEventStore;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,12 +12,19 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,11 +37,18 @@ public class HelloControllerTest {
 
   @Autowired
   private WebApplicationContext webApplicationContext;
+  @Autowired
+  private InMemoryHelloEventStore eventStore;
   private MockMvc mvc;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUpMockMvc() throws Exception {
     mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+  }
+
+  @After
+  public void clearEvents() throws Exception {
+    ReflectionTestUtils.setField(eventStore, "events", new ArrayList<Object>());
   }
 
   @Test
@@ -45,6 +62,10 @@ public class HelloControllerTest {
     // then
     result.andExpect(status().is2xxSuccessful());
     result.andExpect(jsonPath("$.message", equalTo("Hello " + name)));
+    List<Object> events = (List<Object>) ReflectionTestUtils.getField(eventStore, "events");
+    assertThat(events, hasSize(1));
+    assertThat(events.get(0), instanceOf(SaidHelloDomainEvent.class));
+    assertThat(((SaidHelloDomainEvent)events.get(0)).getName(), equalTo(name));
   }
 
   @Test
@@ -61,7 +82,23 @@ public class HelloControllerTest {
     result.andExpect(jsonPath("$.[0].message", equalTo("size must be between 3 and 2147483647")));
   }
 
+  @Test
+  public void whenSayingHiToTheDevil_shouldBarf() throws Exception {
+    // given
+    String name = "The devil";
+
+    // when
+    ResultActions result = sayHiTo(name);
+
+    // then
+    result.andDo(print());
+    result.andExpect(status().is4xxClientError());
+    result.andExpect(jsonPath("$.[0].message", equalTo("The execution failed with an uncaught exception.")));
+  }
+
   private ResultActions sayHiTo(String name) throws Exception {
     return mvc.perform(get("/hello/{name}", name).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
   }
+
+
 }

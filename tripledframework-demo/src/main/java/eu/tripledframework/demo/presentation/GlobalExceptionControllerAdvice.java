@@ -20,18 +20,19 @@ public class GlobalExceptionControllerAdvice {
   @ResponseBody
   public List<ErrorMessage> handleExecutionException(ExecutionException exception) throws Throwable {
     // we simply rethrow the cause.
+    List<ErrorMessage> errorMessages = new ArrayList<>();
     if (exception.getCause() instanceof CommandValidationException) {
-      return handleValidationError((CommandValidationException) exception.getCause());
+      errorMessages.addAll(handleValidationError((CommandValidationException) exception.getCause()));
     } else {
-      return new ArrayList<>();
+      errorMessages.add(new ErrorMessage("The execution failed with an uncaught exception."));
     }
+    return errorMessages;
   }
 
   private List<ErrorMessage> handleValidationError(CommandValidationException exception) {
     List<ErrorMessage> errorMessages = new ArrayList<>();
     for (ConstraintViolation<Object> objectConstraintViolation : exception.getConstraintViolations()) {
-      ErrorMessage errorMessage = new ErrorMessage();
-      errorMessage.setMessage(objectConstraintViolation.getMessage());
+      ErrorMessage errorMessage = new ErrorMessage(objectConstraintViolation.getMessage());
 
       errorMessages.add(errorMessage);
     }

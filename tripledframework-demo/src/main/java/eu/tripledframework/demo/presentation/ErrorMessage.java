@@ -3,7 +3,7 @@ package eu.tripledframework.demo.presentation;
 public class ErrorMessage {
   private String message;
 
-  public void setMessage(String message) {
+  public ErrorMessage(String message) {
     this.message = message;
   }
 

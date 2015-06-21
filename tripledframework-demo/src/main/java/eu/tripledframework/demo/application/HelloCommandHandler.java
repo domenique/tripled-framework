@@ -14,6 +14,9 @@ public class HelloCommandHandler {
 
   @Handles(HelloCommand.class)
   public HelloResponse handleHelloCommand(HelloCommand helloCommand) {
+    if (helloCommand.getName().equals("The devil")) {
+      throw new IllegalArgumentException("I'm not saying hi to the devil! :P");
+    }
     HelloResponse helloResponse = new HelloResponse("Hello " + helloCommand.getName());
 
     eventPublisher.publish(new SaidHelloDomainEvent(helloCommand.getName()));
