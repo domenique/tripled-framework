@@ -1,9 +1,9 @@
 package eu.tripledframework.demo.application;
 
 import eu.tripledframework.demo.SaidHelloDomainEvent;
-import eu.tripledframework.eventbus.EventPublisher;
-import eu.tripledframework.eventbus.annotation.EventHandler;
-import eu.tripledframework.eventbus.annotation.Handles;
+import eu.tripledframework.eventbus.domain.EventPublisher;
+import eu.tripledframework.eventbus.domain.annotation.EventHandler;
+import eu.tripledframework.eventbus.domain.annotation.Handles;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @EventHandler

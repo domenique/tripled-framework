@@ -1,6 +1,6 @@
 package eu.tripledframework.demo.presentation;
 
-import eu.tripledframework.eventbus.interceptor.CommandValidationException;
+import eu.tripledframework.eventbus.domain.interceptor.CommandValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

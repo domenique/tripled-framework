@@ -1,8 +1,8 @@
 package eu.tripledframework.demo.infrastructure;
 
 import eu.tripledframework.demo.SaidHelloDomainEvent;
-import eu.tripledframework.eventbus.annotation.EventHandler;
-import eu.tripledframework.eventbus.annotation.Handles;
+import eu.tripledframework.eventbus.domain.annotation.EventHandler;
+import eu.tripledframework.eventbus.domain.annotation.Handles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

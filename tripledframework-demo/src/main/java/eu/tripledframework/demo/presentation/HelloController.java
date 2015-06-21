@@ -2,8 +2,8 @@ package eu.tripledframework.demo.presentation;
 
 import eu.tripledframework.demo.application.HelloCommand;
 import eu.tripledframework.demo.application.HelloResponse;
-import eu.tripledframework.eventbus.EventPublisher;
-import eu.tripledframework.eventbus.callback.FutureEventCallback;
+import eu.tripledframework.eventbus.domain.EventPublisher;
+import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

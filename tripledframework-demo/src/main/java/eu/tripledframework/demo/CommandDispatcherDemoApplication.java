@@ -1,6 +1,6 @@
 package eu.tripledframework.demo;
 
-import eu.tripledframework.eventbus.annotation.EnableEventHandlerSupport;
+import eu.tripledframework.eventbus.domain.annotation.EnableEventHandlerSupport;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
