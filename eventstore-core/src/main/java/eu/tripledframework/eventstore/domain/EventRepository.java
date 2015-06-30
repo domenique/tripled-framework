@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public interface EventRepository {
 
-  Collection<Event> findAllById(String id);
+  Collection<DomainEvent> findAllById(String id);
 
-  void save(Event object);
+  void save(DomainEvent object);
 }

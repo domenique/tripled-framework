@@ -5,3 +5,4 @@ rebel.xml
 .project
 build/
 .gradle/
+.gradle*
