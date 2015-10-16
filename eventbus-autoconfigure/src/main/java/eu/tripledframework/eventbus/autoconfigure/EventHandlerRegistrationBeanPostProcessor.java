@@ -1,10 +1,11 @@
 package eu.tripledframework.eventbus.autoconfigure;
 
-import eu.tripledframework.eventbus.domain.EventSubscriber;
-import eu.tripledframework.eventbus.domain.annotation.EventHandler;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+
+import eu.tripledframework.eventbus.domain.EventSubscriber;
+import eu.tripledframework.eventbus.domain.annotation.EventHandler;
 
 public class EventHandlerRegistrationBeanPostProcessor implements BeanPostProcessor {
 

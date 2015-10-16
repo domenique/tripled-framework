@@ -1,11 +1,11 @@
 package eu.tripledframework.eventbus.autoconfigure;
 
-import eu.tripledframework.eventbus.domain.EventBusInterceptor;
-import eu.tripledframework.eventbus.domain.EventPublisher;
-import eu.tripledframework.eventbus.domain.asynchronous.AsynchronousEventBus;
-import eu.tripledframework.eventbus.domain.interceptor.LoggingEventBusInterceptor;
-import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
-import eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Executor;
+
+import javax.validation.Validator;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,10 +14,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import javax.validation.Validator;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Executor;
+import eu.tripledframework.eventbus.domain.EventBusInterceptor;
+import eu.tripledframework.eventbus.domain.EventPublisher;
+import eu.tripledframework.eventbus.domain.asynchronous.AsynchronousEventBus;
+import eu.tripledframework.eventbus.domain.interceptor.LoggingEventBusInterceptor;
+import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
+import eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus;
 
 @Configuration
 @EnableConfigurationProperties(EventBusProperties.class)
@@ -36,11 +38,12 @@ public class EventBusAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean(EventPublisher.class)
   @ConditionalOnProperty(value = "eu.tripledframework.eventbus.useAsync", havingValue = "true")
-  public AsynchronousEventBus asynchronousCommandDispatcher(Executor executor, LocalValidatorFactoryBean validator) {
+  public AsynchronousEventBus asynchronousCommandDispatcher() {
     List<EventBusInterceptor> interceptors =
-        Arrays.asList(new LoggingEventBusInterceptor(), new ValidatingEventBusInterceptor(validator.getValidator()));
+        Arrays.asList(new LoggingEventBusInterceptor(),
+            new ValidatingEventBusInterceptor(localValidatorFactoryBean().getValidator()));
 
-    return new AsynchronousEventBus(interceptors, executor);
+    return new AsynchronousEventBus(interceptors, taskExecutor());
   }
 
   @Bean

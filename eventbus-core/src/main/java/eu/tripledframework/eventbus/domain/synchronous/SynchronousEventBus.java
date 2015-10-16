@@ -1,5 +1,15 @@
 package eu.tripledframework.eventbus.domain.synchronous;
 
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.Future;
+
+import org.reflections.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.EventPublisher;
@@ -10,15 +20,6 @@ import eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
-import org.reflections.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.Future;
 
 /**
  * Synchronous implementation of the CommandDispatcher.
@@ -57,6 +58,7 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
 
   protected void subscribeInternal(Object eventHandler, Class<?> eventType, Method method) {
     EventHandlerInvoker invoker = new EventHandlerInvoker(eventType, eventHandler, method);
+    getLogger().debug("Subscribing {}.{}() to receive events of type {}", eventHandler.getClass().getSimpleName(), method.getName(), eventType.getName());
     invokerRepository.addEventHandlerInvoker(invoker);
   }
 
