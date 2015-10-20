@@ -13,7 +13,11 @@ public class ExceptionThrowingEventCallback<ReturnType> implements EventCallback
 
   @Override
   public void onFailure(Throwable exception) {
-    throw new CommandFailedException(exception);
+    if (exception instanceof RuntimeException) {
+      throw (RuntimeException) exception;
+    } else {
+      throw new CommandFailedException(exception);
+    }
   }
 
   public ReturnType getResult() {

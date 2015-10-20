@@ -1,11 +1,24 @@
 package eu.tripledframework.eventbus.domain.synchronous;
 
-import eu.tripledframework.eventbus.command.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import eu.tripledframework.eventbus.command.ACommandHandledByMultipleHandlers;
+import eu.tripledframework.eventbus.command.FailingCommand;
+import eu.tripledframework.eventbus.command.HelloCommand;
+import eu.tripledframework.eventbus.command.UnhandledCommand;
+import eu.tripledframework.eventbus.command.ValidatingCommand;
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.EventPublisher;
 import eu.tripledframework.eventbus.domain.EventSubscriber;
-import eu.tripledframework.eventbus.domain.callback.CommandFailedException;
 import eu.tripledframework.eventbus.domain.callback.ExceptionThrowingEventCallback;
 import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import eu.tripledframework.eventbus.domain.dispatcher.EventHandlerNotFoundException;
@@ -16,17 +29,11 @@ import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterce
 import eu.tripledframework.eventbus.domain.invoker.DuplicateEventHandlerRegistrationException;
 import eu.tripledframework.eventbus.handler.SecondTestEventHandler;
 import eu.tripledframework.eventbus.handler.TestEventHandler;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -95,7 +102,7 @@ public class SynchronousEventBusTest {
     assertThat(myEventHandler.isHelloCommandHandled, is(true));
   }
 
-  @Test(expected = CommandFailedException.class)
+  @Test(expected = IllegalStateException.class)
   public void whenGivenACommandThatFails_exceptionShouldBeThrown() throws Exception {
     // given
     FailingCommand command = new FailingCommand();
@@ -136,7 +143,7 @@ public class SynchronousEventBusTest {
     ValidatingCommand validatingCommand = new ValidatingCommand(null);
     validator.shouldFailNextCall(true);
 
-    expectedException.expectCause(instanceOf(CommandValidationException.class));
+    expectedException.expect(instanceOf(CommandValidationException.class));
 
     // when
     eventPublisher.publish(validatingCommand);

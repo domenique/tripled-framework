@@ -1,13 +1,13 @@
 package eu.tripledframework.eventbus.domain.dispatcher;
 
+import java.util.List;
+import java.util.Optional;
+
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * The event dispatcher is responsible for dispatching an event to all registered handlers.
@@ -35,9 +35,9 @@ public class EventDispatcher<ReturnType> {
 
   public void dispatch() {
     Optional<EventHandlerInvoker> optionalInvokerWithReturnType = invokerRepository.findByEventWithReturnType(event.getClass());
-    List<EventHandlerInvoker> invokersWithReturnType = invokerRepository.findAllByEventWithoutReturnType(event.getClass());
+    List<EventHandlerInvoker> invokersWithoutReturnType = invokerRepository.findAllByEventWithoutReturnType(event.getClass());
 
-    assertInvokerIsFound(optionalInvokerWithReturnType, invokersWithReturnType);
+    assertInvokerIsFound(optionalInvokerWithReturnType, invokersWithoutReturnType);
 
     ReturnType response = null;
     Exception thrownException = null;
@@ -51,7 +51,7 @@ public class EventDispatcher<ReturnType> {
     }
 
     // now all the event handlers without a return type.
-    for (EventHandlerInvoker eventHandlerInvoker : invokersWithReturnType) {
+    for (EventHandlerInvoker eventHandlerInvoker : invokersWithoutReturnType) {
       try {
         executeChain(event, eventHandlerInvoker);
       } catch (Exception exception) {

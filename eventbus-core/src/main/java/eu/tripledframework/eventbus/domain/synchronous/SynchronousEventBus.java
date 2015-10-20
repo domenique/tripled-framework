@@ -58,7 +58,7 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
 
   protected void subscribeInternal(Object eventHandler, Class<?> eventType, Method method) {
     EventHandlerInvoker invoker = new EventHandlerInvoker(eventType, eventHandler, method);
-    getLogger().debug("Subscribing {}.{}() to receive events of type {}", eventHandler.getClass().getSimpleName(), method.getName(), eventType.getName());
+    getLogger().info("Subscribing {}.{}() to receive events of type {}", eventHandler.getClass().getSimpleName(), method.getName(), eventType.getName());
     invokerRepository.addEventHandlerInvoker(invoker);
   }
 

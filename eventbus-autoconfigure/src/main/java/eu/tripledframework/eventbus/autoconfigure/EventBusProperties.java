@@ -5,13 +5,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "eu.tripledframework.eventbus")
 public class EventBusProperties {
 
-  private boolean useAsync;
+  private String mode;
 
-  public boolean isUseAsync() {
-    return useAsync;
+  public String getMode() {
+    return mode;
   }
 
-  public void setUseAsync(boolean useAsync) {
-    this.useAsync = useAsync;
+  public void setMode(String mode) {
+    this.mode = mode;
   }
 }

@@ -3,6 +3,7 @@ apply plugin: 'propdeps'
 apply plugin: 'propdeps-idea'
 apply plugin: 'idea'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'spring-boot'
 
 publishing {
   publications {
@@ -12,18 +13,24 @@ publishing {
   }
 }
 
+bootRepackage {
+  mainClassName = 'None'
+}
+
 compileJava.dependsOn(processResources)
 
-dependencyManagement {
-  imports {
-    mavenBom 'io.spring.platform:platform-bom:1.1.3.RELEASE'
-  }
-}
+//dependencyManagement {
+//  imports {
+//    mavenBom 'io.spring.platform:platform-bom:1.1.3.RELEASE'
+//  }
+//}
+
+
 
 dependencies {
   compile project(":eventbus-core")
-  compile("org.springframework.boot:spring-boot:${springBootVersion}")
-  compile("org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}")
-  optional("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
+  compile("org.springframework.boot:spring-boot")
+  compile("org.springframework.boot:spring-boot-autoconfigure")
+  optional("org.springframework.boot:spring-boot-configuration-processor")
 }
 
