@@ -16,14 +16,12 @@ buildscript {
 }
 
 allprojects {
-  apply plugin: 'java'
   apply plugin: 'jacoco'
   apply plugin: 'com.github.kt3k.coveralls'
 
-  version = '0.0.1-SNAPSHOT'
-  group = 'eu.tripledframework'
-
   repositories {
+    mavenLocal()
+    mavenCentral()
     jcenter()
   }
 
@@ -33,13 +31,31 @@ allprojects {
 }
 
 subprojects {
+  apply plugin: 'java'
+  apply plugin: 'signing'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
-  repositories {
-    mavenLocal()
-    mavenCentral()
+  version = '0.0.1'
+  group = 'eu.tripledframework'
+
+  task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+  }
+
+  task sourcesJar(type: Jar) {
+      classifier = 'sources'
+      from sourceSets.main.allSource
+  }
+
+  artifacts {
+    archives javadocJar, sourcesJar
+  }
+
+  signing {
+    sign configurations.archives
   }
 
   jacocoTestReport {

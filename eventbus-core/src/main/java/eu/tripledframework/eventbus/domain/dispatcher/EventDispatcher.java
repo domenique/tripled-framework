@@ -16,7 +16,7 @@ import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository
  * If an event handler exists with a returnType, this one is executed first, the order of other event handlers is undefined and should not be
  * relied upon. If the any of the event handlers fail, the others are still invoked.
  *
- * @param <ReturnType>
+ * @param <ReturnType> The return type of the commandHandler it dispatches to.
  */
 public class EventDispatcher<ReturnType> {
 
