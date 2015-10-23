@@ -24,7 +24,7 @@ uploadArchives {
       mavenLocal()
     } else if (isReleaseBuild || isCiBuild) {
       mavenDeployer {
-        if (isReleaseBuild || isDevBuild) {
+        if (isReleaseBuild) {
           beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
         }
 

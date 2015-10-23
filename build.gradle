@@ -51,16 +51,13 @@ subprojects {
 
   //set build variables based on build type (release, continuous integration, development)
   if(project.hasProperty("release")) {
-      logger.warn('This is a release build!')
       isReleaseBuild = true
       sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
   } else if (project.hasProperty("ci")) {
-      logger.warn('This is a CI build!')
       isCiBuild = true
       version += "-SNAPSHOT"
       sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
   } else {
-      logger.warn('This is a DEV build!')
       version += "-DEV"
       isDevBuild = true
   }
@@ -79,7 +76,7 @@ subprojects {
     archives javadocJar, sourcesJar
   }
 
-  if(isReleaseBuild || isDevBuild) {
+  if(isReleaseBuild) {
     signing {
         sign configurations.archives
     }
