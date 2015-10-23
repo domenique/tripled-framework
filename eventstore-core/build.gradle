@@ -1,13 +1,4 @@
-apply plugin: 'maven-publish'
 apply plugin: 'io.spring.dependency-management'
-
-publishing {
-  publications {
-    maven(MavenPublication) {
-      from components.java
-    }
-  }
-}
 
 dependencyManagement {
   imports {

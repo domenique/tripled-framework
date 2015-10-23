@@ -1,25 +1,50 @@
-apply plugin: 'maven-publish'
+dependencies {
+  compile project(":eventbus-core")
+  compile project(":eventbus-autoconfigure")
+}
 
-publishing {
-  publications {
-    maven(MavenPublication) {
-      from components.java
-      // weird hack to mark dependencies as compile deps in the pom...
-      // see https://discuss.gradle.org/t/maven-publish-plugin-generated-pom-making-dependency-scope-runtime/7494/3
-      pom.withXml {
-        asNode().dependencies.'*'.findAll() {
-          it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
-            dep.name == it.artifactId.text()
+uploadArchives {
+  repositories {
+    if (isDevBuild) {
+      mavenLocal()
+    } else if (isReleaseBuild || isCiBuild) {
+      mavenDeployer {
+        if (isReleaseBuild || isDevBuild) {
+          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+        }
+
+        repository(url: sonatypeRepositoryUrl) {
+          authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+
+        pom.project {
+          name 'TripleD framework'
+          packaging 'jar'
+          description 'TripleD is a framework to create CQRS based application using Java.'
+          url 'http://www.tripled-framework.eu/'
+
+          scm {
+            url 'scm:git@github.com:domenique/tripled-framework.git'
+            connection 'scm:git@github.com:domenique/tripled-framework.git'
+            developerConnection 'scm:git@github.com:domenique/tripled-framework.git'
           }
-        }.each() {
-          it.scope*.value = 'compile'
+
+          licenses {
+            license {
+              name 'The Apache Software License, Version 2.0'
+              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+              distribution 'repo'
+            }
+          }
+
+          developers {
+            developer {
+              id 'domenique'
+              name 'Domenique Tilleuil'
+            }
+          }
         }
       }
     }
   }
-}
-
-dependencies {
-  compile project(":eventbus-core")
-  compile project(":eventbus-autoconfigure")
 }
