@@ -1,12 +1,12 @@
-# TripleD [![build status](https://travis-ci.org/domenique/tripled-framework.svg?branch=master)](https://travis-ci.org/domenique/tripled-framework) [![Coverage Status](https://coveralls.io/repos/domenique/tripled-framework/badge.svg?branch=master)](https://coveralls.io/r/domenique/tripled-framework?branch=master)
+# TripleD [![build status](https://travis-ci.org/domenique/tripled-framework.svg?branch=master)](https://travis-ci.org/domenique/tripled-framework) [![Coverage Status](https://coveralls.io/repos/domenique/tripled-framework/badge.svg?branch=master)](https://coveralls.io/r/domenique/tripled-framework?branch=master)[![Maven Central](https://maven-badges.herokuapp.com/maven-central/eu.tripled-framework/spring-boot-eventbus-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/eu.tripled-framework/spring-boot-eventbus-starter)
 A very opinionated framework to build applications using CQRS, event sourcing and domain driven design.
 
 ## Goal
 The TripleD framework aims to take away as much boiler plate code as possible when building CQRS based applications which want to take advantage of event sourcing and domain driven design.
 
 This framework aims to facilitate the creation and execution of commands. The idea is to be able to dispatch commands so that they can be executed in an (a)synchronous fashion.
- 
-## Usage 
+
+## Usage
 The framework supports Spring boot. This implies that if you add this framework jar to your classpath, it will be auto-configured with sensible defaults.
 
 after adding the required dependencies, an `EventPublisher` and `EventSubscriber`  should be available in your application context.
