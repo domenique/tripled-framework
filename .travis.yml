@@ -1,1 +1,10 @@
-language: javajdk:  - oraclejdk8after_success:  - gradle uploadArchives -Pci  - gradle jacocoTestReport coveralls
+language: java
+jdk:
+- oraclejdk8
+after_success:
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && gradle
+  uploadArchives -Pci
+- gradle jacocoTestReport coveralls
+env:
+  global:
+    secure: xR66NegFrdr2BRO1/7k4QivwlgKYhowjNHCtICoFLYbKqmVdS61r6bKC5qZFQ8PoL++auqXjM6S8H6I8w+MNPDYrklCwZ+MtGwGM70bLX4Nq4dRaxpGOMU8+OguxlomhuPclE2o2nXvp/oBs34u8toBn0FITdkJ7hQmyap87CPned+ygCti8X/j/0S7pzZVKgqJyDmKrmI4+d1IxLFV8c/6hQGGEMG89LnDvBkPeLhXspSRf6l0zYB5XAcv7OgofQnQymBsnT18syvPkjs+oEpas75ytPVF5EL72s4k3m2kXdzrwXL+w0aDJjdbjKHL//1BbXvVjsp4CtXa/8fMh6sB6exYVOPVRUyZguna2nlN1rxfs5g2dNVmGZ4FymDJjwCMLL0EkgJ3EjTeVu0HzDMptBcTH90o5+6z54QBMvjXC0USc6L/021YUVznKTKZo11aUCQPQNhfVsyIS0MPWv0FZP4aY/eZ7wX5hbSENsup7iLrEWFUCOKO4uol464s4/kiNMB4a//wkzd9UqKx/7GaS5cuOF03fQH28yW/BeRTWc6sKJOAn2GaF/tiXljZh6ijdSz8INP6Tp5G3ev79l6qj2/Y/YtdlJx29j/goDajqKwWY1diUNTo1bxefTb0qzn6eQg8k1Dz/BbeMpjb+o3draSVNFf+HC+SKchekxkU=
