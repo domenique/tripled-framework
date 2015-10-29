@@ -16,21 +16,21 @@ public class EventHandlerInvokerRepository {
 
   public void addEventHandlerInvoker(EventHandlerInvoker invoker) {
     if (!eventHandlers.contains(invoker)) {
-      if (invoker.hasReturnType() && !findByEventWithReturnType(invoker.getEventType()).isPresent() || !invoker.hasReturnType()) {
+      if (invoker.hasReturnType() && !findByEventTypeWithReturnType(invoker.getEventType()).isPresent() || !invoker.hasReturnType()) {
         eventHandlers.add(invoker);
-      } else if (invoker.hasReturnType() && findByEventWithReturnType(invoker.getEventType()).isPresent()) {
+      } else if (invoker.hasReturnType() && findByEventTypeWithReturnType(invoker.getEventType()).isPresent()) {
         throw new DuplicateEventHandlerRegistrationException(String.format("An eventHandler with return type for event %s already exists.", invoker.getEventType()));
       }
     }
   }
 
-  public List<EventHandlerInvoker> findAllByEventWithoutReturnType(Class<?> eventType) {
+  public List<EventHandlerInvoker> findAllByEventTypeWithoutReturnType(Class<?> eventType) {
     return eventHandlers.stream()
         .filter(p -> p.handles(eventType) && !p.hasReturnType())
         .collect(Collectors.toList());
   }
 
-  public Optional<EventHandlerInvoker> findByEventWithReturnType(Class<?> eventType) {
+  public Optional<EventHandlerInvoker> findByEventTypeWithReturnType(Class<?> eventType) {
     return eventHandlers.stream()
         .filter(input -> input.handles(eventType) && input.hasReturnType())
         .findFirst();

@@ -1,12 +1,9 @@
 package eu.tripledframework.eventbus.domain.synchronous;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Future;
 
-import org.reflections.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,12 +11,13 @@ import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.EventPublisher;
 import eu.tripledframework.eventbus.domain.EventSubscriber;
-import eu.tripledframework.eventbus.domain.annotation.Handles;
 import eu.tripledframework.eventbus.domain.callback.ExceptionThrowingEventCallback;
 import eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
+import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
+import eu.tripledframework.eventbus.domain.invoker.InstanceEventHandlerInvokerFactory;
 
 /**
  * Synchronous implementation of the CommandDispatcher.
@@ -30,36 +28,33 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
 
   private final EventHandlerInvokerRepository invokerRepository;
   private final InterceptorChainFactory interceptorChainFactory;
+  private final EventHandlerInvokerFactory eventHandlerInvokerFactory;
 
   // constructors
 
   public SynchronousEventBus() {
     this.invokerRepository = new EventHandlerInvokerRepository();
     this.interceptorChainFactory = new InterceptorChainFactory();
+    this.eventHandlerInvokerFactory = new InstanceEventHandlerInvokerFactory();
   }
 
   public SynchronousEventBus(List<EventBusInterceptor> interceptors) {
     this.invokerRepository = new EventHandlerInvokerRepository();
     this.interceptorChainFactory = new InterceptorChainFactory(interceptors);
+    this.eventHandlerInvokerFactory = new InstanceEventHandlerInvokerFactory();
   }
 
   // subscribe methods
 
   @Override
   public void subscribe(Object eventHandler) {
-    Set<Method> methods = ReflectionUtils.getAllMethods(eventHandler.getClass(),
-        ReflectionUtils.withAnnotation(Handles.class));
-
-    for (Method method : methods) {
-      Handles annotation = method.getAnnotation(Handles.class);
-      subscribeInternal(eventHandler, annotation.value(), method);
-    }
+    List<EventHandlerInvoker> invokers = eventHandlerInvokerFactory.create(eventHandler);
+    invokers.forEach(this::subscribeInternal);
   }
 
-  protected void subscribeInternal(Object eventHandler, Class<?> eventType, Method method) {
-    EventHandlerInvoker invoker = new EventHandlerInvoker(eventType, eventHandler, method);
-    getLogger().info("Subscribing {}.{}() to receive events of type {}", eventHandler.getClass().getSimpleName(), method.getName(), eventType.getName());
-    invokerRepository.addEventHandlerInvoker(invoker);
+  protected void subscribeInternal(EventHandlerInvoker eventHandler) {
+    getLogger().info("Adding Event subscription for {}", eventHandler.toString());
+    invokerRepository.addEventHandlerInvoker(eventHandler);
   }
 
   // publish methods

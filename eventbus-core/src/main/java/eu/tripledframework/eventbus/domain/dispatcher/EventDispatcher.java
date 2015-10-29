@@ -34,8 +34,10 @@ public class EventDispatcher<ReturnType> {
   }
 
   public void dispatch() {
-    Optional<EventHandlerInvoker> optionalInvokerWithReturnType = invokerRepository.findByEventWithReturnType(event.getClass());
-    List<EventHandlerInvoker> invokersWithoutReturnType = invokerRepository.findAllByEventWithoutReturnType(event.getClass());
+    Optional<EventHandlerInvoker> optionalInvokerWithReturnType = invokerRepository.findByEventTypeWithReturnType(
+        event.getClass());
+    List<EventHandlerInvoker> invokersWithoutReturnType = invokerRepository.findAllByEventTypeWithoutReturnType(
+        event.getClass());
 
     assertInvokerIsFound(optionalInvokerWithReturnType, invokersWithoutReturnType);
 
