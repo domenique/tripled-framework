@@ -5,7 +5,7 @@ after_success:
 - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && gradle
   uploadArchives -Pci
 - bash <(curl -s https://codecov.io/bash)
-- gradle jacocoTestReport coveralls
+- gradle jacocoRootReport coveralls
 env:
   global:
     secure: AgDAemm0w6BAteXlNUq87l0jqFeZpY0VJat6kqMxnyTP6NL9pNlMFGK4XPHqwL5U+IjwHLIYFTUPeKjCdp20ThfRENu7zEbcaKg5nZOKNJz13LSmeKh3AX4dVQFgwBLQ5lWvCYDrctu2BfTqVVfU79RrtzCu85aH+aTZTUP9Hhds2VeluA4oJEMYVDkYIof8Gu/cCVBH5FzZC74esbv6lEDkqLGKSFdMrjc61rx839wtysCnnEQ9b447Ml9O1aCQOWMjk3vO43YR2M5oG7QyeSC7c0WteVjM9ccG8EOgltLN8FVBUJ+IUxdboP3uRLbsXaltonfWl1xf8aYJGQb6NJphJcnnUdCg9JunJK2CJTNd3BqtvVGdaj1dIFs3fSFmvGb1L4TO4TRhEf8jxKPCDCQhwxool4aXF+sxGukzY1rjk2e53XaJ8/a5p6Z7Ri+/GSjxVeG046+g2ePJ4Npwu6YUvNLatMMiYmjqpWR7k/mZZrSsP2Zl7p1jS9mdc9NUN3kRIeMbhNUrgSrCZ+7+DDkNNgVAzSBO3VgJRajyFozTFQZNbK7iHSESobcdxybh73nkW3b4HLSVRbsA7R2J5pNuKqTwIxx1PW+35iPFs6J9/+Gz43gEkzdmiKxMXB1HTpxuYeANLzjMCj9G9JqQFl+pw9X5nRBN2yww7g8YQYg=
