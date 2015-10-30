@@ -4,7 +4,6 @@ jdk:
 after_success:
 - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && gradle
   uploadArchives -Pci
-- bash <(curl -s https://codecov.io/bash)
 - gradle jacocoRootReport coveralls
 env:
   global:
