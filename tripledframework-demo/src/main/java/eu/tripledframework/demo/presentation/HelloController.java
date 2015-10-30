@@ -21,8 +21,7 @@ public class HelloController {
 
   @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
   public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
-    Future<HelloResponse> future = FutureEventCallback.forType(HelloResponse.class);
-    eventPublisher.publish(new HelloCommand(name), future);
+    Future<HelloResponse> future = eventPublisher.publish(new HelloCommand(name));
 
     HelloResponse helloResponse = future.get();
 
