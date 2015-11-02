@@ -1,25 +1,25 @@
 package eu.tripledframework.eventbus.domain.synchronous;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.Future;
-
-import org.reflections.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.EventPublisher;
 import eu.tripledframework.eventbus.domain.EventSubscriber;
 import eu.tripledframework.eventbus.domain.annotation.Handles;
+import eu.tripledframework.eventbus.domain.callback.AggregateEventCallback;
 import eu.tripledframework.eventbus.domain.callback.ExceptionThrowingEventCallback;
 import eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
+import org.reflections.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 /**
  * Synchronous implementation of the CommandDispatcher.
@@ -27,6 +27,7 @@ import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository
 public class SynchronousEventBus implements EventPublisher, EventSubscriber {
 
   private final Logger logger = LoggerFactory.getLogger(SynchronousEventBus.class);
+  private static final EventCallback<?> DEFAULT_CALLBACK = new ExceptionThrowingEventCallback<>();
 
   private final EventHandlerInvokerRepository invokerRepository;
   private final InterceptorChainFactory interceptorChainFactory;
@@ -65,31 +66,42 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
   // publish methods
 
   @Override
-  public void publish(Object message) {
-    publish(message, new ExceptionThrowingEventCallback<>());
+  public <ReturnType> Future<ReturnType>  publish(Object message) {
+    return publish(message, (EventCallback<ReturnType>) DEFAULT_CALLBACK);
   }
 
   @Override
-  public <ReturnType> void publish(Object event, Future<ReturnType> callback) {
-    if (callback instanceof EventCallback) {
-      publish(event, (EventCallback<ReturnType>) callback);
-    } else {
-      throw new IllegalArgumentException("The callback should be an instance of EventCallBack.");
-    }
-  }
-
-  @Override
-  public <ReturnType> void publish(Object event, EventCallback<ReturnType> callback) {
+  public <ReturnType> Future<ReturnType> publish(Object event, EventCallback<ReturnType> callback) {
     Objects.requireNonNull(event, "The event cannot be null.");
     Objects.requireNonNull(callback, "The callback cannot be null.");
     getLogger().debug("Received an event for publication: {}", event);
 
-    publishInternal(event, callback);
+    EventCallback<ReturnType> determinedCallback = determineCallbacks(callback);
+    Future<ReturnType> future = getFutureCallback(callback);
+    publishInternal(event, determinedCallback);
 
     getLogger().debug("Dispatched event {}", event);
+
+    return future;
   }
 
-  protected <ReturnType> void publishInternal(Object event, EventCallback<ReturnType> callback) {
+    private <ReturnType> Future<ReturnType> getFutureCallback(EventCallback<ReturnType> callback) {
+        return isDefaultCallback(callback) ? (Future<ReturnType>) callback : (Future<ReturnType>) DEFAULT_CALLBACK;
+    }
+
+    private <ReturnType> EventCallback<ReturnType> determineCallbacks(EventCallback<ReturnType> callback) {
+    if (isDefaultCallback(callback)){
+      return callback;
+    } else {
+      return new AggregateEventCallback(callback, DEFAULT_CALLBACK);
+    }
+  }
+
+    private <ReturnType> boolean isDefaultCallback(EventCallback<ReturnType> callback) {
+        return DEFAULT_CALLBACK.getClass() == callback.getClass();
+    }
+
+    protected <ReturnType> void publishInternal(Object event, EventCallback<ReturnType> callback) {
     new EventDispatcher<>(event, callback, invokerRepository, interceptorChainFactory)
         .dispatch();
   }

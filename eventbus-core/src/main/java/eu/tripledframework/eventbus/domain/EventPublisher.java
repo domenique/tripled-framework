@@ -17,22 +17,15 @@ public interface EventPublisher {
    * @param callback The callback to invoke upon completion.
    * @param <ReturnType>   The return type of the event handling.
    */
-  <ReturnType> void publish(Object event, EventCallback<ReturnType> callback);
-
-  /**
-   * Dispatches the given Event and invokes the given callback with either success or failure.
-   *
-   * @param event The event to publish.
-   * @param callback The callback to invoke upon completion.
-   * @param <ReturnType>   The return type of the event handling.
-   */
-  <ReturnType> void publish(Object event, Future<ReturnType> callback);
+  <ReturnType> Future<ReturnType> publish(Object event, EventCallback<ReturnType> callback);
 
   /**
    * Dispatches an event without returning any feedback.
    *
    * @param event      The event to publish.
    * @param <ReturnType> The return type of the event handling.
+   *
+   * @return Future<ReturnType> A future that gives
    */
-  <ReturnType> void publish(Object event);
+  <ReturnType> Future<ReturnType> publish(Object event);
 }

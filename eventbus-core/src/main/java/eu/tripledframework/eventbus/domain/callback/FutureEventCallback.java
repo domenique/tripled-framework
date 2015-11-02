@@ -65,4 +65,8 @@ public class FutureEventCallback<ReturnType> implements EventCallback<ReturnType
     }
     return result;
   }
+
+  protected ReturnType getResult() {
+    return result;
+  }
 }
