@@ -7,13 +7,13 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleEventHandlerInvoker implements EventHandlerInvoker {
+public final class SimpleEventHandlerInvoker implements EventHandlerInvoker {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SimpleEventHandlerInvoker.class);
 
-  private Class<?> eventType;
-  private Object eventHandler;
-  private Method method;
+  private final Class<?> eventType;
+  private final Object eventHandler;
+  private final Method method;
 
   public SimpleEventHandlerInvoker(Class eventType, Object eventHandler, Method eventHandlerMethod) {
     this.eventType = eventType;

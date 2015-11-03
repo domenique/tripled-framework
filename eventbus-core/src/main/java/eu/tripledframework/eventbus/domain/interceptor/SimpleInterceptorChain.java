@@ -1,10 +1,10 @@
 package eu.tripledframework.eventbus.domain.interceptor;
 
+import java.util.Iterator;
+
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
-
-import java.util.Iterator;
 
 public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<ReturnType> {
 
@@ -19,12 +19,11 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
   }
 
   @Override
-  public ReturnType proceed() throws Exception {
+  public ReturnType proceed() {
     if (interceptors.hasNext()) {
       EventBusInterceptor nextInterceptor = interceptors.next();
       return nextInterceptor.intercept(this, event);
     } else {
-      // TODO: Catch exceptions ?
       return (ReturnType) invoker.invoke(event);
     }
   }

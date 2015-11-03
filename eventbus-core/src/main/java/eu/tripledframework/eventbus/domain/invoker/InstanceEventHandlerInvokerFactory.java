@@ -7,7 +7,10 @@ import java.util.Set;
 
 import org.reflections.ReflectionUtils;
 
+import eu.tripledframework.eventbus.domain.annotation.EventHandler;
 import eu.tripledframework.eventbus.domain.annotation.Handles;
+
+import static org.reflections.ReflectionUtils.withAnnotation;
 
 public class InstanceEventHandlerInvokerFactory implements EventHandlerInvokerFactory {
 
@@ -16,7 +19,7 @@ public class InstanceEventHandlerInvokerFactory implements EventHandlerInvokerFa
     List<EventHandlerInvoker> invokers = new ArrayList<>();
 
     Set<Method> methods = ReflectionUtils.getAllMethods(eventHandler.getClass(),
-        ReflectionUtils.withAnnotation(Handles.class));
+        withAnnotation(Handles.class));
 
     for (Method method : methods) {
       Handles annotation = method.getAnnotation(Handles.class);
@@ -25,5 +28,12 @@ public class InstanceEventHandlerInvokerFactory implements EventHandlerInvokerFa
     }
 
     return invokers;
+  }
+
+  @Override
+  public boolean supports(Object object) {
+    EventHandler annotation = object.getClass().getAnnotation(EventHandler.class);
+
+    return annotation != null;
   }
 }

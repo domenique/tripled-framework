@@ -1,11 +1,12 @@
 package eu.tripledframework.eventbus.domain.interceptor;
 
-import eu.tripledframework.eventbus.domain.EventBusInterceptor;
-import eu.tripledframework.eventbus.domain.InterceptorChain;
+import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import java.util.Set;
+
+import eu.tripledframework.eventbus.domain.EventBusInterceptor;
+import eu.tripledframework.eventbus.domain.InterceptorChain;
 
 public class ValidatingEventBusInterceptor implements EventBusInterceptor {
 
@@ -16,7 +17,7 @@ public class ValidatingEventBusInterceptor implements EventBusInterceptor {
   }
 
   @Override
-  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) throws Exception {
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) {
     validate(event);
     return chain.proceed();
   }

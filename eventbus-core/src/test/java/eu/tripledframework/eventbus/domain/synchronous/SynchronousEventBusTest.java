@@ -11,7 +11,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import eu.tripledframework.eventbus.command.ACommandHandledByMultipleHandlers;
+import eu.tripledframework.eventbus.command.CommandHandledByAPrivateMethod;
 import eu.tripledframework.eventbus.command.FailingCommand;
+import eu.tripledframework.eventbus.command.FailingCommandWithCheckedException;
 import eu.tripledframework.eventbus.command.HelloCommand;
 import eu.tripledframework.eventbus.command.UnhandledCommand;
 import eu.tripledframework.eventbus.command.ValidatingCommand;
@@ -27,6 +29,7 @@ import eu.tripledframework.eventbus.domain.interceptor.LoggingEventBusIntercepto
 import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
 import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
 import eu.tripledframework.eventbus.domain.invoker.DuplicateEventHandlerRegistrationException;
+import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvocationException;
 import eu.tripledframework.eventbus.handler.SecondTestEventHandler;
 import eu.tripledframework.eventbus.handler.TestEventHandler;
 
@@ -127,7 +130,7 @@ public class SynchronousEventBusTest {
       }
 
       @Override
-      public void onFailure(Throwable exception) {
+      public void onFailure(RuntimeException exception) {
         if (!(exception instanceof CommandValidationException)) {
           fail("onFailure should not be called.");
         }
@@ -143,12 +146,14 @@ public class SynchronousEventBusTest {
     ValidatingCommand validatingCommand = new ValidatingCommand(null);
     validator.shouldFailNextCall(true);
 
-    expectedException.expect(instanceOf(CommandValidationException.class));
-
     // when
-    eventPublisher.publish(validatingCommand);
+    try {
+      eventPublisher.publish(validatingCommand);
+    } catch (CommandValidationException ex) {
+      // then --> exception
+      assertThat(ex.getConstraintViolations().size(), is(1));
+    }
 
-    // then --> exception
   }
 
   @Test
@@ -167,8 +172,53 @@ public class SynchronousEventBusTest {
       assertThat(ex, instanceOf(ExecutionException.class));
       assertThat(eventHandler.isFailingCommandHandled, is(true));
     }
+  }
 
+  @Test
+  public void whenGivenACommandWhichFailsWithACheckedExceptionUsingAFuture_shouldFail() throws Exception {
+    // given
+    Future<Void> future = FutureEventCallback.forType(Void.class);
+    FailingCommandWithCheckedException command = new FailingCommandWithCheckedException();
 
+    // when
+    eventPublisher.publish(command, future);
+
+    try {
+      future.get();
+    } catch (Exception ex) {
+      assertThat(future.isDone(), is(true));
+      assertThat(ex, instanceOf(ExecutionException.class));
+      assertThat(ex.getCause(), instanceOf(EventHandlerInvocationException.class));
+      assertThat(eventHandler.isFailingCommandHandled, is(true));
+    }
+  }
+
+  @Test
+  public void whenGivenACommandWhichFailsWithACheckedExceptionUsing_shouldFail() throws Exception {
+    // given
+    FailingCommandWithCheckedException command = new FailingCommandWithCheckedException();
+
+    // when
+    try {
+      eventPublisher.publish(command);
+    } catch (Exception ex) {
+      assertThat(ex, instanceOf(EventHandlerInvocationException.class));
+      assertThat(eventHandler.isFailingCommandHandled, is(true));
+    }
+  }
+
+  @Test
+  public void whenGivenACommandWhichIsHandledByAPrivateMethod_shouldFail() throws Exception {
+    // given
+    CommandHandledByAPrivateMethod command = new CommandHandledByAPrivateMethod();
+
+    // when
+    try {
+      eventPublisher.publish(command);
+    } catch (Exception ex) {
+      assertThat(ex, instanceOf(EventHandlerInvocationException.class));
+      assertThat(eventHandler.isCommandHandledByAPrivateMethodCalled, is(false));
+    }
   }
 
   @Test
@@ -185,7 +235,7 @@ public class SynchronousEventBusTest {
       }
 
       @Override
-      public void onFailure(Throwable exception) {
+      public void onFailure(RuntimeException exception) {
         fail("onFailure should not be called.");
       }
     });

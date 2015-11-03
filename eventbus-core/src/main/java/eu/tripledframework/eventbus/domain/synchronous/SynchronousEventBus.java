@@ -1,5 +1,6 @@
 package eu.tripledframework.eventbus.domain.synchronous;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -28,28 +29,30 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
 
   private final EventHandlerInvokerRepository invokerRepository;
   private final InterceptorChainFactory interceptorChainFactory;
-  private final EventHandlerInvokerFactory eventHandlerInvokerFactory;
+  private List<EventHandlerInvokerFactory> eventHandlerInvokerFactories;
 
   // constructors
 
   public SynchronousEventBus() {
     this.invokerRepository = new EventHandlerInvokerRepository();
     this.interceptorChainFactory = new InterceptorChainFactory();
-    this.eventHandlerInvokerFactory = new InstanceEventHandlerInvokerFactory();
+    this.eventHandlerInvokerFactories = Collections.singletonList(new InstanceEventHandlerInvokerFactory());
   }
 
   public SynchronousEventBus(List<EventBusInterceptor> interceptors) {
     this.invokerRepository = new EventHandlerInvokerRepository();
     this.interceptorChainFactory = new InterceptorChainFactory(interceptors);
-    this.eventHandlerInvokerFactory = new InstanceEventHandlerInvokerFactory();
+    this.eventHandlerInvokerFactories = Collections.singletonList(new InstanceEventHandlerInvokerFactory());
   }
 
   // subscribe methods
 
   @Override
   public void subscribe(Object eventHandler) {
-    List<EventHandlerInvoker> invokers = eventHandlerInvokerFactory.create(eventHandler);
-    invokers.forEach(this::subscribeInternal);
+    eventHandlerInvokerFactories.stream()
+        .filter(cur -> cur.supports(eventHandler))
+        .findFirst()
+        .ifPresent(f -> f.create(eventHandler).forEach(this::subscribeInternal));
   }
 
   protected void subscribeInternal(EventHandlerInvoker eventHandler) {
@@ -94,4 +97,13 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
     return logger;
   }
 
+  // optional setters to override behaviour.
+
+  public void setEventHandlerInvokerFactory(List<EventHandlerInvokerFactory> eventHandlerInvokerFactories) {
+    if (eventHandlerInvokerFactories == null || eventHandlerInvokerFactories.isEmpty()) {
+      throw new IllegalArgumentException("At least one eventHandlerInvokerFactory should be configured.");
+    }
+    this.eventHandlerInvokerFactories = eventHandlerInvokerFactories;
+  }
 }
+

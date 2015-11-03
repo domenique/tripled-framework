@@ -1,8 +1,12 @@
 package eu.tripledframework.eventbus.domain.callback;
 
-import eu.tripledframework.eventbus.domain.EventCallback;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
-import java.util.concurrent.*;
+import eu.tripledframework.eventbus.domain.EventCallback;
 
 public class FutureEventCallback<ReturnType> implements EventCallback<ReturnType>, Future<ReturnType> {
 
@@ -21,7 +25,7 @@ public class FutureEventCallback<ReturnType> implements EventCallback<ReturnType
   }
 
   @Override
-  public void onFailure(Throwable exception) {
+  public void onFailure(RuntimeException exception) {
     this.exception = exception;
     countDownLatch.countDown();
   }

@@ -19,6 +19,6 @@ public interface EventCallback<ReturnType> {
    *
    * @param exception The exception received from executing the event handling.
    */
-  void onFailure(Throwable exception);
+  void onFailure(RuntimeException exception);
 
 }
