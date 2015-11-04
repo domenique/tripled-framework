@@ -1,6 +1,15 @@
 package eu.tripledframework.eventbus.domain.asynchronous;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.junit.Before;
+import org.junit.Test;
+
 import eu.tripledframework.eventbus.command.HelloCommand;
 import eu.tripledframework.eventbus.command.ValidatingCommand;
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
@@ -9,14 +18,6 @@ import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
 import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
 import eu.tripledframework.eventbus.handler.TestEventHandler;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -35,7 +36,6 @@ public class AsynchronousEventBusTest {
   @Before
   public void setUp() throws Exception {
     eventHandler = new TestEventHandler();
-
     ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
         .setNameFormat(THREAD_POOL_PREFIX + "%d")
         .build());
@@ -51,7 +51,6 @@ public class AsynchronousEventBusTest {
     AsynchronousEventBus eventBus2 = new AsynchronousEventBus(interceptors, executor2);
     eventBus2.subscribe(eventHandler);
     dispatcherWithValidation = eventBus2;
-
   }
 
   @Test

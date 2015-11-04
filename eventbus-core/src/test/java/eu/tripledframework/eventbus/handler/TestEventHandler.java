@@ -1,16 +1,21 @@
 package eu.tripledframework.eventbus.handler;
 
 import eu.tripledframework.eventbus.command.ACommandHandledByMultipleHandlers;
+import eu.tripledframework.eventbus.command.CommandHandledByAPrivateMethod;
 import eu.tripledframework.eventbus.command.FailingCommand;
+import eu.tripledframework.eventbus.command.FailingCommandWithCheckedException;
 import eu.tripledframework.eventbus.command.HelloCommand;
 import eu.tripledframework.eventbus.command.ValidatingCommand;
+import eu.tripledframework.eventbus.domain.annotation.EventHandler;
 import eu.tripledframework.eventbus.domain.annotation.Handles;
 
+@EventHandler
 public class TestEventHandler {
 
   public boolean isHelloCommandHandled;
   public boolean isFailingCommandHandled;
   public boolean isValidatingCommandHandled;
+  public boolean isCommandHandledByAPrivateMethodCalled;
   public int handledByFirstCount;
   public int handledBySecondCount;
   public String threadNameForExecute;
@@ -26,6 +31,17 @@ public class TestEventHandler {
   public String handleFailingCommand(FailingCommand failingCommand) {
     isFailingCommandHandled = true;
     throw new IllegalStateException("could not execute command.");
+  }
+
+  @Handles(CommandHandledByAPrivateMethod.class)
+  private void handleCommandHandledByAPrivateMethod(CommandHandledByAPrivateMethod privateCommand) {
+    isCommandHandledByAPrivateMethodCalled = true;
+  }
+
+  @Handles(FailingCommandWithCheckedException.class)
+  public String handleFailingCommandWithCheckedException(FailingCommandWithCheckedException failingCommand) throws Exception {
+    isFailingCommandHandled = true;
+    throw new Exception("could not execute command.");
   }
 
   @Handles(ValidatingCommand.class)

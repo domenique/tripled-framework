@@ -13,6 +13,7 @@ dependencies {
 
   testCompile("junit:junit")
   testCompile("org.springframework.boot:spring-boot-starter-logging:${springBootVersion}")
+  testCompile("nl.jqno.equalsverifier:equalsverifier:1.7.5")
 }
 
 uploadArchives {

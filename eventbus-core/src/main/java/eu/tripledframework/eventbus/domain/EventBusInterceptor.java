@@ -23,8 +23,7 @@ public interface EventBusInterceptor {
    * @param event        The event which will eventually be executed.
    * @param <ReturnType> The return type of the event execution and by consequence this Interceptor.
    * @return The return object from the chain.proceed() command or, depending on the implementation, some other instance of the ReturnType.
-   * @throws Exception When an exception occurred.
    */
-  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) throws Exception;
+  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event);
 
 }

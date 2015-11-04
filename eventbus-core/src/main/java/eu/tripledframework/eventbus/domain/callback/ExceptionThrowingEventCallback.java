@@ -12,12 +12,8 @@ public class ExceptionThrowingEventCallback<ReturnType> implements EventCallback
   }
 
   @Override
-  public void onFailure(Throwable exception) {
-    if (exception instanceof RuntimeException) {
-      throw (RuntimeException) exception;
-    } else {
-      throw new CommandFailedException(exception);
-    }
+  public void onFailure(RuntimeException exception) {
+    throw exception;
   }
 
   public ReturnType getResult() {

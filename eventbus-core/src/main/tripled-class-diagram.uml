@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="1130.8078703703704" y="457.0">eu.tripledframework.eventbus.domain.EventPublisher</node>
+    <node x="637.0" y="479.0">eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher</node>
+    <node x="1556.8078703703704" y="479.0">eu.tripledframework.eventbus.domain.EventSubscriber</node>
+    <node x="853.5" y="312.0">eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository</node>
+    <node x="807.3078703703703" y="622.0">eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus</node>
+    <node x="585.5" y="323.0">eu.tripledframework.eventbus.domain.EventCallback</node>
+    <node x="10.5" y="334.0">eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory</node>
+    <node x="195.5" y="211.0">eu.tripledframework.eventbus.domain.interceptor.SimpleInterceptorChain</node>
+    <node x="844.8078703703703" y="789.0">eu.tripledframework.eventbus.domain.asynchronous.AsynchronousEventBus</node>
+    <node x="153.849537037037" y="0.0">eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository" target="eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker">
+      <point x="0.0" y="-47.5" />
+      <point x="1060.5" y="186.0" />
+      <point x="422.18287037037027" y="186.0" />
+      <point x="107.33333333333326" y="80.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus" target="eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher">
+      <point x="-15.8125" y="-58.5" />
+      <point x="917.9953703703703" y="572.0" />
+      <point x="709.5" y="572.0" />
+      <point x="0.0" y="25.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.interceptor.SimpleInterceptorChain" target="eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker">
+      <point x="0.0" y="-25.5" />
+      <point x="288.0" y="186.0" />
+      <point x="314.849537037037" y="186.0" />
+      <point x="0.0" y="80.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus" target="eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker">
+      <point x="-110.6875" y="-58.5" />
+      <point x="823.1203703703703" y="602.0" />
+      <point x="0.0" y="602.0" />
+      <point x="0.0" y="186.0" />
+      <point x="207.51620370370375" y="186.0" />
+      <point x="-107.33333333333326" y="80.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus" target="eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory">
+      <point x="-47.4375" y="-58.5" />
+      <point x="886.3703703703703" y="582.0" />
+      <point x="215.92824074074065" y="582.0" />
+      <point x="215.92824074074065" y="432.0" />
+      <point x="288.0" y="432.0" />
+      <point x="0.0" y="25.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus" target="eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository">
+      <point x="47.4375" y="-58.5" />
+      <point x="981.2453703703703" y="582.0" />
+      <point x="1120.3078703703704" y="582.0" />
+      <point x="1120.3078703703704" y="432.0" />
+      <point x="1198.5" y="432.0" />
+      <point x="138.0" y="47.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus" target="eu.tripledframework.eventbus.domain.EventPublisher">
+      <point x="79.0625" y="-58.5" />
+      <point x="1012.8703703703703" y="592.0" />
+      <point x="1333.8078703703704" y="592.0" />
+      <point x="0.0" y="47.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher" target="eu.tripledframework.eventbus.domain.EventCallback">
+      <point x="0.0" y="-25.5" />
+      <point x="0.0" y="36.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.asynchronous.AsynchronousEventBus" target="eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus">
+      <point x="0.0" y="-14.5" />
+      <point x="0.0" y="58.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus" target="eu.tripledframework.eventbus.domain.EventSubscriber">
+      <point x="110.6875" y="-58.5" />
+      <point x="1044.4953703703704" y="602.0" />
+      <point x="1653.3078703703704" y="602.0" />
+      <point x="0.0" y="25.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher" target="eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory">
+      <point x="-48.33333333333326" y="-25.5" />
+      <point x="661.1666666666667" y="432.0" />
+      <point x="473.0" y="432.0" />
+      <point x="185.0" y="25.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory" target="eu.tripledframework.eventbus.domain.interceptor.SimpleInterceptorChain">
+      <point x="0.0" y="-25.5" />
+      <point x="0.0" y="25.5" />
+    </edge>
+    <edge source="eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher" target="eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository">
+      <point x="48.33333333333326" y="-25.5" />
+      <point x="757.8333333333333" y="432.0" />
+      <point x="922.5" y="432.0" />
+      <point x="-138.0" y="47.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.8384180790960452" x="875.0" y="409.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>public</VISIBILITY>
+</Diagram>
+

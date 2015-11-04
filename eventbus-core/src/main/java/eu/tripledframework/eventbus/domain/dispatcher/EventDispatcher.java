@@ -34,18 +34,20 @@ public class EventDispatcher<ReturnType> {
   }
 
   public void dispatch() {
-    Optional<EventHandlerInvoker> optionalInvokerWithReturnType = invokerRepository.findByEventWithReturnType(event.getClass());
-    List<EventHandlerInvoker> invokersWithoutReturnType = invokerRepository.findAllByEventWithoutReturnType(event.getClass());
+    Optional<EventHandlerInvoker> optionalInvokerWithReturnType = invokerRepository.findByEventTypeWithReturnType(
+        event.getClass());
+    List<EventHandlerInvoker> invokersWithoutReturnType = invokerRepository.findAllByEventTypeWithoutReturnType(
+        event.getClass());
 
     assertInvokerIsFound(optionalInvokerWithReturnType, invokersWithoutReturnType);
 
     ReturnType response = null;
-    Exception thrownException = null;
+    RuntimeException thrownException = null;
     // first dispatch a handler with return type.
     if (optionalInvokerWithReturnType.isPresent()) {
       try {
         response = executeChain(event, optionalInvokerWithReturnType.get());
-      } catch (Exception exception) {
+      } catch (RuntimeException exception) {
         thrownException = exception;
       }
     }
@@ -54,7 +56,7 @@ public class EventDispatcher<ReturnType> {
     for (EventHandlerInvoker eventHandlerInvoker : invokersWithoutReturnType) {
       try {
         executeChain(event, eventHandlerInvoker);
-      } catch (Exception exception) {
+      } catch (RuntimeException exception) {
         thrownException = exception;
       }
     }
@@ -62,12 +64,12 @@ public class EventDispatcher<ReturnType> {
     invokeAppropriateCallback(response, thrownException);
   }
 
-  private <ReturnType> ReturnType executeChain(Object event, EventHandlerInvoker eventHandlerInvoker) throws Exception {
+  private <ReturnType> ReturnType executeChain(Object event, EventHandlerInvoker eventHandlerInvoker) {
     InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, eventHandlerInvoker);
     return chain.proceed();
   }
 
-  private void invokeAppropriateCallback(ReturnType response, Exception thrownException) {
+  private void invokeAppropriateCallback(ReturnType response, RuntimeException thrownException) {
     if (thrownException != null) {
       callback.onFailure(thrownException);
     } else {

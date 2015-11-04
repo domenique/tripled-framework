@@ -1,71 +1,42 @@
 package eu.tripledframework.eventbus.domain.invoker;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Objects;
+/**
+ * An EventHandlerInvoker is responsible for invoking a method which handles an event.
+ * <p>
+ * This method can be on a simple object, or if the implementation supports it, it could be made in such a way that
+ * it instantiates the object before calling the method.
+ */
+public interface EventHandlerInvoker {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+  /**
+   * Method to verify if this EventHandlerInvoker is able to invoke an event of the given type.
+   *
+   * @param eventTypeToHandle The type of event that needs to be checked.
+   * @return <code>true</code> if the EventHandlerInvoker is able to handle events of the given type,
+   * <code>false</code> otherwise.
+   */
+  boolean handles(Class<?> eventTypeToHandle);
 
-public class EventHandlerInvoker {
+  /**
+   * returns the type of event it is able to handle
+   *
+   * @return The class of the event it supports.
+   */
+  @Deprecated
+  Class<?> getEventType();
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(EventHandlerInvoker.class);
+  /**
+   * Method which checks if the method which is being invoked by this invoker has a return type.
+   *
+   * @return <code>true</code> if the method which will be invoked has a return type, <code>false</code> otherwise.
+   */
+  boolean hasReturnType();
 
-  private Class<?> eventType;
-  private Object eventHandler;
-  private Method method;
-
-  public EventHandlerInvoker(Class eventType, Object eventHandler, Method eventHandlerMethod) {
-    this.eventType = eventType;
-    this.eventHandler = eventHandler;
-    this.method = eventHandlerMethod;
-  }
-
-  public boolean handles(Class<?> eventTypeToHandle) {
-    return this.eventType.isAssignableFrom(eventTypeToHandle);
-  }
-
-  public Class<?> getEventType() {
-    return eventType;
-  }
-
-  public boolean hasReturnType() {
-    return !method.getReturnType().getName().equals("void");
-  }
-
-  public Object invoke(Object object) {
-    LOGGER.debug("About to invoke {}.{}() with event {}", eventHandler.getClass().getSimpleName(), method.getName(), object);
-    try {
-      return method.invoke(eventHandler, object);
-    } catch (IllegalAccessException e) {
-      String errorMsg = String.format("Could not invoke EventHandler method %s on %s", method.getName(), eventHandler.getClass().getSimpleName());
-      throw new EventHandlerInvocationException(errorMsg, e);
-    } catch (InvocationTargetException e) {
-      if (e.getCause() instanceof RuntimeException) {
-        throw (RuntimeException) e.getCause();
-      } else {
-        throw new EventHandlerInvocationException(
-            "The invocation of the event handler threw an unknown checked exception.", e);
-      }
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(eventType, eventHandler, method);
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-    final EventHandlerInvoker other = (EventHandlerInvoker) obj;
-    return Objects.equals(this.eventType, other.eventType)
-        && Objects.equals(this.eventHandler, other.eventHandler)
-        && Objects.equals(this.method, other.method);
-  }
+  /**
+   * Invokes the method handler with the given object as input.
+   *
+   * @param object The event with which the method handler should be invoked.
+   * @return an optional response from the method handler.
+   */
+  Object invoke(Object object);
 }
