@@ -51,7 +51,6 @@ public class AsynchronousEventBusTest {
     AsynchronousEventBus eventBus2 = new AsynchronousEventBus(interceptors, executor2);
     eventBus2.subscribe(eventHandler);
     dispatcherWithValidation = eventBus2;
-
   }
 
   @Test

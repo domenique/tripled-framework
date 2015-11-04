@@ -1,7 +1,10 @@
 package eu.tripledframework.eventbus.domain.synchronous;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -30,6 +33,7 @@ import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
 import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
 import eu.tripledframework.eventbus.domain.invoker.DuplicateEventHandlerRegistrationException;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvocationException;
+import eu.tripledframework.eventbus.domain.invoker.TestEventHandlerInvokerFactory;
 import eu.tripledframework.eventbus.handler.SecondTestEventHandler;
 import eu.tripledframework.eventbus.handler.TestEventHandler;
 
@@ -105,6 +109,42 @@ public class SynchronousEventBusTest {
     assertThat(myEventHandler.isHelloCommandHandled, is(true));
   }
 
+  @Test
+  public void whenGivenAnEventHandlerInvokerFactory_shouldUseIt() throws Exception {
+    // given
+    SynchronousEventBus eventBus = new SynchronousEventBus();
+    TestEventHandlerInvokerFactory invokerFactory = new TestEventHandlerInvokerFactory();
+    eventBus.setEventHandlerInvokerFactory(Arrays.asList(invokerFactory));
+
+    // when
+    eventBus.subscribe(new TestEventHandler());
+
+    // then
+    assertThat(invokerFactory.isCreateCalled, is(true));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void whenGivenAnEmptyEventHandlerInvokerFactoryList_shouldFail() throws Exception {
+    // given
+    SynchronousEventBus eventBus = new SynchronousEventBus();
+
+    // when
+    eventBus.setEventHandlerInvokerFactory(Collections.emptyList());
+
+    // then -> exception
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void whenGivenANullEventHandlerInvokerFactoryList_shouldFail() throws Exception {
+    // given
+    SynchronousEventBus eventBus = new SynchronousEventBus();
+
+    // when
+    eventBus.setEventHandlerInvokerFactory(null);
+
+    // then -> exception
+  }
+
   @Test(expected = IllegalStateException.class)
   public void whenGivenACommandThatFails_exceptionShouldBeThrown() throws Exception {
     // given
@@ -112,6 +152,17 @@ public class SynchronousEventBusTest {
 
     // when
     eventPublisher.publish(command);
+
+    // then --> exception
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void whenGivenACommandAndAWrongFuture_exceptionShouldBeThrown() throws Exception {
+    // given
+    HelloCommand command = new HelloCommand("Domenique");
+
+    // when
+    eventPublisher.publish(command, new CompletableFuture<>());
 
     // then --> exception
   }
