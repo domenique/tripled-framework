@@ -1,15 +1,16 @@
 package eu.tripledframework.eventstore.domain;
 
-import eu.tripledframework.eventstore.infrastructure.ReflectionObjectConstructor;
-
 import java.util.Collection;
+
+import eu.tripledframework.eventstore.infrastructure.ReflectionObjectConstructor;
 
 public class EventStore<AggregateRootType> {
 
   private Class<AggregateRootType> type;
   private final EventRepository eventRepository;
 
-  public EventStore(EventRepository eventRepository) {
+  public EventStore(Class<AggregateRootType> type, EventRepository eventRepository) {
+    this.type = type;
     this.eventRepository = eventRepository;
   }
 
@@ -17,6 +18,6 @@ public class EventStore<AggregateRootType> {
     Collection<DomainEvent> allEvents = eventRepository.findAllById(aggregateRootIdentifier);
 
     // construct the aggregate root
-    return new ReflectionObjectConstructor<AggregateRootType>(type).construct(allEvents);
+    return new ReflectionObjectConstructor<>(type).construct(allEvents);
   }
 }
