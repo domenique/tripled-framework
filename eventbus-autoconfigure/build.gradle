@@ -1,15 +1,7 @@
 apply plugin: 'propdeps'
 apply plugin: 'propdeps-idea'
-apply plugin: 'idea'
-apply plugin: 'io.spring.dependency-management'
 
 compileJava.dependsOn(processResources)
-
-dependencyManagement {
-  imports {
-    mavenBom 'io.spring.platform:platform-bom:1.1.4.RELEASE'
-  }
-}
 
 dependencies {
   compile project(":eventbus-core")

@@ -2,8 +2,7 @@ language: java
 jdk:
 - oraclejdk8
 after_success:
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && gradle
-  uploadArchives -Pci
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && gradle uploadArchives -Pci
 - gradle coveralls
 env:
   global:

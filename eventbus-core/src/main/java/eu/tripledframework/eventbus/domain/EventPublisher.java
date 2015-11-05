@@ -3,10 +3,10 @@ package eu.tripledframework.eventbus.domain;
 import java.util.concurrent.Future;
 
 /**
- * The basic contract of the EventBus when publishing events..
+ * The basic contract of the EventBus when publishing events.
  * <p>
- * An EventBusPublisher is responsible for dispatching events. The EventBus can, depending on the implementation execute the event handling in a
- * synchronous or asynchronous fashion.
+ * An EventBusPublisher is responsible for dispatching events. The EventBus can, depending on the implementation
+ * execute the event handling in a synchronous or asynchronous fashion.
  */
 public interface EventPublisher {
 
