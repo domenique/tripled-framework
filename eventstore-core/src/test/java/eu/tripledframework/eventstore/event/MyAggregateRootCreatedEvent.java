@@ -10,6 +10,11 @@ public class MyAggregateRootCreatedEvent extends DomainEvent {
         this.name = name;
     }
 
+    public MyAggregateRootCreatedEvent(String identifier, String name, int revision) {
+        super(identifier, revision);
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }

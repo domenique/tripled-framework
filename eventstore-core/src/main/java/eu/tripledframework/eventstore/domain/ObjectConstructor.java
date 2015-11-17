@@ -6,4 +6,5 @@ public interface ObjectConstructor<T> {
 
   T construct(Collection<DomainEvent> events);
 
+  T applyDomainEvents(T instance, Collection<DomainEvent> events);
 }

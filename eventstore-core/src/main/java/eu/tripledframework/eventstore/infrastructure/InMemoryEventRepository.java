@@ -1,12 +1,12 @@
 package eu.tripledframework.eventstore.infrastructure;
 
-import eu.tripledframework.eventstore.domain.DomainEvent;
-import eu.tripledframework.eventstore.domain.EventRepository;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
+
+import eu.tripledframework.eventstore.domain.DomainEvent;
+import eu.tripledframework.eventstore.domain.EventRepository;
 
 public class InMemoryEventRepository implements EventRepository {
 
@@ -20,6 +20,14 @@ public class InMemoryEventRepository implements EventRepository {
   public Collection<DomainEvent> findAllById(String id) {
     return events.stream()
         .filter(domainEvent -> domainEvent.getAggregateRootIdentifier().equals(id))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Collection<DomainEvent> findAllByIdAndAfterRevision(String identifier, int revision) {
+    return events.stream()
+        .filter(domainEvent -> domainEvent.getAggregateRootIdentifier().equals(identifier))
+        .filter(domainEvent -> domainEvent.getRevision() > revision)
         .collect(Collectors.toList());
   }
 

@@ -1,44 +1,77 @@
-package eu.tripledframework.eventstore.domain;
-
-import eu.tripledframework.eventstore.event.AddressUpdatedEvent;
-import eu.tripledframework.eventstore.event.AddressUpdatedEventWhichCannotBeInvoked;
-import eu.tripledframework.eventstore.event.MyAggregateRootCreatedEvent;
-import eu.tripledframework.eventstore.event.UnMappedEvent;
-import eu.tripledframework.eventstore.infrastructure.AggregateRootReconstructionException;
-import eu.tripledframework.eventstore.infrastructure.ReflectionObjectConstructor;
-import org.junit.Test;
+package eu.tripledframework.eventstore.infrastructure;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.*;
+import org.junit.Test;
+
+import eu.tripledframework.eventstore.domain.DomainEvent;
+import eu.tripledframework.eventstore.domain.MyAggregateRoot;
+import eu.tripledframework.eventstore.domain.NotInstantiatableAggregateRoot;
+import eu.tripledframework.eventstore.domain.ObjectConstructor;
+import eu.tripledframework.eventstore.event.AddressUpdatedEvent;
+import eu.tripledframework.eventstore.event.AddressUpdatedEventWhichCannotBeInvoked;
+import eu.tripledframework.eventstore.event.MyAggregateRootCreatedEvent;
+import eu.tripledframework.eventstore.event.UnMappedEvent;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
-public class ObjectConstructorTest {
+public class ReflectionObjectConstructorTest {
 
-  @Test(expected = IllegalArgumentException.class)
-  public void whenGivenAnEmptyListOfEvents_ShouldThrowIllegalArgument() throws Exception {
+  @Test
+  public void whenGivenAnEmptyListOfEvents_ShouldReturnNull() throws Exception {
     // given
     ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
 
     // when
-    objectConstructor.construct(Collections.EMPTY_LIST);
+    MyAggregateRoot object = objectConstructor.construct(Collections.emptyList());
 
     // then
-    // exception
+    assertThat(object, nullValue());
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void whenGivenANullEventList_ShouldThrowIllegalArgument() throws Exception {
+  @Test
+  public void whenGivenANullEventList_ShouldReturnNull() throws Exception {
     // given
     ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
 
     // when
-    objectConstructor.construct(null);
+    MyAggregateRoot object = objectConstructor.construct(null);
 
     // then
-    // exception
+    assertThat(object, nullValue());
+  }
+
+  @Test
+  public void whenGivenAnEmptyListOfEventsAndAnInstance_ShouldReturnInstance() throws Exception {
+    // given
+    ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
+
+    // when
+    MyAggregateRoot instance = new MyAggregateRoot("id", "name");
+    MyAggregateRoot object = objectConstructor.applyDomainEvents(instance, Collections.emptyList());
+
+    // then
+    assertThat(object, sameInstance(instance));
+  }
+
+  @Test
+  public void whenGivenAnNullListOfEventsAndAnInstance_ShouldReturnInstance() throws Exception {
+    // given
+    ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
+
+    // when
+    MyAggregateRoot instance = new MyAggregateRoot("id", "name");
+    MyAggregateRoot object = objectConstructor.applyDomainEvents(instance, null);
+
+    // then
+    assertThat(object, sameInstance(instance));
   }
 
   @Test

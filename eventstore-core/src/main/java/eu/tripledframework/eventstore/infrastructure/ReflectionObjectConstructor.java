@@ -1,15 +1,5 @@
 package eu.tripledframework.eventstore.infrastructure;
 
-import eu.tripledframework.eventstore.domain.ConstructionAware;
-import eu.tripledframework.eventstore.domain.DomainEvent;
-import eu.tripledframework.eventstore.domain.ObjectConstructor;
-import eu.tripledframework.eventstore.domain.annotation.ConstructionHandler;
-import eu.tripledframework.eventstore.domain.annotation.EP;
-import org.apache.commons.jxpath.JXPathContext;
-import org.reflections.ReflectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +8,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.jxpath.JXPathContext;
+import org.reflections.ReflectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import eu.tripledframework.eventstore.domain.ConstructionAware;
+import eu.tripledframework.eventstore.domain.DomainEvent;
+import eu.tripledframework.eventstore.domain.ObjectConstructor;
+import eu.tripledframework.eventstore.domain.annotation.ConstructionHandler;
+import eu.tripledframework.eventstore.domain.annotation.EP;
 
 import static org.reflections.ReflectionUtils.withAnnotation;
 
@@ -40,7 +41,7 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
   @Override
   public T construct(Collection<DomainEvent> events) {
     if (events == null || events.isEmpty()) {
-      throw new IllegalArgumentException("At least one event should be provided.");
+      return null;
     }
 
     DomainEvent firstEvent = events.stream().findFirst().get();
@@ -49,15 +50,22 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
 
     events.stream()
         .skip(1)
-        .forEach(p -> {
-          applyDomainEvent(instance, p);
-          LOGGER.debug("Applied {}", p);
-        });
+        .forEach(p -> applyDomainEvent(instance, p));
 
-    // Invoke the postConstruct on the object if it's ConstructionAware.
-    if (instance instanceof ConstructionAware) {
-      ((ConstructionAware) instance).postConstruct();
+    invokePostConstructIfNeeded(instance);
+
+    return instance;
+  }
+
+  @Override
+  public T applyDomainEvents(T instance, Collection<DomainEvent> events) {
+    if (events == null || events.isEmpty()) {
+      return instance;
     }
+    events.stream()
+        .forEach(event -> applyDomainEvent(instance, event));
+
+    invokePostConstructIfNeeded(instance);
 
     return instance;
   }
@@ -84,6 +92,7 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
         method.setAccessible(true);
         Object[] parameters = getParametersValues(method.getParameterAnnotations(), event);
         method.invoke(instance, parameters);
+        LOGGER.debug("Applied {}", event);
       } catch (IllegalAccessException | InvocationTargetException e) {
         throw new AggregateRootReconstructionException(String.format("Could not apply event %s to instance %s", event, instance), e);
       }
@@ -103,7 +112,6 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
     return null;
   }
 
-
   private Constructor getEventHandlerConstructor(DomainEvent event) {
     Set<Constructor> constructors = ReflectionUtils.getConstructors(targetClass, withAnnotation(ConstructionHandler.class));
     for (Constructor constructor : constructors) {
@@ -114,6 +122,7 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
     }
     return null;
   }
+
 
   private Object[] getParametersValues(Annotation[][] parameterAnnotations, DomainEvent event) {
     List<Object> params = new ArrayList<>();
@@ -127,6 +136,13 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
       }
     }
     return params.toArray(new Object[params.size()]);
+  }
+
+  private void invokePostConstructIfNeeded(T instance) {
+    // Invoke the postConstruct on the object if it's ConstructionAware.
+    if (instance instanceof ConstructionAware) {
+      ((ConstructionAware) instance).postConstruct();
+    }
   }
 
   private Object getValue(String expr, DomainEvent event) {

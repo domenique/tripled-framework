@@ -10,6 +10,11 @@ public class AddressUpdatedEvent extends DomainEvent {
         this.address = address;
     }
 
+    public AddressUpdatedEvent(String identifier, int revision, String address) {
+        super(identifier, revision);
+        this.address = address;
+    }
+
     public String getAddress() {
         return address;
     }
