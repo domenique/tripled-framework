@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -25,7 +24,6 @@ import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.EventPublisher;
 import eu.tripledframework.eventbus.domain.EventSubscriber;
 import eu.tripledframework.eventbus.domain.callback.ExceptionThrowingEventCallback;
-import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import eu.tripledframework.eventbus.domain.dispatcher.EventHandlerNotFoundException;
 import eu.tripledframework.eventbus.domain.interceptor.CommandValidationException;
 import eu.tripledframework.eventbus.domain.interceptor.LoggingEventBusInterceptor;
@@ -151,18 +149,7 @@ public class SynchronousEventBusTest {
     FailingCommand command = new FailingCommand();
 
     // when
-    eventPublisher.publish(command);
-
-    // then --> exception
-  }
-
-  @Test(expected = IllegalArgumentException.class)
-  public void whenGivenACommandAndAWrongFuture_exceptionShouldBeThrown() throws Exception {
-    // given
-    HelloCommand command = new HelloCommand("Domenique");
-
-    // when
-    eventPublisher.publish(command, new CompletableFuture<>());
+    eventPublisher.publish(command, new ExceptionThrowingEventCallback<>());
 
     // then --> exception
   }
@@ -210,11 +197,10 @@ public class SynchronousEventBusTest {
   @Test
   public void whenGivenACommandWhichFails_shouldFail() throws Exception {
     // given
-    Future<Void> future = FutureEventCallback.forType(Void.class);
     FailingCommand command = new FailingCommand();
 
     // when
-    eventPublisher.publish(command, future);
+    Future<Void> future = eventPublisher.publish(command);
 
     try {
       future.get();
@@ -228,11 +214,10 @@ public class SynchronousEventBusTest {
   @Test
   public void whenGivenACommandWhichFailsWithACheckedExceptionUsingAFuture_shouldFail() throws Exception {
     // given
-    Future<Void> future = FutureEventCallback.forType(Void.class);
     FailingCommandWithCheckedException command = new FailingCommandWithCheckedException();
 
     // when
-    eventPublisher.publish(command, future);
+    Future<Void> future = eventPublisher.publish(command);
 
     try {
       future.get();

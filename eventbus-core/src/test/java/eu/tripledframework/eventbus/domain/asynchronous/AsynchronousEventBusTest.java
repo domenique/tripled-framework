@@ -14,7 +14,6 @@ import eu.tripledframework.eventbus.command.HelloCommand;
 import eu.tripledframework.eventbus.command.ValidatingCommand;
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.EventPublisher;
-import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
 import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
 import eu.tripledframework.eventbus.handler.TestEventHandler;
@@ -59,11 +58,10 @@ public class AsynchronousEventBusTest {
     AsynchronousEventBus defaultPublisher = new AsynchronousEventBus();
     TestEventHandler eventHandler = new TestEventHandler();
     defaultPublisher.subscribe(eventHandler);
-    Future<Void> future = FutureEventCallback.forType(Void.class);
     HelloCommand command = new HelloCommand("domenique");
 
     // when
-    defaultPublisher.publish(command, future);
+    Future<Void> future = defaultPublisher.publish(command);
     future.get();
 
     // then
@@ -75,10 +73,9 @@ public class AsynchronousEventBusTest {
   public void whenGivenAValidCommand_shouldBeExecutedAsynchronous() throws Exception {
     // given
     HelloCommand command = new HelloCommand("Domenique");
-    Future<Void> future = FutureEventCallback.forType(Void.class);
 
     // when
-    asynchronousDispatcher.publish(command, future);
+    Future<Void> future = asynchronousDispatcher.publish(command);
     future.get();
 
     // then
@@ -90,10 +87,9 @@ public class AsynchronousEventBusTest {
   public void whenGivenAValidCommandAndFutureCallback_waitForExecutionToFinish() throws Exception {
     // given
     HelloCommand command = new HelloCommand("Domenique");
-    Future<Void> future = FutureEventCallback.forType(Void.class);
 
     // when
-    asynchronousDispatcher.publish(command, future);
+    Future<Void> future = asynchronousDispatcher.publish(command);
     future.get();
 
     // then
@@ -105,12 +101,11 @@ public class AsynchronousEventBusTest {
   @Test
   public void whenUsingADispatcherWithValidator_validationShouldBeDoneAsynchronous() throws Exception {
     // given
-    Future<Void> future = FutureEventCallback.forType(Void.class);
     ValidatingCommand command = new ValidatingCommand("should pass");
     validator.shouldFailNextCall(false);
 
     // when
-    dispatcherWithValidation.publish(command, future);
+    Future<Void> future = dispatcherWithValidation.publish(command);
     future.get();
 
     // then

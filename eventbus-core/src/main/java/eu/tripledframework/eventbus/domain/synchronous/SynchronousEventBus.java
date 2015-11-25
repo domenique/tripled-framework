@@ -12,7 +12,7 @@ import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.EventPublisher;
 import eu.tripledframework.eventbus.domain.EventSubscriber;
-import eu.tripledframework.eventbus.domain.callback.ExceptionThrowingEventCallback;
+import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
@@ -63,17 +63,11 @@ public class SynchronousEventBus implements EventPublisher, EventSubscriber {
   // publish methods
 
   @Override
-  public void publish(Object message) {
-    publish(message, new ExceptionThrowingEventCallback<>());
-  }
+  public <ReturnType> Future<ReturnType> publish(Object event) {
+    FutureEventCallback<ReturnType> future = new FutureEventCallback<>();
+    publish(event, future);
 
-  @Override
-  public <ReturnType> void publish(Object event, Future<ReturnType> callback) {
-    if (callback instanceof EventCallback) {
-      publish(event, (EventCallback<ReturnType>) callback);
-    } else {
-      throw new IllegalArgumentException("The callback should be an instance of EventCallBack.");
-    }
+    return future;
   }
 
   @Override

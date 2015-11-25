@@ -14,10 +14,6 @@ public class FutureEventCallback<ReturnType> implements EventCallback<ReturnType
   private Throwable exception;
   private CountDownLatch countDownLatch = new CountDownLatch(1);
 
-  public static <RT> Future<RT> forType(Class<RT> returnType) {
-    return new FutureEventCallback<>();
-  }
-
   @Override
   public void onSuccess(ReturnType result) {
     this.result = result;
