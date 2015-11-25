@@ -27,7 +27,8 @@ public class EventStoreTest {
   public void setUp() throws Exception {
     inMemoryEventRepository = new InMemoryEventRepository();
     inMemorySnapshotRepository = new InMemorySnapshotRepository<>();
-    eventStore = new EventStore<>(MyAggregateRoot.class, inMemoryEventRepository, inMemorySnapshotRepository);
+    eventStore = new EventStore<>(MyAggregateRoot.class, inMemoryEventRepository);
+
   }
 
   @Test
@@ -57,6 +58,8 @@ public class EventStoreTest {
   @Test
   public void whenFindingASnapshot_shouldUseItToConstructAggregate() throws Exception {
     // given
+    eventStore.setSnapshotRepository(inMemorySnapshotRepository);
+
     String aggregateRootId = "id";
     MyAggregateRootCreatedEvent createdEvent = new MyAggregateRootCreatedEvent(aggregateRootId, "name", 0);
     inMemoryEventRepository.save(createdEvent);

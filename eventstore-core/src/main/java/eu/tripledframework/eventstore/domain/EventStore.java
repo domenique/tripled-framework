@@ -11,19 +11,17 @@ public class EventStore<AggregateRootType> {
 
   private Class<AggregateRootType> type;
   private final EventRepository eventRepository;
-  private final SnapshotRepository<AggregateRootType> snapshotRepository;
+  private SnapshotRepository<AggregateRootType> snapshotRepository;
   private final ReflectionObjectConstructor<AggregateRootType> objectConstructor;
 
-  public EventStore(Class<AggregateRootType> type, EventRepository eventRepository,
-                    SnapshotRepository<AggregateRootType> snapshotRepository) {
+  public EventStore(Class<AggregateRootType> type, EventRepository eventRepository) {
     this.type = type;
     this.eventRepository = eventRepository;
-    this.snapshotRepository = snapshotRepository;
     this.objectConstructor = new ReflectionObjectConstructor<>(type);
   }
 
   public Optional<AggregateRootType> findById(String identifier) {
-    Optional<Snapshot<AggregateRootType>> retrievedSnapshot = snapshotRepository.findLatest(identifier);
+    Optional<Snapshot<AggregateRootType>> retrievedSnapshot = retrieveSnapshot(identifier);
 
     if (retrievedSnapshot.isPresent()) {
       Snapshot<AggregateRootType> snapshot = retrievedSnapshot.get();
@@ -36,5 +34,16 @@ public class EventStore<AggregateRootType> {
 
       return Optional.ofNullable(objectConstructor.construct(allEvents));
     }
+  }
+
+  private Optional<Snapshot<AggregateRootType>> retrieveSnapshot(String identifier) {
+    if (snapshotRepository == null) {
+      return Optional.empty();
+    }
+    return snapshotRepository.findLatest(identifier);
+  }
+
+  public void setSnapshotRepository(SnapshotRepository<AggregateRootType> snapshotRepository) {
+    this.snapshotRepository = snapshotRepository;
   }
 }
