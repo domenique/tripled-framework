@@ -24,17 +24,16 @@ public class EventHandlerInvokerRepository {
     }
   }
 
-  public List<EventHandlerInvoker> findAllByEventTypeWithoutReturnType(Class<?> eventType) {
-    return eventHandlers.stream()
-        .filter(p -> p.handles(eventType) && !p.hasReturnType())
-        .collect(Collectors.toList());
-  }
-
-  public Optional<EventHandlerInvoker> findByEventTypeWithReturnType(Class<?> eventType) {
+  private Optional<EventHandlerInvoker> findByEventTypeWithReturnType(Class<?> eventType) {
     return eventHandlers.stream()
         .filter(input -> input.handles(eventType) && input.hasReturnType())
         .findFirst();
+  }
 
+  public List<EventHandlerInvoker> findAllByEventType(Class<?> eventType) {
+    return eventHandlers.stream()
+        .filter(p -> p.handles(eventType))
+        .collect(Collectors.toList());
   }
 }
 

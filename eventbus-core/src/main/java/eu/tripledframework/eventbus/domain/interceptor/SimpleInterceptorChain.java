@@ -10,11 +10,12 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
 
   private final Object event;
   private final Iterator<EventBusInterceptor> interceptors;
-  private final EventHandlerInvoker invoker;
+  private final Iterator<EventHandlerInvoker> invokers;
 
-  public SimpleInterceptorChain(Object event, EventHandlerInvoker invoker, Iterator<EventBusInterceptor> interceptors) {
+  public SimpleInterceptorChain(Object event, Iterator<EventHandlerInvoker> invokers,
+                                Iterator<EventBusInterceptor> interceptors) {
     this.event = event;
-    this.invoker = invoker;
+    this.invokers = invokers;
     this.interceptors = interceptors;
   }
 
@@ -24,7 +25,22 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
       EventBusInterceptor nextInterceptor = interceptors.next();
       return nextInterceptor.intercept(this, event);
     } else {
-      return (ReturnType) invoker.invoke(event);
+      return invokeEventHandlers();
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private ReturnType invokeEventHandlers() {
+    ReturnType response = null;
+    while (invokers.hasNext()) {
+      EventHandlerInvoker current = invokers.next();
+      if (current.hasReturnType()) {
+        response = (ReturnType) current.invoke(event);
+      } else {
+        current.invoke(event);
+      }
+    }
+
+    return response;
   }
 }

@@ -1,7 +1,7 @@
 package eu.tripledframework.eventbus.domain.dispatcher;
 
+import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
@@ -34,42 +34,25 @@ public class EventDispatcher<ReturnType> {
   }
 
   public void dispatch() {
-    Optional<EventHandlerInvoker> optionalInvokerWithReturnType = invokerRepository.findByEventTypeWithReturnType(
-        event.getClass());
-    List<EventHandlerInvoker> invokersWithoutReturnType = invokerRepository.findAllByEventTypeWithoutReturnType(
-        event.getClass());
-
-    assertInvokerIsFound(optionalInvokerWithReturnType, invokersWithoutReturnType);
+    List<EventHandlerInvoker> invokers = invokerRepository.findAllByEventType(event.getClass());
+    assertInvokerIsFound(invokers);
 
     ReturnType response = null;
     RuntimeException thrownException = null;
-    // first dispatch a handler with return type.
-    if (optionalInvokerWithReturnType.isPresent()) {
       try {
-        response = executeChain(event, optionalInvokerWithReturnType.get());
+        response = executeChain(event, invokers.iterator());
       } catch (RuntimeException exception) {
         thrownException = exception;
       }
-    }
-
-    // now all the event handlers without a return type.
-    for (EventHandlerInvoker eventHandlerInvoker : invokersWithoutReturnType) {
-      try {
-        executeChain(event, eventHandlerInvoker);
-      } catch (RuntimeException exception) {
-        thrownException = exception;
-      }
-    }
-
-    invokeAppropriateCallback(response, thrownException);
+    invokeAppropriateCallbackMethod(response, thrownException);
   }
 
-  private <ReturnType> ReturnType executeChain(Object event, EventHandlerInvoker eventHandlerInvoker) {
+  private ReturnType executeChain(Object event, Iterator<EventHandlerInvoker> eventHandlerInvoker) {
     InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, eventHandlerInvoker);
     return chain.proceed();
   }
 
-  private void invokeAppropriateCallback(ReturnType response, RuntimeException thrownException) {
+  private void invokeAppropriateCallbackMethod(ReturnType response, RuntimeException thrownException) {
     if (thrownException != null) {
       callback.onFailure(thrownException);
     } else {
@@ -77,8 +60,8 @@ public class EventDispatcher<ReturnType> {
     }
   }
 
-  private void assertInvokerIsFound(Optional<EventHandlerInvoker> optionalInvokerWithReturnType, List<EventHandlerInvoker> invokersWithReturnType) {
-    if (!optionalInvokerWithReturnType.isPresent() && invokersWithReturnType.isEmpty()) {
+  private void assertInvokerIsFound(List<EventHandlerInvoker> invokersWithReturnType) {
+    if (invokersWithReturnType == null || invokersWithReturnType.isEmpty()) {
       throw new EventHandlerNotFoundException(String.format("Could not find an event handler for %s", event));
     }
   }
