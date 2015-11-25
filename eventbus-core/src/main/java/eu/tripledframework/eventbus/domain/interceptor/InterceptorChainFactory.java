@@ -1,10 +1,12 @@
 package eu.tripledframework.eventbus.domain.interceptor;
 
-import eu.tripledframework.eventbus.domain.EventBusInterceptor;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
-
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+
+import eu.tripledframework.eventbus.domain.EventBusInterceptor;
+import eu.tripledframework.eventbus.domain.InterceptorChain;
+import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
 
 public class InterceptorChainFactory {
 
@@ -18,7 +20,7 @@ public class InterceptorChainFactory {
     this.interceptors = Collections.unmodifiableList(interceptors);
   }
 
-  public <ReturnType> SimpleInterceptorChain<ReturnType> createChain(Object event, EventHandlerInvoker invoker) {
+  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, Iterator<EventHandlerInvoker> invoker) {
     return new SimpleInterceptorChain<>(event, invoker, interceptors.iterator());
   }
 
