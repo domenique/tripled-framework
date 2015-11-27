@@ -12,6 +12,7 @@ configurations {
 
 dependencies {
   compile project(":spring-boot-eventbus-starter")
+  compile project(":eventstore-core")
   compile("org.springframework.boot:spring-boot-starter-web")
   compile("org.hibernate:hibernate-validator")
   runtime("org.hsqldb:hsqldb")
