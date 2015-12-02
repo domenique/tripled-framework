@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
-package eu.tripledframework.eventbus.handler;
+package eu.tripledframework.eventbus.domain.unitofwork;
 
-import eu.tripledframework.eventbus.command.HelloCommand;
-import eu.tripledframework.eventbus.domain.annotation.EventHandler;
-import eu.tripledframework.eventbus.domain.annotation.Handles;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-@EventHandler
-public class SecondTestEventHandler {
+public class UnitOfWork {
 
-  public boolean isHelloCommandHandled;
+  private String id;
 
-  @Handles(HelloCommand.class)
-  public String stringReturning(HelloCommand command) {
-    isHelloCommandHandled = true;
-    return "Hello " + command.getName();
+  private Map<String, Object> data;
+  private List<Object> delayedEvents;
+
+  public UnitOfWork() {
+    this.id = UUID.randomUUID().toString();
+    this.delayedEvents = new ArrayList<>();
+    this.data = new HashMap<>();
+  }
+
+  public void delayEvent(Object event) {
+    this.delayedEvents.add(event);
+  }
+
+  public void addProperty(String key, Object object) {
+    this.data.put(key, object);
   }
 
 }
