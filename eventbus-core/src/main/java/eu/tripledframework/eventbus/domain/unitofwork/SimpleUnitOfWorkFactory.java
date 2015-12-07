@@ -15,8 +15,12 @@
  */
 package eu.tripledframework.eventbus.domain.unitofwork;
 
-public interface UnitOfWork {
-  void commit();
+import eu.tripledframework.eventbus.domain.CommandDispatcher;
 
-  void rollback();
+public class SimpleUnitOfWorkFactory implements UnitOfWorkFactory {
+
+  @Override
+  public UnitOfWork create(CommandDispatcher commandDispatcher) {
+    return new SimpleUnitOfWork(commandDispatcher);
+  }
 }

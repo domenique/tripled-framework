@@ -28,7 +28,7 @@ package eu.tripledframework.eventbus.domain;
  * some UI logic without blocking the calling thread. This makes a callback an ideal place to inform clients through
  * some push technology like web-sockets, or ui updates in a swing application.
  * <p>
- * If you want to publish an event, and you don't want to block the calling thread but still perform some logic when
+ * If you want to dispatch an event, and you don't want to block the calling thread but still perform some logic when
  * the event is processed, this is the way to do it. If you want to block the calling thread you should use the
  * FutureEventCallback which implements this callback interface and the adheres to the Future interface.
  *

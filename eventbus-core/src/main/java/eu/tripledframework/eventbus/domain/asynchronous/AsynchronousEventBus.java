@@ -27,8 +27,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * An Implementation of the CommandDispatcher which executes the command in an asynchronous fashion.
- * This implementation uses a ThreadPool to publish events to separate threads.
+ * An Implementation of the EventDispatcher which executes the command in an asynchronous fashion.
+ * This implementation uses a ThreadPool to dispatch events to separate threads.
  */
 public class AsynchronousEventBus extends SynchronousEventBus {
 
@@ -52,7 +52,7 @@ public class AsynchronousEventBus extends SynchronousEventBus {
   }
 
   @Override
-  protected <ReturnType> void publishInternal(Object message, EventCallback<ReturnType> callback) {
+  protected <ReturnType> void dispatchInternal(Object message, EventCallback<ReturnType> callback) {
     executor.execute(new RunnableCommand<>(message, callback));
   }
 
@@ -73,7 +73,7 @@ public class AsynchronousEventBus extends SynchronousEventBus {
 
     @Override
     public void run() {
-      AsynchronousEventBus.super.publishInternal(message, callback);
+      AsynchronousEventBus.super.dispatchInternal(message, callback);
     }
   }
 }

@@ -15,8 +15,23 @@
  */
 package eu.tripledframework.eventbus.domain.unitofwork;
 
-public interface UnitOfWork {
-  void commit();
+public final class UnitOfWorkHolder {
 
-  void rollback();
+  private static final ThreadLocal<UnitOfWork> HOLDER = new ThreadLocal<>();
+
+  private UnitOfWorkHolder() {
+    // cannot be instantiated.
+  }
+
+  public static void initialize(UnitOfWork unitOfWork) {
+    HOLDER.set(unitOfWork);
+  }
+
+  public static UnitOfWork get() {
+    return HOLDER.get();
+  }
+
+  public static void clear() {
+    HOLDER.remove();
+  }
 }

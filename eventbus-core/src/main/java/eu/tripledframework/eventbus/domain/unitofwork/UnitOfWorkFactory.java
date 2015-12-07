@@ -15,8 +15,11 @@
  */
 package eu.tripledframework.eventbus.domain.unitofwork;
 
-public interface UnitOfWork {
-  void commit();
+import eu.tripledframework.eventbus.domain.CommandDispatcher;
 
-  void rollback();
+/**
+ * Created by domenique on 03/12/15.
+ */
+public interface UnitOfWorkFactory {
+  UnitOfWork create(CommandDispatcher commandDispatcher);
 }

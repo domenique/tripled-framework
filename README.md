@@ -34,11 +34,11 @@ The below sample illustrates how a springMVC controller would typically fire a c
 public class HelloController {
 
   @Autowired
-  private EventPublisher eventPublisher;
+  private EventPublisher commandDispatcher;
 
   @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
     public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
-      Future<HelloResponse> future = eventPublisher.publish(new HelloCommand(name), future);
+      Future<HelloResponse> future = commandDispatcher.publish(new HelloCommand(name), future);
 
       return future.get();
     }
