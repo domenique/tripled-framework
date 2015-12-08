@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package eu.tripledframework.eventbus.domain;
+package eu.tripledframework.eventbus.domain.interceptor;
 
-/**
- * The interceptorChain is used by an interceptor to proceed the chain.
- *
- * @param <ReturnType> The Type of the return object of the command.
- */
-public interface InterceptorChain<ReturnType> {
 
-  /**
-   * Method which is supposed to be called by the interceptor the advance in the chain.
-   *
-   * @return The return object of the command.
-   */
-  ReturnType proceed();
+import eu.tripledframework.eventbus.domain.InterceptorChain;
+
+public class PublisherInterceptorChain<ReturnType> implements InterceptorChain<ReturnType> {
+
+
+  @Override
+  public ReturnType proceed() {
+    return null;
+  }
 }

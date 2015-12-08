@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package eu.tripledframework.eventbus.domain.unitofwork;
 
-package eu.tripledframework.eventbus.domain;
+public final class UnitOfWorkHolder {
 
-/**
- * The interceptorChain is used by an interceptor to proceed the chain.
- *
- * @param <ReturnType> The Type of the return object of the command.
- */
-public interface InterceptorChain<ReturnType> {
+  private static final ThreadLocal<UnitOfWork> HOLDER = new ThreadLocal<>();
 
-  /**
-   * Method which is supposed to be called by the interceptor the advance in the chain.
-   *
-   * @return The return object of the command.
-   */
-  ReturnType proceed();
+  private UnitOfWorkHolder() {
+    // cannot be instantiated.
+  }
+
+  public static void initialize(UnitOfWork unitOfWork) {
+    HOLDER.set(unitOfWork);
+  }
+
+  public static UnitOfWork get() {
+    return HOLDER.get();
+  }
+
+  public static void clear() {
+    HOLDER.remove();
+  }
 }

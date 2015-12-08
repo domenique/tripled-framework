@@ -13,20 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package eu.tripledframework.eventbus.domain.unitofwork;
 
-package eu.tripledframework.eventbus.domain;
+public interface UnitOfWork {
+  void commit();
 
-/**
- * The interceptorChain is used by an interceptor to proceed the chain.
- *
- * @param <ReturnType> The Type of the return object of the command.
- */
-public interface InterceptorChain<ReturnType> {
-
-  /**
-   * Method which is supposed to be called by the interceptor the advance in the chain.
-   *
-   * @return The return object of the command.
-   */
-  ReturnType proceed();
+  void rollback();
 }

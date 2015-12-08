@@ -16,16 +16,28 @@
 
 package eu.tripledframework.eventbus.domain.interceptor;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
+import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
 
-public class TestEventBusInterceptor implements EventBusInterceptor {
+public class EventHandlerInterceptorChainFactory {
 
-  public boolean isInterceptorCalled = false;
+  private final List<EventBusInterceptor> interceptors;
 
-  @Override
-  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) {
-    isInterceptorCalled = true;
-    return chain.proceed();
+  public EventHandlerInterceptorChainFactory() {
+    this.interceptors = Collections.unmodifiableList(Collections.emptyList());
   }
+
+  public EventHandlerInterceptorChainFactory(List<EventBusInterceptor> interceptors) {
+    this.interceptors = Collections.unmodifiableList(interceptors);
+  }
+
+  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, Iterator<EventHandlerInvoker> invoker) {
+    return new SimpleInterceptorChain<>(event, invoker, interceptors.iterator());
+  }
+
 }

@@ -13,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package eu.tripledframework.eventbus.domain.unitofwork;
 
-package eu.tripledframework.eventbus.domain;
+import eu.tripledframework.eventbus.domain.CommandDispatcher;
 
 /**
- * The interceptorChain is used by an interceptor to proceed the chain.
- *
- * @param <ReturnType> The Type of the return object of the command.
+ * Created by domenique on 03/12/15.
  */
-public interface InterceptorChain<ReturnType> {
-
-  /**
-   * Method which is supposed to be called by the interceptor the advance in the chain.
-   *
-   * @return The return object of the command.
-   */
-  ReturnType proceed();
+public interface UnitOfWorkFactory {
+  UnitOfWork create(CommandDispatcher commandDispatcher);
 }
