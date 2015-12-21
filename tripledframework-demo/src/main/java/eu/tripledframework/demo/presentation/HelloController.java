@@ -26,17 +26,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.tripledframework.demo.application.HelloCommand;
 import eu.tripledframework.demo.application.HelloResponse;
-import eu.tripledframework.eventbus.domain.EventPublisher;
+import eu.tripledframework.eventbus.domain.CommandDispatcher;
 
 @RestController
 public class HelloController {
 
   @Autowired
-  private EventPublisher eventPublisher;
+  private CommandDispatcher eventPublisher;
 
   @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
   public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
-    Future<HelloResponse> future = eventPublisher.publish(new HelloCommand(name));
+    Future<HelloResponse> future = eventPublisher.dispatch(new HelloCommand(name));
 
     return future.get();
   }

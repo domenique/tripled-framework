@@ -15,32 +15,21 @@
  */
 package eu.tripledframework.eventbus.domain;
 
-import java.util.concurrent.Future;
 
 /**
- * The basic contract of the EventBus when publishing events.
+ * Basic interface to interact with the eventbus when publishing events. The events are published in a fire and forget mode. Implying that
+ * we do not expect any return types, nor do we even expect that there is any event handler interested in the event.
  * <p>
- * An EventBusPublisher is responsible for dispatching events. The EventBus can, depending on the implementation
- * execute the event handling in a synchronous or asynchronous fashion.
+ * Depending on the configuration of the event bus, it could mean that the event is applied transactionally. This means that the execution
+ * of the event handling code is deferred until the completion of a transaction of the command handler firing the event.
  */
 public interface EventPublisher {
 
-  /**
-   * Dispatches the given Event and invokes the given callback with either success or failure.
-   *
-   * @param event The event to publish.
-   * @param callback The callback to invoke upon completion.
-   * @param <ReturnType>   The return type of the event handling.
-   */
-  <ReturnType> void publish(Object event, EventCallback<ReturnType> callback);
 
   /**
-   * Dispatches the given Event and invokes the given callback with either success or failure.
+   * Publishes the given event.
    *
    * @param event The event to publish.
-   * @param <ReturnType>   The return type of the event handling.
-   * @return A future object to be used to retrieve the result.
    */
-  <ReturnType> Future<ReturnType> publish(Object event);
-
+  void publish(Object event);
 }

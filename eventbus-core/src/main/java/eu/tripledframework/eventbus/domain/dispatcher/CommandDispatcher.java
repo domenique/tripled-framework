@@ -1,51 +1,56 @@
-/*
- * Copyright 2015 TripleD framework.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package eu.tripledframework.eventbus.domain.dispatcher;
 
+import java.util.Iterator;
+import java.util.List;
+
+import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
 
-import java.util.Iterator;
-import java.util.List;
-
-public class EventDispatcher<ReturnType> implements Dispatcher {
+public class CommandDispatcher<ReturnType> implements Dispatcher {
 
   private final EventHandlerInvokerRepository invokerRepository;
   private final InterceptorChainFactory interceptorChainFactory;
   private final Object event;
+  private final EventCallback<ReturnType> callback;
 
-  public EventDispatcher(Object event, EventHandlerInvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory) {
+  public CommandDispatcher(Object event, EventCallback<ReturnType> callback,
+                           EventHandlerInvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory) {
     this.event = event;
+    this.callback = callback;
     this.invokerRepository = invokerRepository;
     this.interceptorChainFactory = interceptorChainFactory;
   }
 
   @Override
   public void dispatch() {
+    // TODO: We should have only one handler for a command. so we should enforce this.
     List<EventHandlerInvoker> invokers = invokerRepository.findAllByEventType(event.getClass());
     assertInvokerIsFound(invokers);
 
-    executeChain(event, invokers.iterator());
+    ReturnType response = null;
+    RuntimeException thrownException = null;
+      try {
+        response = executeChain(event, invokers.iterator());
+      } catch (RuntimeException exception) {
+        thrownException = exception;
+      }
+    invokeAppropriateCallbackMethod(response, thrownException);
   }
 
   private ReturnType executeChain(Object event, Iterator<EventHandlerInvoker> eventHandlerInvoker) {
     InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, eventHandlerInvoker);
     return chain.proceed();
+  }
+
+  private void invokeAppropriateCallbackMethod(ReturnType response, RuntimeException thrownException) {
+    if (thrownException != null) {
+      callback.onFailure(thrownException);
+    } else {
+      callback.onSuccess(response);
+    }
   }
 
   private void assertInvokerIsFound(List<EventHandlerInvoker> invokersWithReturnType) {
