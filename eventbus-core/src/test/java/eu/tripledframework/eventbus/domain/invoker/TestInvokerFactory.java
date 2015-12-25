@@ -15,9 +15,21 @@
  */
 package eu.tripledframework.eventbus.domain.invoker;
 
-public class DuplicateHandlerFoundException extends RuntimeException {
+import java.util.Collections;
+import java.util.List;
 
-  public DuplicateHandlerFoundException(String message) {
-    super(message);
+public class TestInvokerFactory implements InvokerFactory {
+
+  public boolean isCreateCalled;
+
+  @Override
+  public List<Invoker> create(Object eventHandler) {
+    isCreateCalled = true;
+    return Collections.emptyList();
+  }
+
+  @Override
+  public boolean supports(Object object) {
+    return true;
   }
 }

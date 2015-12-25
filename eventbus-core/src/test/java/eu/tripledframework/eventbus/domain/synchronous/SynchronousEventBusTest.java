@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import eu.tripledframework.eventbus.domain.EventPublisher;
-import eu.tripledframework.eventbus.domain.invoker.DuplicateHandlerFoundException;
+import eu.tripledframework.eventbus.domain.invoker.DuplicateInvokerFoundException;
 import eu.tripledframework.eventbus.event.UnhandledEvent;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,9 +47,9 @@ import eu.tripledframework.eventbus.domain.interceptor.CommandValidationExceptio
 import eu.tripledframework.eventbus.domain.interceptor.LoggingEventBusInterceptor;
 import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
 import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
-import eu.tripledframework.eventbus.domain.invoker.DuplicateHandlerRegistrationException;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvocationException;
-import eu.tripledframework.eventbus.domain.invoker.TestEventHandlerInvokerFactory;
+import eu.tripledframework.eventbus.domain.invoker.DuplicateInvokerRegistrationException;
+import eu.tripledframework.eventbus.domain.invoker.InvocationException;
+import eu.tripledframework.eventbus.domain.invoker.TestInvokerFactory;
 import eu.tripledframework.eventbus.handler.SecondTestEventHandler;
 import eu.tripledframework.eventbus.handler.TestEventHandler;
 
@@ -131,7 +131,7 @@ public class SynchronousEventBusTest {
   public void whenGivenAnEventHandlerInvokerFactory_shouldUseIt() throws Exception {
     // given
     SynchronousEventBus eventBus = new SynchronousEventBus();
-    TestEventHandlerInvokerFactory invokerFactory = new TestEventHandlerInvokerFactory();
+    TestInvokerFactory invokerFactory = new TestInvokerFactory();
     eventBus.setEventHandlerInvokerFactory(Arrays.asList(invokerFactory));
 
     // when
@@ -244,7 +244,7 @@ public class SynchronousEventBusTest {
     } catch (Exception ex) {
       assertThat(future.isDone(), is(true));
       assertThat(ex, instanceOf(ExecutionException.class));
-      assertThat(ex.getCause(), instanceOf(EventHandlerInvocationException.class));
+      assertThat(ex.getCause(), instanceOf(InvocationException.class));
       assertThat(eventHandler.isFailingCommandHandled, is(true));
     }
   }
@@ -258,7 +258,7 @@ public class SynchronousEventBusTest {
     try {
       commandDispatcher.dispatch(command);
     } catch (Exception ex) {
-      assertThat(ex, instanceOf(EventHandlerInvocationException.class));
+      assertThat(ex, instanceOf(InvocationException.class));
       assertThat(eventHandler.isFailingCommandHandled, is(true));
     }
   }
@@ -272,7 +272,7 @@ public class SynchronousEventBusTest {
     try {
       commandDispatcher.dispatch(command);
     } catch (Exception ex) {
-      assertThat(ex, instanceOf(EventHandlerInvocationException.class));
+      assertThat(ex, instanceOf(InvocationException.class));
       assertThat(eventHandler.isCommandHandledByAPrivateMethodCalled, is(false));
     }
   }
@@ -310,18 +310,20 @@ public class SynchronousEventBusTest {
     // then --> exception
   }
 
-  @Test(expected = DuplicateHandlerRegistrationException.class)
-  public void whenRegisteringDuplicateEventHandlerWithReturnType_shouldFailWithException() throws Exception {
+  @Test
+  public void whenRegisteringDuplicateEventHandlerWithReturnType_shouldNotFail() throws Exception {
     // given
     SecondTestEventHandler secondEventHandler = new SecondTestEventHandler();
 
     // when
     ((EventSubscriber) commandDispatcher).subscribe(secondEventHandler);
 
-    // then --> exception
+    // then
+    // TODO: How can we assert that the subscription worked?
+
   }
 
-  @Test(expected = DuplicateHandlerFoundException.class)
+  @Test(expected = DuplicateInvokerFoundException.class)
   public void whenRegisteringADuplicateEventHandler_shouldNotInvokeAny() throws Exception {
     // given
     AnEventHandledByMultipleHandlers command = new AnEventHandledByMultipleHandlers();

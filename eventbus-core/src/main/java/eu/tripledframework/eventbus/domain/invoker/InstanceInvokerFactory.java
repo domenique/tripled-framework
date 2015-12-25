@@ -27,18 +27,18 @@ import eu.tripledframework.eventbus.domain.annotation.Handles;
 
 import static org.reflections.ReflectionUtils.withAnnotation;
 
-public class InstanceEventHandlerInvokerFactory implements EventHandlerInvokerFactory {
+public class InstanceInvokerFactory implements InvokerFactory {
 
   @Override
-  public List<HandlerInvoker> create(Object eventHandler) {
-    List<HandlerInvoker> invokers = new ArrayList<>();
+  public List<Invoker> create(Object eventHandler) {
+    List<Invoker> invokers = new ArrayList<>();
 
     Set<Method> methods = ReflectionUtils.getAllMethods(eventHandler.getClass(),
         withAnnotation(Handles.class));
 
     for (Method method : methods) {
       Handles annotation = method.getAnnotation(Handles.class);
-      HandlerInvoker invoker = new SimpleHandlerInvoker(annotation.value(), eventHandler, method);
+      Invoker invoker = new SimpleInvoker(annotation.value(), eventHandler, method);
       invokers.add(invoker);
     }
 

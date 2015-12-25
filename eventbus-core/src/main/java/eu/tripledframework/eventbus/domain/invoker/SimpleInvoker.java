@@ -22,15 +22,15 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class SimpleHandlerInvoker implements HandlerInvoker {
+public final class SimpleInvoker implements Invoker {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHandlerInvoker.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleInvoker.class);
 
   private final Class<?> eventType;
   private final Object eventHandler;
   private final Method method;
 
-  public SimpleHandlerInvoker(Class eventType, Object eventHandler, Method eventHandlerMethod) {
+  public SimpleInvoker(Class eventType, Object eventHandler, Method eventHandlerMethod) {
     this.eventType = eventType;
     this.eventHandler = eventHandler;
     this.method = eventHandlerMethod;
@@ -39,11 +39,6 @@ public final class SimpleHandlerInvoker implements HandlerInvoker {
   @Override
   public boolean handles(Class<?> eventTypeToHandle) {
     return this.eventType.isAssignableFrom(eventTypeToHandle);
-  }
-
-  @Override
-  public Class<?> getEventType() {
-    return eventType;
   }
 
   @Override
@@ -58,12 +53,12 @@ public final class SimpleHandlerInvoker implements HandlerInvoker {
       return method.invoke(eventHandler, object);
     } catch (IllegalAccessException e) {
       String errorMsg = String.format("Could not invoke Handler method %s on %s", method.getName(), eventHandler.getClass().getSimpleName());
-      throw new EventHandlerInvocationException(errorMsg, e);
+      throw new InvocationException(errorMsg, e);
     } catch (InvocationTargetException e) {
       if (e.getCause() instanceof RuntimeException) {
         throw (RuntimeException) e.getCause();
       } else {
-        throw new EventHandlerInvocationException(
+        throw new InvocationException(
             "The invocation of the event handler threw an unknown checked exception.", e);
       }
     }
@@ -71,7 +66,7 @@ public final class SimpleHandlerInvoker implements HandlerInvoker {
 
   @Override
   public String toString() {
-    return "HandlerInvoker{" +
+    return "Invoker{" +
            "eventType=" + eventType +
            ", eventHandler=" + eventHandler +
            ", method=" + method +
@@ -91,7 +86,7 @@ public final class SimpleHandlerInvoker implements HandlerInvoker {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    final SimpleHandlerInvoker other = (SimpleHandlerInvoker) obj;
+    final SimpleInvoker other = (SimpleInvoker) obj;
     return Objects.equals(this.eventType, other.eventType)
         && Objects.equals(this.eventHandler, other.eventHandler)
         && Objects.equals(this.method, other.method);

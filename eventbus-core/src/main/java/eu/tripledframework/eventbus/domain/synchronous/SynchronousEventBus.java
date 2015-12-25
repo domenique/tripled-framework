@@ -23,10 +23,10 @@ import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import eu.tripledframework.eventbus.domain.dispatcher.CommandDispatcher;
 import eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
-import eu.tripledframework.eventbus.domain.invoker.HandlerInvoker;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerFactory;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
-import eu.tripledframework.eventbus.domain.invoker.InstanceEventHandlerInvokerFactory;
+import eu.tripledframework.eventbus.domain.invoker.Invoker;
+import eu.tripledframework.eventbus.domain.invoker.InvokerFactory;
+import eu.tripledframework.eventbus.domain.invoker.InvokerRepository;
+import eu.tripledframework.eventbus.domain.invoker.InstanceInvokerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,22 +42,22 @@ public class SynchronousEventBus implements eu.tripledframework.eventbus.domain.
 
   private final Logger logger = LoggerFactory.getLogger(SynchronousEventBus.class);
 
-  private final EventHandlerInvokerRepository invokerRepository;
+  private final InvokerRepository invokerRepository;
   private final InterceptorChainFactory interceptorChainFactory;
-  private List<EventHandlerInvokerFactory> eventHandlerInvokerFactories;
+  private List<InvokerFactory> eventHandlerInvokerFactories;
 
   // constructors
 
   public SynchronousEventBus() {
-    this.invokerRepository = new EventHandlerInvokerRepository();
+    this.invokerRepository = new InvokerRepository();
     this.interceptorChainFactory = new InterceptorChainFactory();
-    this.eventHandlerInvokerFactories = Collections.singletonList(new InstanceEventHandlerInvokerFactory());
+    this.eventHandlerInvokerFactories = Collections.singletonList(new InstanceInvokerFactory());
   }
 
   public SynchronousEventBus(List<EventBusInterceptor> interceptors) {
-    this.invokerRepository = new EventHandlerInvokerRepository();
+    this.invokerRepository = new InvokerRepository();
     this.interceptorChainFactory = new InterceptorChainFactory(interceptors);
-    this.eventHandlerInvokerFactories = Collections.singletonList(new InstanceEventHandlerInvokerFactory());
+    this.eventHandlerInvokerFactories = Collections.singletonList(new InstanceInvokerFactory());
   }
 
   // subscribe methods
@@ -67,9 +67,9 @@ public class SynchronousEventBus implements eu.tripledframework.eventbus.domain.
     eventHandlerInvokerFactories.stream().filter(cur -> cur.supports(eventHandler)).findFirst().ifPresent(f -> f.create(eventHandler).forEach(this::subscribeInternal));
   }
 
-  protected void subscribeInternal(HandlerInvoker eventHandler) {
+  protected void subscribeInternal(Invoker eventHandler) {
     getLogger().info("Adding Event subscription for {}", eventHandler.toString());
-    invokerRepository.addEventHandlerInvoker(eventHandler);
+    invokerRepository.add(eventHandler);
   }
 
   // dispatch methods
@@ -115,7 +115,7 @@ public class SynchronousEventBus implements eu.tripledframework.eventbus.domain.
 
   // optional setters to override behaviour.
 
-  public void setEventHandlerInvokerFactory(List<EventHandlerInvokerFactory> eventHandlerInvokerFactories) {
+  public void setEventHandlerInvokerFactory(List<InvokerFactory> eventHandlerInvokerFactories) {
     if (eventHandlerInvokerFactories == null || eventHandlerInvokerFactories.isEmpty()) {
       throw new IllegalArgumentException("At least one eventHandlerInvokerFactory should be configured.");
     }

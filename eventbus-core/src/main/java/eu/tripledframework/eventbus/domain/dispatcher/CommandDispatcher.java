@@ -5,18 +5,18 @@ import java.util.Optional;
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
-import eu.tripledframework.eventbus.domain.invoker.HandlerInvoker;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
+import eu.tripledframework.eventbus.domain.invoker.Invoker;
+import eu.tripledframework.eventbus.domain.invoker.InvokerRepository;
 
 public class CommandDispatcher<ReturnType> implements Dispatcher {
 
-  private final EventHandlerInvokerRepository invokerRepository;
+  private final InvokerRepository invokerRepository;
   private final InterceptorChainFactory interceptorChainFactory;
   private final Object event;
   private final EventCallback<ReturnType> callback;
 
   public CommandDispatcher(Object event, EventCallback<ReturnType> callback,
-                           EventHandlerInvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory) {
+                           InvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory) {
     this.event = event;
     this.callback = callback;
     this.invokerRepository = invokerRepository;
@@ -25,7 +25,7 @@ public class CommandDispatcher<ReturnType> implements Dispatcher {
 
   @Override
   public void dispatch() {
-    Optional<HandlerInvoker> invoker = invokerRepository.findByEventType(event.getClass());
+    Optional<Invoker> invoker = invokerRepository.findByEventType(event.getClass());
     assertInvokerIsFound(invoker);
 
     ReturnType response = null;
@@ -38,8 +38,8 @@ public class CommandDispatcher<ReturnType> implements Dispatcher {
     invokeAppropriateCallbackMethod(response, thrownException);
   }
 
-  private ReturnType executeChain(Object event, HandlerInvoker handlerInvoker) {
-    InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, handlerInvoker);
+  private ReturnType executeChain(Object event, Invoker invoker) {
+    InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, invoker);
     return chain.proceed();
   }
 
@@ -51,7 +51,7 @@ public class CommandDispatcher<ReturnType> implements Dispatcher {
     }
   }
 
-  private void assertInvokerIsFound(Optional<HandlerInvoker> invoker) {
+  private void assertInvokerIsFound(Optional<Invoker> invoker) {
     if (!invoker.isPresent()) {
       throw new HandlerNotFoundException(String.format("Could not find an event handler for %s", event));
     }
