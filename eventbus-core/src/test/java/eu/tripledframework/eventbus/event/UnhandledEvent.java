@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.domain.invoker;
+package eu.tripledframework.eventbus.event;
 
-public class DuplicateEventHandlerRegistrationException extends RuntimeException {
-  public DuplicateEventHandlerRegistrationException(String message) {
-    super(message);
-  }
+public class UnhandledEvent {
 }

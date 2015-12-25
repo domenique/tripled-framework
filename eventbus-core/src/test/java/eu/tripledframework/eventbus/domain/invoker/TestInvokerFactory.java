@@ -15,18 +15,21 @@
  */
 package eu.tripledframework.eventbus.domain.invoker;
 
-import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.Test;
+public class TestInvokerFactory implements InvokerFactory {
 
-public class SimpleEventHandlerInvokerTest {
+  public boolean isCreateCalled;
 
-  @Test
-  public void verifyEquals() throws Exception {
-    EqualsVerifier.forClass(SimpleEventHandlerInvoker.class)
-        .withPrefabValues(Method.class, SimpleEventHandlerInvoker.class.getDeclaredMethod("handles", Class.class),
-            SimpleEventHandlerInvoker.class.getDeclaredMethod("getEventType"))
-        .verify();
+  @Override
+  public List<Invoker> create(Object eventHandler) {
+    isCreateCalled = true;
+    return Collections.emptyList();
+  }
+
+  @Override
+  public boolean supports(Object object) {
+    return true;
   }
 }

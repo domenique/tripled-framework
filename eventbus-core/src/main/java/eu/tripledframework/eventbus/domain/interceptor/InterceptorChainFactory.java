@@ -15,13 +15,13 @@
  */
 package eu.tripledframework.eventbus.domain.interceptor;
 
+import eu.tripledframework.eventbus.domain.EventBusInterceptor;
+import eu.tripledframework.eventbus.domain.InterceptorChain;
+import eu.tripledframework.eventbus.domain.invoker.Invoker;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import eu.tripledframework.eventbus.domain.EventBusInterceptor;
-import eu.tripledframework.eventbus.domain.InterceptorChain;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
 
 public class InterceptorChainFactory {
 
@@ -35,8 +35,12 @@ public class InterceptorChainFactory {
     this.interceptors = Collections.unmodifiableList(interceptors);
   }
 
-  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, Iterator<EventHandlerInvoker> invoker) {
+  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, Iterator<Invoker> invoker) {
     return new SimpleInterceptorChain<>(event, invoker, interceptors.iterator());
+  }
+
+  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, Invoker invoker) {
+    return new SimpleInterceptorChain<>(event, Collections.singletonList(invoker).iterator(), interceptors.iterator());
   }
 
 }

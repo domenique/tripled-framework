@@ -28,7 +28,7 @@ import org.junit.Test;
 import eu.tripledframework.eventbus.command.HelloCommand;
 import eu.tripledframework.eventbus.command.ValidatingCommand;
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
-import eu.tripledframework.eventbus.domain.EventPublisher;
+import eu.tripledframework.eventbus.domain.CommandDispatcher;
 import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
 import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
 import eu.tripledframework.eventbus.handler.TestEventHandler;
@@ -42,8 +42,8 @@ public class AsynchronousEventBusTest {
 
   public static final String THREAD_POOL_PREFIX = "CDForTest-pool-";
   public static final String THREAD_POOL_WITH_VALIDATION_PREFIX = "CDForTest-Val-pool-";
-  private EventPublisher asynchronousDispatcher;
-  private EventPublisher dispatcherWithValidation;
+  private CommandDispatcher asynchronousDispatcher;
+  private CommandDispatcher dispatcherWithValidation;
   private TestEventHandler eventHandler;
   private TestValidator validator;
 
@@ -76,7 +76,7 @@ public class AsynchronousEventBusTest {
     HelloCommand command = new HelloCommand("domenique");
 
     // when
-    Future<Void> future = defaultPublisher.publish(command);
+    Future<Void> future = defaultPublisher.dispatch(command);
     future.get();
 
     // then
@@ -90,7 +90,7 @@ public class AsynchronousEventBusTest {
     HelloCommand command = new HelloCommand("Domenique");
 
     // when
-    Future<Void> future = asynchronousDispatcher.publish(command);
+    Future<Void> future = asynchronousDispatcher.dispatch(command);
     future.get();
 
     // then
@@ -104,7 +104,7 @@ public class AsynchronousEventBusTest {
     HelloCommand command = new HelloCommand("Domenique");
 
     // when
-    Future<Void> future = asynchronousDispatcher.publish(command);
+    Future<Void> future = asynchronousDispatcher.dispatch(command);
     future.get();
 
     // then
@@ -120,7 +120,7 @@ public class AsynchronousEventBusTest {
     validator.shouldFailNextCall(false);
 
     // when
-    Future<Void> future = dispatcherWithValidation.publish(command);
+    Future<Void> future = dispatcherWithValidation.dispatch(command);
     future.get();
 
     // then

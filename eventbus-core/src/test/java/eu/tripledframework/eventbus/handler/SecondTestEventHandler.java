@@ -16,10 +16,10 @@
 package eu.tripledframework.eventbus.handler;
 
 import eu.tripledframework.eventbus.command.HelloCommand;
-import eu.tripledframework.eventbus.domain.annotation.EventHandler;
+import eu.tripledframework.eventbus.domain.annotation.Handler;
 import eu.tripledframework.eventbus.domain.annotation.Handles;
 
-@EventHandler
+@Handler
 public class SecondTestEventHandler {
 
   public boolean isHelloCommandHandled;

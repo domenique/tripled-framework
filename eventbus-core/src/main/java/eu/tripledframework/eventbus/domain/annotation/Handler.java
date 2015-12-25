@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.domain.dispatcher;
+package eu.tripledframework.eventbus.domain.annotation;
 
-public class EventHandlerNotFoundException extends RuntimeException {
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-  public EventHandlerNotFoundException(String message) {
-    super(message);
-  }
+/**
+ * Annotation to indicate that the annotated type is an Handler.
+ *
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+public @interface Handler {
+
 }

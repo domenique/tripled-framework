@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.domain.invoker;
+package eu.tripledframework.eventbus.domain.dispatcher;
 
-public class EventHandlerInvocationException extends RuntimeException {
+public interface Dispatcher {
 
-  public EventHandlerInvocationException(String message, Throwable cause) {
-    super(message, cause);
-  }
+  void dispatch();
+
 }

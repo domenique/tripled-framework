@@ -22,12 +22,15 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import eu.tripledframework.eventbus.domain.EventPublisher;
+import eu.tripledframework.eventbus.domain.invoker.DuplicateInvokerFoundException;
+import eu.tripledframework.eventbus.event.UnhandledEvent;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import eu.tripledframework.eventbus.command.ACommandHandledByMultipleHandlers;
+import eu.tripledframework.eventbus.event.AnEventHandledByMultipleHandlers;
 import eu.tripledframework.eventbus.command.CommandHandledByAPrivateMethod;
 import eu.tripledframework.eventbus.command.FailingCommand;
 import eu.tripledframework.eventbus.command.FailingCommandWithCheckedException;
@@ -36,17 +39,17 @@ import eu.tripledframework.eventbus.command.UnhandledCommand;
 import eu.tripledframework.eventbus.command.ValidatingCommand;
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.EventCallback;
-import eu.tripledframework.eventbus.domain.EventPublisher;
+import eu.tripledframework.eventbus.domain.CommandDispatcher;
 import eu.tripledframework.eventbus.domain.EventSubscriber;
 import eu.tripledframework.eventbus.domain.callback.ExceptionThrowingEventCallback;
-import eu.tripledframework.eventbus.domain.dispatcher.EventHandlerNotFoundException;
+import eu.tripledframework.eventbus.domain.dispatcher.HandlerNotFoundException;
 import eu.tripledframework.eventbus.domain.interceptor.CommandValidationException;
 import eu.tripledframework.eventbus.domain.interceptor.LoggingEventBusInterceptor;
 import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
 import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
-import eu.tripledframework.eventbus.domain.invoker.DuplicateEventHandlerRegistrationException;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvocationException;
-import eu.tripledframework.eventbus.domain.invoker.TestEventHandlerInvokerFactory;
+import eu.tripledframework.eventbus.domain.invoker.DuplicateInvokerRegistrationException;
+import eu.tripledframework.eventbus.domain.invoker.InvocationException;
+import eu.tripledframework.eventbus.domain.invoker.TestInvokerFactory;
 import eu.tripledframework.eventbus.handler.SecondTestEventHandler;
 import eu.tripledframework.eventbus.handler.TestEventHandler;
 
@@ -63,6 +66,7 @@ public class SynchronousEventBusTest {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  private CommandDispatcher commandDispatcher;
   private EventPublisher eventPublisher;
   private TestEventHandler eventHandler;
   private TestValidator validator;
@@ -79,6 +83,7 @@ public class SynchronousEventBusTest {
     eventHandler = new TestEventHandler();
     eventBus.subscribe(eventHandler);
 
+    commandDispatcher = eventBus;
     eventPublisher = eventBus;
   }
 
@@ -88,7 +93,7 @@ public class SynchronousEventBusTest {
     HelloCommand helloCommand = new HelloCommand("Domenique");
 
     // given
-    eventPublisher.publish(helloCommand);
+    commandDispatcher.dispatch(helloCommand);
 
     // then
     assertThat(eventHandler.isHelloCommandHandled, is(true));
@@ -101,7 +106,7 @@ public class SynchronousEventBusTest {
     ExceptionThrowingEventCallback<String> callback = new ExceptionThrowingEventCallback<>();
 
     // given
-    eventPublisher.publish(helloCommand, callback);
+    commandDispatcher.dispatch(helloCommand, callback);
 
     // then
     assertThat(callback.getResult(), equalTo("Hello Domenique"));
@@ -116,7 +121,7 @@ public class SynchronousEventBusTest {
     publisherWithoutInterceptors.subscribe(myEventHandler);
 
     // when
-    publisherWithoutInterceptors.publish(helloCommand);
+    publisherWithoutInterceptors.dispatch(helloCommand);
 
     // then
     assertThat(myEventHandler.isHelloCommandHandled, is(true));
@@ -126,7 +131,7 @@ public class SynchronousEventBusTest {
   public void whenGivenAnEventHandlerInvokerFactory_shouldUseIt() throws Exception {
     // given
     SynchronousEventBus eventBus = new SynchronousEventBus();
-    TestEventHandlerInvokerFactory invokerFactory = new TestEventHandlerInvokerFactory();
+    TestInvokerFactory invokerFactory = new TestInvokerFactory();
     eventBus.setEventHandlerInvokerFactory(Arrays.asList(invokerFactory));
 
     // when
@@ -164,7 +169,7 @@ public class SynchronousEventBusTest {
     FailingCommand command = new FailingCommand();
 
     // when
-    eventPublisher.publish(command, new ExceptionThrowingEventCallback<>());
+    commandDispatcher.dispatch(command, new ExceptionThrowingEventCallback<>());
 
     // then --> exception
   }
@@ -176,7 +181,7 @@ public class SynchronousEventBusTest {
     validator.shouldFailNextCall(true);
 
     // when
-    eventPublisher.publish(validatingCommand, new EventCallback<Void>() {
+    commandDispatcher.dispatch(validatingCommand, new EventCallback<Void>() {
       @Override
       public void onSuccess(Void result) {
         fail("onSuccess should not be called.");
@@ -201,7 +206,7 @@ public class SynchronousEventBusTest {
 
     // when
     try {
-      eventPublisher.publish(validatingCommand);
+      commandDispatcher.dispatch(validatingCommand);
     } catch (CommandValidationException ex) {
       // then --> exception
       assertThat(ex.getConstraintViolations().size(), is(1));
@@ -215,7 +220,7 @@ public class SynchronousEventBusTest {
     FailingCommand command = new FailingCommand();
 
     // when
-    Future<Void> future = eventPublisher.publish(command);
+    Future<Void> future = commandDispatcher.dispatch(command);
 
     try {
       future.get();
@@ -232,14 +237,14 @@ public class SynchronousEventBusTest {
     FailingCommandWithCheckedException command = new FailingCommandWithCheckedException();
 
     // when
-    Future<Void> future = eventPublisher.publish(command);
+    Future<Void> future = commandDispatcher.dispatch(command);
 
     try {
       future.get();
     } catch (Exception ex) {
       assertThat(future.isDone(), is(true));
       assertThat(ex, instanceOf(ExecutionException.class));
-      assertThat(ex.getCause(), instanceOf(EventHandlerInvocationException.class));
+      assertThat(ex.getCause(), instanceOf(InvocationException.class));
       assertThat(eventHandler.isFailingCommandHandled, is(true));
     }
   }
@@ -251,9 +256,9 @@ public class SynchronousEventBusTest {
 
     // when
     try {
-      eventPublisher.publish(command);
+      commandDispatcher.dispatch(command);
     } catch (Exception ex) {
-      assertThat(ex, instanceOf(EventHandlerInvocationException.class));
+      assertThat(ex, instanceOf(InvocationException.class));
       assertThat(eventHandler.isFailingCommandHandled, is(true));
     }
   }
@@ -265,9 +270,9 @@ public class SynchronousEventBusTest {
 
     // when
     try {
-      eventPublisher.publish(command);
+      commandDispatcher.dispatch(command);
     } catch (Exception ex) {
-      assertThat(ex, instanceOf(EventHandlerInvocationException.class));
+      assertThat(ex, instanceOf(InvocationException.class));
       assertThat(eventHandler.isCommandHandledByAPrivateMethodCalled, is(false));
     }
   }
@@ -279,7 +284,7 @@ public class SynchronousEventBusTest {
     validator.shouldFailNextCall(false);
 
     // when
-    eventPublisher.publish(validatingCommand, new EventCallback<Void>() {
+    commandDispatcher.dispatch(validatingCommand, new EventCallback<Void>() {
       @Override
       public void onSuccess(Void result) {
         assertThat(result, nullValue());
@@ -294,32 +299,46 @@ public class SynchronousEventBusTest {
     assertThat(eventHandler.isValidatingCommandHandled, is(true));
   }
 
-  @Test(expected = EventHandlerNotFoundException.class)
+  @Test(expected = HandlerNotFoundException.class)
   public void whenGivenCommandForWhichNoHandlerExists_shouldThrowException() throws Exception {
     // given
     UnhandledCommand command = new UnhandledCommand();
 
     // when
-    eventPublisher.publish(command);
+    commandDispatcher.dispatch(command);
 
     // then --> exception
   }
 
-  @Test(expected = DuplicateEventHandlerRegistrationException.class)
-  public void whenRegisteringDuplicateEventHandlerWithReturnType_shouldFailWithException() throws Exception {
+  @Test
+  public void whenRegisteringDuplicateEventHandlerWithReturnType_shouldNotFail() throws Exception {
     // given
     SecondTestEventHandler secondEventHandler = new SecondTestEventHandler();
 
     // when
-    ((EventSubscriber) eventPublisher).subscribe(secondEventHandler);
+    ((EventSubscriber) commandDispatcher).subscribe(secondEventHandler);
 
-    // then --> exception
+    // then
+    // TODO: How can we assert that the subscription worked?
+
+  }
+
+  @Test(expected = DuplicateInvokerFoundException.class)
+  public void whenRegisteringADuplicateEventHandler_shouldNotInvokeAny() throws Exception {
+    // given
+    AnEventHandledByMultipleHandlers command = new AnEventHandledByMultipleHandlers();
+    ((EventSubscriber) commandDispatcher).subscribe(eventHandler);
+
+    // when
+    commandDispatcher.dispatch(command);
+
+    // then -> exception
   }
 
   @Test
-  public void whenGivenACommandWithMultipleHandlers_allHandlersShouldBeInvoked() throws Exception {
+  public void whenGivenAnEventWithMultipleHandlers_allHandlersShouldBeInvoked() throws Exception {
     // given
-    ACommandHandledByMultipleHandlers command = new ACommandHandledByMultipleHandlers();
+    AnEventHandledByMultipleHandlers command = new AnEventHandledByMultipleHandlers();
 
     // when
     eventPublisher.publish(command);
@@ -329,19 +348,14 @@ public class SynchronousEventBusTest {
     assertThat(eventHandler.handledBySecondCount, equalTo(1));
   }
 
-  @Test
-  public void whenRegisteringADuplicateEventHandler_shouldNotInvokeTwice() throws Exception {
+  @Test(expected = HandlerNotFoundException.class)
+  public void whenGivenAnEventWithNoHandlers_shouldThrowException() throws Exception {
     // given
-    ACommandHandledByMultipleHandlers command = new ACommandHandledByMultipleHandlers();
-    ((EventSubscriber) eventPublisher).subscribe(eventHandler);
+    UnhandledEvent command = new UnhandledEvent();
 
     // when
     eventPublisher.publish(command);
 
-    // then
-    assertThat(eventHandler.handledByFirstCount, equalTo(1));
-    assertThat(eventHandler.handledBySecondCount, equalTo(1));
-
-
+    // then -> exception
   }
 }
