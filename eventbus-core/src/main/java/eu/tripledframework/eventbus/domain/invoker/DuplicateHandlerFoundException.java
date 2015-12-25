@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.domain.dispatcher;
+package eu.tripledframework.eventbus.domain.invoker;
 
-public class EventHandlerNotFoundException extends RuntimeException {
+public class DuplicateHandlerFoundException extends RuntimeException {
 
-  public EventHandlerNotFoundException(String message) {
+  public DuplicateHandlerFoundException(String message) {
     super(message);
   }
 }

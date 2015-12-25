@@ -1,7 +1,7 @@
 package eu.tripledframework.eventbus.domain.dispatcher;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.Optional;
 
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
@@ -26,21 +26,20 @@ public class CommandDispatcher<ReturnType> implements Dispatcher {
 
   @Override
   public void dispatch() {
-    // TODO: We should have only one handler for a command. so we should enforce this.
-    List<EventHandlerInvoker> invokers = invokerRepository.findAllByEventType(event.getClass());
-    assertInvokerIsFound(invokers);
+    Optional<EventHandlerInvoker> invoker = invokerRepository.findByEventType(event.getClass());
+    assertInvokerIsFound(invoker);
 
     ReturnType response = null;
     RuntimeException thrownException = null;
       try {
-        response = executeChain(event, invokers.iterator());
+        response = executeChain(event, invoker.get());
       } catch (RuntimeException exception) {
         thrownException = exception;
       }
     invokeAppropriateCallbackMethod(response, thrownException);
   }
 
-  private ReturnType executeChain(Object event, Iterator<EventHandlerInvoker> eventHandlerInvoker) {
+  private ReturnType executeChain(Object event, EventHandlerInvoker eventHandlerInvoker) {
     InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, eventHandlerInvoker);
     return chain.proceed();
   }
@@ -53,9 +52,9 @@ public class CommandDispatcher<ReturnType> implements Dispatcher {
     }
   }
 
-  private void assertInvokerIsFound(List<EventHandlerInvoker> invokersWithReturnType) {
-    if (invokersWithReturnType == null || invokersWithReturnType.isEmpty()) {
-      throw new EventHandlerNotFoundException(String.format("Could not find an event handler for %s", event));
+  private void assertInvokerIsFound(Optional<EventHandlerInvoker> invoker) {
+    if (!invoker.isPresent()) {
+      throw new HandlerNotFoundException(String.format("Could not find an event handler for %s", event));
     }
   }
 }

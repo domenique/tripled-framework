@@ -15,7 +15,6 @@
  */
 package eu.tripledframework.eventbus.domain.dispatcher;
 
-import eu.tripledframework.eventbus.domain.InterceptorChain;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
@@ -43,14 +42,13 @@ public class EventDispatcher<ReturnType> implements Dispatcher {
     executeChain(event, invokers.iterator());
   }
 
-  private ReturnType executeChain(Object event, Iterator<EventHandlerInvoker> eventHandlerInvoker) {
-    InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, eventHandlerInvoker);
-    return chain.proceed();
+  private void executeChain(Object event, Iterator<EventHandlerInvoker> eventHandlerInvoker) {
+    interceptorChainFactory.<ReturnType>createChain(event, eventHandlerInvoker).proceed();
   }
 
-  private void assertInvokerIsFound(List<EventHandlerInvoker> invokersWithReturnType) {
-    if (invokersWithReturnType == null || invokersWithReturnType.isEmpty()) {
-      throw new EventHandlerNotFoundException(String.format("Could not find an event handler for %s", event));
+  private void assertInvokerIsFound(List<EventHandlerInvoker> invokers) {
+    if (invokers == null || invokers.isEmpty()) {
+      throw new HandlerNotFoundException(String.format("Could not find an event handler for %s", event));
     }
   }
 }

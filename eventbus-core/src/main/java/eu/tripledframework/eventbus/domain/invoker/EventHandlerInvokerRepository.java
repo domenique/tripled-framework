@@ -34,21 +34,25 @@ public class EventHandlerInvokerRepository {
       if (invoker.hasReturnType() && !findByEventTypeWithReturnType(invoker.getEventType()).isPresent() || !invoker.hasReturnType()) {
         eventHandlers.add(invoker);
       } else if (invoker.hasReturnType() && findByEventTypeWithReturnType(invoker.getEventType()).isPresent()) {
-        throw new DuplicateEventHandlerRegistrationException(String.format("An eventHandler with return type for event %s already exists.", invoker.getEventType()));
+        throw new DuplicateHandlerRegistrationException(String.format("An eventHandler with return type for event %s already exists.", invoker.getEventType()));
       }
     }
   }
 
   private Optional<EventHandlerInvoker> findByEventTypeWithReturnType(Class<?> eventType) {
-    return eventHandlers.stream()
-        .filter(input -> input.handles(eventType) && input.hasReturnType())
-        .findFirst();
+    return eventHandlers.stream().filter(input -> input.handles(eventType) && input.hasReturnType()).findFirst();
   }
 
   public List<EventHandlerInvoker> findAllByEventType(Class<?> eventType) {
-    return eventHandlers.stream()
-        .filter(p -> p.handles(eventType))
-        .collect(Collectors.toList());
+    return eventHandlers.stream().filter(p -> p.handles(eventType)).collect(Collectors.toList());
+  }
+
+  public Optional<EventHandlerInvoker> findByEventType(Class<?> eventType) {
+    List<EventHandlerInvoker> found = eventHandlers.stream().filter(p -> p.handles(eventType)).collect(Collectors.toList());
+    if (found.size() > 1) {
+      throw new DuplicateHandlerFoundException(String.format("Found multiple handlers for %s. Expected only one.", eventType.getSimpleName()));
+    }
+    return found.stream().findFirst();
   }
 }
 

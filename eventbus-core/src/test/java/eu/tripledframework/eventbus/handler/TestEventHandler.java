@@ -15,7 +15,7 @@
  */
 package eu.tripledframework.eventbus.handler;
 
-import eu.tripledframework.eventbus.command.ACommandHandledByMultipleHandlers;
+import eu.tripledframework.eventbus.event.AnEventHandledByMultipleHandlers;
 import eu.tripledframework.eventbus.command.CommandHandledByAPrivateMethod;
 import eu.tripledframework.eventbus.command.FailingCommand;
 import eu.tripledframework.eventbus.command.FailingCommandWithCheckedException;
@@ -65,13 +65,13 @@ public class TestEventHandler {
     isValidatingCommandHandled = true;
   }
 
-  @Handles(ACommandHandledByMultipleHandlers.class)
-  public void handleFirst(ACommandHandledByMultipleHandlers command) {
+  @Handles(AnEventHandledByMultipleHandlers.class)
+  public void handleFirst(AnEventHandledByMultipleHandlers command) {
     handledByFirstCount++;
   }
 
-  @Handles(ACommandHandledByMultipleHandlers.class)
-  public String handleSecond(ACommandHandledByMultipleHandlers command) {
+  @Handles(AnEventHandledByMultipleHandlers.class)
+  public String handleSecond(AnEventHandledByMultipleHandlers command) {
     handledBySecondCount++;
     return "Handled by second.";
   }

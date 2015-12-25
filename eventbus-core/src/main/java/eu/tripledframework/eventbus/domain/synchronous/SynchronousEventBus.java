@@ -64,7 +64,11 @@ public class SynchronousEventBus implements eu.tripledframework.eventbus.domain.
 
   @Override
   public void subscribe(Object eventHandler) {
-    eventHandlerInvokerFactories.stream().filter(cur -> cur.supports(eventHandler)).findFirst().ifPresent(f -> f.create(eventHandler).forEach(this::subscribeInternal));
+    eventHandlerInvokerFactories.stream()
+        .filter(cur -> cur.supports(eventHandler))
+        .findFirst()
+        .ifPresent(f -> f.create(eventHandler)
+            .forEach(this::subscribeInternal));
   }
 
   protected void subscribeInternal(EventHandlerInvoker eventHandler) {
