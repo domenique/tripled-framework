@@ -23,32 +23,32 @@ import java.util.stream.Collectors;
 
 public class EventHandlerInvokerRepository {
 
-  private Set<EventHandlerInvoker> eventHandlers;
+  private Set<HandlerInvoker> invokers;
 
   public EventHandlerInvokerRepository() {
-    this.eventHandlers = new CopyOnWriteArraySet<>();
+    this.invokers = new CopyOnWriteArraySet<>();
   }
 
-  public void addEventHandlerInvoker(EventHandlerInvoker invoker) {
-    if (!eventHandlers.contains(invoker)) {
+  public void addEventHandlerInvoker(HandlerInvoker invoker) {
+    if (!invokers.contains(invoker)) {
       if (invoker.hasReturnType() && !findByEventTypeWithReturnType(invoker.getEventType()).isPresent() || !invoker.hasReturnType()) {
-        eventHandlers.add(invoker);
+        invokers.add(invoker);
       } else if (invoker.hasReturnType() && findByEventTypeWithReturnType(invoker.getEventType()).isPresent()) {
         throw new DuplicateHandlerRegistrationException(String.format("An eventHandler with return type for event %s already exists.", invoker.getEventType()));
       }
     }
   }
 
-  private Optional<EventHandlerInvoker> findByEventTypeWithReturnType(Class<?> eventType) {
-    return eventHandlers.stream().filter(input -> input.handles(eventType) && input.hasReturnType()).findFirst();
+  private Optional<HandlerInvoker> findByEventTypeWithReturnType(Class<?> eventType) {
+    return invokers.stream().filter(input -> input.handles(eventType) && input.hasReturnType()).findFirst();
   }
 
-  public List<EventHandlerInvoker> findAllByEventType(Class<?> eventType) {
-    return eventHandlers.stream().filter(p -> p.handles(eventType)).collect(Collectors.toList());
+  public List<HandlerInvoker> findAllByEventType(Class<?> eventType) {
+    return invokers.stream().filter(p -> p.handles(eventType)).collect(Collectors.toList());
   }
 
-  public Optional<EventHandlerInvoker> findByEventType(Class<?> eventType) {
-    List<EventHandlerInvoker> found = eventHandlers.stream().filter(p -> p.handles(eventType)).collect(Collectors.toList());
+  public Optional<HandlerInvoker> findByEventType(Class<?> eventType) {
+    List<HandlerInvoker> found = invokers.stream().filter(p -> p.handles(eventType)).collect(Collectors.toList());
     if (found.size() > 1) {
       throw new DuplicateHandlerFoundException(String.format("Found multiple handlers for %s. Expected only one.", eventType.getSimpleName()));
     }

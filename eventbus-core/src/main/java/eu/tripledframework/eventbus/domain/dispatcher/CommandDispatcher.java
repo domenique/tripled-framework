@@ -1,12 +1,11 @@
 package eu.tripledframework.eventbus.domain.dispatcher;
 
-import java.util.Iterator;
 import java.util.Optional;
 
 import eu.tripledframework.eventbus.domain.EventCallback;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
+import eu.tripledframework.eventbus.domain.invoker.HandlerInvoker;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
 
 public class CommandDispatcher<ReturnType> implements Dispatcher {
@@ -26,7 +25,7 @@ public class CommandDispatcher<ReturnType> implements Dispatcher {
 
   @Override
   public void dispatch() {
-    Optional<EventHandlerInvoker> invoker = invokerRepository.findByEventType(event.getClass());
+    Optional<HandlerInvoker> invoker = invokerRepository.findByEventType(event.getClass());
     assertInvokerIsFound(invoker);
 
     ReturnType response = null;
@@ -39,8 +38,8 @@ public class CommandDispatcher<ReturnType> implements Dispatcher {
     invokeAppropriateCallbackMethod(response, thrownException);
   }
 
-  private ReturnType executeChain(Object event, EventHandlerInvoker eventHandlerInvoker) {
-    InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, eventHandlerInvoker);
+  private ReturnType executeChain(Object event, HandlerInvoker handlerInvoker) {
+    InterceptorChain<ReturnType> chain = interceptorChainFactory.createChain(event, handlerInvoker);
     return chain.proceed();
   }
 
@@ -52,7 +51,7 @@ public class CommandDispatcher<ReturnType> implements Dispatcher {
     }
   }
 
-  private void assertInvokerIsFound(Optional<EventHandlerInvoker> invoker) {
+  private void assertInvokerIsFound(Optional<HandlerInvoker> invoker) {
     if (!invoker.isPresent()) {
       throw new HandlerNotFoundException(String.format("Could not find an event handler for %s", event));
     }

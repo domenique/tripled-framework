@@ -18,9 +18,9 @@ package eu.tripledframework.eventbus.domain.invoker;
 import java.util.List;
 
 /**
- * A Factory to create EventHandlerInvoker objects.
+ * A Factory to create HandlerInvoker objects.
  * <p>
- * Override this class if you want the eventbus to create alternative EventHandlerInvoker objects.
+ * Override this class if you want the eventbus to create alternative HandlerInvoker objects.
  * <p>
  * When subscribing an object to the eventbus, the appropriate factory will be used depending on the result of the
  * supports methods. The Factories will be queried in the order specified in which they are given to the eventBus
@@ -29,15 +29,15 @@ import java.util.List;
 public interface EventHandlerInvokerFactory {
 
   /**
-   * Method which will create one or more EventHandlerInvoker objects for the given object.
+   * Method which will create one or more HandlerInvoker objects for the given object.
    *
-   * @param eventHandler The object for which EventHandlerInvoker objects should be created.
-   * @return A List of EventHandlerInvoker objects, or an empty list. never null.
+   * @param eventHandler The object for which HandlerInvoker objects should be created.
+   * @return A List of HandlerInvoker objects, or an empty list. never null.
    */
-  List<EventHandlerInvoker> create(Object eventHandler);
+  List<HandlerInvoker> create(Object eventHandler);
 
   /**
-   * Returns true if this factory is capable of creating EventHandlerInvoker objects for the given object,
+   * Returns true if this factory is capable of creating HandlerInvoker objects for the given object,
    * false otherwise.
    *
    * This method is called by the EventBus prior to calling the create.

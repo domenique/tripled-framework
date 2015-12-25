@@ -23,7 +23,7 @@ import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import eu.tripledframework.eventbus.domain.dispatcher.CommandDispatcher;
 import eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
+import eu.tripledframework.eventbus.domain.invoker.HandlerInvoker;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerFactory;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
 import eu.tripledframework.eventbus.domain.invoker.InstanceEventHandlerInvokerFactory;
@@ -64,14 +64,10 @@ public class SynchronousEventBus implements eu.tripledframework.eventbus.domain.
 
   @Override
   public void subscribe(Object eventHandler) {
-    eventHandlerInvokerFactories.stream()
-        .filter(cur -> cur.supports(eventHandler))
-        .findFirst()
-        .ifPresent(f -> f.create(eventHandler)
-            .forEach(this::subscribeInternal));
+    eventHandlerInvokerFactories.stream().filter(cur -> cur.supports(eventHandler)).findFirst().ifPresent(f -> f.create(eventHandler).forEach(this::subscribeInternal));
   }
 
-  protected void subscribeInternal(EventHandlerInvoker eventHandler) {
+  protected void subscribeInternal(HandlerInvoker eventHandler) {
     getLogger().info("Adding Event subscription for {}", eventHandler.toString());
     invokerRepository.addEventHandlerInvoker(eventHandler);
   }
@@ -108,8 +104,7 @@ public class SynchronousEventBus implements eu.tripledframework.eventbus.domain.
     Objects.requireNonNull(event, "The event should not be null.");
     getLogger().debug("Received an event to publish. {}", event);
 
-    // TODO: Call appropriate event dispatcher which does not work with callbacks, but can invoke multiple handlers.
-    new EventDispatcher<Void>(event, invokerRepository, interceptorChainFactory).dispatch();
+    new EventDispatcher(event, invokerRepository, interceptorChainFactory).dispatch();
 
     getLogger().debug("Published event {}", event);
   }

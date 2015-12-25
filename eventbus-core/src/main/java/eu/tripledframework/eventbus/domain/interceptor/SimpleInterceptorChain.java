@@ -19,15 +19,15 @@ import java.util.Iterator;
 
 import eu.tripledframework.eventbus.domain.EventBusInterceptor;
 import eu.tripledframework.eventbus.domain.InterceptorChain;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
+import eu.tripledframework.eventbus.domain.invoker.HandlerInvoker;
 
 public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<ReturnType> {
 
   private final Object event;
   private final Iterator<EventBusInterceptor> interceptors;
-  private final Iterator<EventHandlerInvoker> invokers;
+  private final Iterator<HandlerInvoker> invokers;
 
-  public SimpleInterceptorChain(Object event, Iterator<EventHandlerInvoker> invokers,
+  public SimpleInterceptorChain(Object event, Iterator<HandlerInvoker> invokers,
                                 Iterator<EventBusInterceptor> interceptors) {
     this.event = event;
     this.invokers = invokers;
@@ -48,7 +48,7 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
   private ReturnType invokeEventHandlers() {
     ReturnType response = null;
     while (invokers.hasNext()) {
-      EventHandlerInvoker current = invokers.next();
+      HandlerInvoker current = invokers.next();
       if (current.hasReturnType()) {
         response = (ReturnType) current.invoke(event);
       } else {

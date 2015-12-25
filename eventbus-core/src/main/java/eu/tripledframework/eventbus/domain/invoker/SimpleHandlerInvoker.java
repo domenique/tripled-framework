@@ -22,15 +22,15 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class SimpleEventHandlerInvoker implements EventHandlerInvoker {
+public final class SimpleHandlerInvoker implements HandlerInvoker {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleEventHandlerInvoker.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleHandlerInvoker.class);
 
   private final Class<?> eventType;
   private final Object eventHandler;
   private final Method method;
 
-  public SimpleEventHandlerInvoker(Class eventType, Object eventHandler, Method eventHandlerMethod) {
+  public SimpleHandlerInvoker(Class eventType, Object eventHandler, Method eventHandlerMethod) {
     this.eventType = eventType;
     this.eventHandler = eventHandler;
     this.method = eventHandlerMethod;
@@ -57,7 +57,7 @@ public final class SimpleEventHandlerInvoker implements EventHandlerInvoker {
     try {
       return method.invoke(eventHandler, object);
     } catch (IllegalAccessException e) {
-      String errorMsg = String.format("Could not invoke EventHandler method %s on %s", method.getName(), eventHandler.getClass().getSimpleName());
+      String errorMsg = String.format("Could not invoke Handler method %s on %s", method.getName(), eventHandler.getClass().getSimpleName());
       throw new EventHandlerInvocationException(errorMsg, e);
     } catch (InvocationTargetException e) {
       if (e.getCause() instanceof RuntimeException) {
@@ -71,7 +71,7 @@ public final class SimpleEventHandlerInvoker implements EventHandlerInvoker {
 
   @Override
   public String toString() {
-    return "EventHandlerInvoker{" +
+    return "HandlerInvoker{" +
            "eventType=" + eventType +
            ", eventHandler=" + eventHandler +
            ", method=" + method +
@@ -91,7 +91,7 @@ public final class SimpleEventHandlerInvoker implements EventHandlerInvoker {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    final SimpleEventHandlerInvoker other = (SimpleEventHandlerInvoker) obj;
+    final SimpleHandlerInvoker other = (SimpleHandlerInvoker) obj;
     return Objects.equals(this.eventType, other.eventType)
         && Objects.equals(this.eventHandler, other.eventHandler)
         && Objects.equals(this.method, other.method);

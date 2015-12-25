@@ -9,8 +9,8 @@ This framework aims to facilitate the creation and execution of commands. The id
 ## Usage
 The framework supports Spring boot. This implies that if you add this framework jar to your classpath, it will be auto-configured with sensible defaults.
 
-after adding the required dependencies, an `EventPublisher` and `EventSubscriber`  should be available in your application context.
-Alternatively, When annotatating an `@Configuration` class with `@EnableEventHandlerSupport` you should be able to annotate any spring service with `@EventHandler` and it will be registered automatically to the `EventBus`.
+after adding the required dependencies, a `CommandDispatcher`, `EventPublisher` and `EventSubscriber`  should be available in your application context.
+Additionally, When annotating a `@Configuration` class with `@EnableEventHandlerSupport` you should be able to annotate any spring service with `@Handler` and it will be registered automatically to the `EventBus`.
 
 To get started with the EventBus the following dependencies should be added to your gradle configuration
 ```groovy
@@ -20,7 +20,7 @@ dependencies {
 ```
 
 
-The following configuration annotations should be used if you which to automatically register spring services as eventHandlers.
+The following configuration annotations should be used if you which to automatically register spring services as handlers.
 ```java
 @EnableEventHandlerSupport(basePackage = "eu.tripledframework.demo")
 public class EventBusDemoApplication {
@@ -34,11 +34,11 @@ The below sample illustrates how a springMVC controller would typically fire a c
 public class HelloController {
 
   @Autowired
-  private EventPublisher eventPublisher;
+  private CommandDispatcher dispatcher;
 
   @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
     public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
-      Future<HelloResponse> future = eventPublisher.publish(new HelloCommand(name), future);
+      Future<HelloResponse> future = dispatcher.dispatch(new HelloCommand(name), future);
 
       return future.get();
     }
@@ -47,13 +47,25 @@ public class HelloController {
 
 A commandHandler would then be implemented as following
 ```java
-@EventHandler
+@Handler
+@Component
 public class HelloCommandHandler {
+
+  @Autowired
+  private EventPublisher eventPublisher;
 
   @Handles(HelloCommand.class)
   public HelloResponse handleHelloCommand(HelloCommand helloCommand) {
-    return new HelloResponse("Hello " + helloCommand.getName());
+    if (helloCommand.getName().equals("The devil")) {
+      throw new IllegalArgumentException("I'm not saying hi to the devil! :P");
+    }
+    HelloResponse helloResponse = new HelloResponse("Hello " + helloCommand.getName());
+
+    eventPublisher.publish(new SaidHelloDomainEvent(helloCommand.getName()));
+
+    return helloResponse;
   }
+
 }
 ```
 

@@ -16,13 +16,13 @@
 package eu.tripledframework.eventbus.domain.dispatcher;
 
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
-import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvoker;
+import eu.tripledframework.eventbus.domain.invoker.HandlerInvoker;
 import eu.tripledframework.eventbus.domain.invoker.EventHandlerInvokerRepository;
 
 import java.util.Iterator;
 import java.util.List;
 
-public class EventDispatcher<ReturnType> implements Dispatcher {
+public class EventDispatcher implements Dispatcher {
 
   private final EventHandlerInvokerRepository invokerRepository;
   private final InterceptorChainFactory interceptorChainFactory;
@@ -36,17 +36,17 @@ public class EventDispatcher<ReturnType> implements Dispatcher {
 
   @Override
   public void dispatch() {
-    List<EventHandlerInvoker> invokers = invokerRepository.findAllByEventType(event.getClass());
+    List<HandlerInvoker> invokers = invokerRepository.findAllByEventType(event.getClass());
     assertInvokerIsFound(invokers);
 
     executeChain(event, invokers.iterator());
   }
 
-  private void executeChain(Object event, Iterator<EventHandlerInvoker> eventHandlerInvoker) {
-    interceptorChainFactory.<ReturnType>createChain(event, eventHandlerInvoker).proceed();
+  private void executeChain(Object event, Iterator<HandlerInvoker> eventHandlerInvoker) {
+    interceptorChainFactory.createChain(event, eventHandlerInvoker).proceed();
   }
 
-  private void assertInvokerIsFound(List<EventHandlerInvoker> invokers) {
+  private void assertInvokerIsFound(List<HandlerInvoker> invokers) {
     if (invokers == null || invokers.isEmpty()) {
       throw new HandlerNotFoundException(String.format("Could not find an event handler for %s", event));
     }

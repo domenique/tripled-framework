@@ -15,12 +15,12 @@
  */
 package eu.tripledframework.eventbus.autoconfigure;
 
+import eu.tripledframework.eventbus.domain.annotation.Handler;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 import eu.tripledframework.eventbus.domain.EventSubscriber;
-import eu.tripledframework.eventbus.domain.annotation.EventHandler;
 
 public class EventHandlerRegistrationBeanPostProcessor implements BeanPostProcessor {
 
@@ -38,7 +38,7 @@ public class EventHandlerRegistrationBeanPostProcessor implements BeanPostProces
 
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-    EventHandler annotation = bean.getClass().getAnnotation(EventHandler.class);
+    Handler annotation = bean.getClass().getAnnotation(Handler.class);
     if (annotation != null) {
       eventSubscriber.subscribe(bean);
     }

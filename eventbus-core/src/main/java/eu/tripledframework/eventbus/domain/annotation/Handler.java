@@ -23,13 +23,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to indicate that the annotated type is an EventHandler.
+ * Annotation to indicate that the annotated type is an Handler.
  *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface EventHandler {
+public @interface Handler {
 
 }

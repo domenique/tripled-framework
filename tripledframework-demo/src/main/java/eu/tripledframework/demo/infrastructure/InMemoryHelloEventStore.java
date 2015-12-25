@@ -24,10 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.tripledframework.demo.SaidHelloDomainEvent;
-import eu.tripledframework.eventbus.domain.annotation.EventHandler;
+import eu.tripledframework.eventbus.domain.annotation.Handler;
 import eu.tripledframework.eventbus.domain.annotation.Handles;
 
-@EventHandler
+@Handler
 @Component
 public class InMemoryHelloEventStore {
 

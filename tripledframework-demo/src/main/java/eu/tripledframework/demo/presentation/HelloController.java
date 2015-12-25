@@ -32,11 +32,11 @@ import eu.tripledframework.eventbus.domain.CommandDispatcher;
 public class HelloController {
 
   @Autowired
-  private CommandDispatcher eventPublisher;
+  private CommandDispatcher commandDispatcher;
 
   @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
   public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
-    Future<HelloResponse> future = eventPublisher.dispatch(new HelloCommand(name));
+    Future<HelloResponse> future = commandDispatcher.dispatch(new HelloCommand(name));
 
     return future.get();
   }

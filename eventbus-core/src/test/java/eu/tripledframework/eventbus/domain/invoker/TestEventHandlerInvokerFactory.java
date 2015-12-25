@@ -23,7 +23,7 @@ public class TestEventHandlerInvokerFactory implements EventHandlerInvokerFactor
   public boolean isCreateCalled;
 
   @Override
-  public List<EventHandlerInvoker> create(Object eventHandler) {
+  public List<HandlerInvoker> create(Object eventHandler) {
     isCreateCalled = true;
     return Collections.emptyList();
   }

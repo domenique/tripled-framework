@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import eu.tripledframework.eventbus.domain.annotation.Handler;
 import org.reflections.ReflectionUtils;
 
-import eu.tripledframework.eventbus.domain.annotation.EventHandler;
 import eu.tripledframework.eventbus.domain.annotation.Handles;
 
 import static org.reflections.ReflectionUtils.withAnnotation;
@@ -30,15 +30,15 @@ import static org.reflections.ReflectionUtils.withAnnotation;
 public class InstanceEventHandlerInvokerFactory implements EventHandlerInvokerFactory {
 
   @Override
-  public List<EventHandlerInvoker> create(Object eventHandler) {
-    List<EventHandlerInvoker> invokers = new ArrayList<>();
+  public List<HandlerInvoker> create(Object eventHandler) {
+    List<HandlerInvoker> invokers = new ArrayList<>();
 
     Set<Method> methods = ReflectionUtils.getAllMethods(eventHandler.getClass(),
         withAnnotation(Handles.class));
 
     for (Method method : methods) {
       Handles annotation = method.getAnnotation(Handles.class);
-      EventHandlerInvoker invoker = new SimpleEventHandlerInvoker(annotation.value(), eventHandler, method);
+      HandlerInvoker invoker = new SimpleHandlerInvoker(annotation.value(), eventHandler, method);
       invokers.add(invoker);
     }
 
@@ -47,7 +47,7 @@ public class InstanceEventHandlerInvokerFactory implements EventHandlerInvokerFa
 
   @Override
   public boolean supports(Object object) {
-    EventHandler annotation = object.getClass().getAnnotation(EventHandler.class);
+    Handler annotation = object.getClass().getAnnotation(Handler.class);
 
     return annotation != null;
   }

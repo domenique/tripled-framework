@@ -16,18 +16,18 @@
 package eu.tripledframework.eventbus.domain.invoker;
 
 /**
- * An EventHandlerInvoker is responsible for invoking a method which handles an event.
+ * An HandlerInvoker is responsible for invoking a method which handles an event or command.
  * <p>
  * This method can be on a simple object, or if the implementation supports it, it could be made in such a way that
  * it instantiates the object before calling the method.
  */
-public interface EventHandlerInvoker {
+public interface HandlerInvoker {
 
   /**
-   * Method to verify if this EventHandlerInvoker is able to invoke an event of the given type.
+   * Method to verify if this HandlerInvoker is able to invoke an event of the given type.
    *
    * @param eventTypeToHandle The type of event that needs to be checked.
-   * @return <code>true</code> if the EventHandlerInvoker is able to handle events of the given type,
+   * @return <code>true</code> if the HandlerInvoker is able to handle events of the given type,
    * <code>false</code> otherwise.
    */
   boolean handles(Class<?> eventTypeToHandle);

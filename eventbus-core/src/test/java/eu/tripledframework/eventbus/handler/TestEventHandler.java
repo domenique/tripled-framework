@@ -21,10 +21,10 @@ import eu.tripledframework.eventbus.command.FailingCommand;
 import eu.tripledframework.eventbus.command.FailingCommandWithCheckedException;
 import eu.tripledframework.eventbus.command.HelloCommand;
 import eu.tripledframework.eventbus.command.ValidatingCommand;
-import eu.tripledframework.eventbus.domain.annotation.EventHandler;
+import eu.tripledframework.eventbus.domain.annotation.Handler;
 import eu.tripledframework.eventbus.domain.annotation.Handles;
 
-@EventHandler
+@Handler
 public class TestEventHandler {
 
   public boolean isHelloCommandHandled;
