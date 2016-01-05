@@ -16,7 +16,6 @@
 dependencies {
   compile("org.slf4j:slf4j-api")
   compile("javax.validation:validation-api:1.1.0.Final")
-  compile("org.reflections:reflections:0.9.10")
 
   testCompile("junit:junit")
   testCompile("org.springframework.boot:spring-boot-starter-logging:${springBootVersion}")

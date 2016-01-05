@@ -15,23 +15,21 @@
  */
 package eu.tripledframework.eventbus.domain.asynchronous;
 
+import eu.tripledframework.eventbus.command.HelloCommand;
+import eu.tripledframework.eventbus.command.ValidatingCommand;
+import eu.tripledframework.eventbus.domain.CommandDispatcher;
+import eu.tripledframework.eventbus.domain.EventBusInterceptor;
+import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
+import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
+import eu.tripledframework.eventbus.handler.TestEventHandler;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import org.junit.Before;
-import org.junit.Test;
-
-import eu.tripledframework.eventbus.command.HelloCommand;
-import eu.tripledframework.eventbus.command.ValidatingCommand;
-import eu.tripledframework.eventbus.domain.EventBusInterceptor;
-import eu.tripledframework.eventbus.domain.CommandDispatcher;
-import eu.tripledframework.eventbus.domain.interceptor.TestValidator;
-import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
-import eu.tripledframework.eventbus.handler.TestEventHandler;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,16 +48,12 @@ public class AsynchronousEventBusTest {
   @Before
   public void setUp() throws Exception {
     eventHandler = new TestEventHandler();
-    ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-        .setNameFormat(THREAD_POOL_PREFIX + "%d")
-        .build());
+    ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory(THREAD_POOL_PREFIX));
     AsynchronousEventBus eventBus = new AsynchronousEventBus(executor);
     eventBus.subscribe(eventHandler);
     asynchronousDispatcher = eventBus;
 
-    ExecutorService executor2 = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-        .setNameFormat(THREAD_POOL_WITH_VALIDATION_PREFIX + "%d")
-        .build());
+    ExecutorService executor2 = Executors.newCachedThreadPool(new NamedThreadFactory(THREAD_POOL_WITH_VALIDATION_PREFIX));
     validator = new TestValidator();
     List<EventBusInterceptor> interceptors = Arrays.asList(new ValidatingEventBusInterceptor(validator));
     AsynchronousEventBus eventBus2 = new AsynchronousEventBus(interceptors, executor2);

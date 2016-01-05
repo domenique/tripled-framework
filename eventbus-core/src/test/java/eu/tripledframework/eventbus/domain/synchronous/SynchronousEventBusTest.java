@@ -76,7 +76,8 @@ public class SynchronousEventBusTest {
     List<EventBusInterceptor> interceptors = new ArrayList<>();
     interceptors.add(0, new LoggingEventBusInterceptor());
     validator = new TestValidator();
-    interceptors.add(1, new ValidatingEventBusInterceptor(validator));
+    interceptors.add(1, new LoggingEventBusInterceptor());
+    interceptors.add(2, new ValidatingEventBusInterceptor(validator));
 
     SynchronousEventBus eventBus = new SynchronousEventBus(interceptors);
 
@@ -264,7 +265,7 @@ public class SynchronousEventBusTest {
   }
 
   @Test
-  public void whenGivenACommandWhichIsHandledByAPrivateMethod_shouldFail() throws Exception {
+  public void whenGivenACommandWhichIsHandledByAPrivateMethod_shouldFailWithHandlerNotFound() throws Exception {
     // given
     CommandHandledByAPrivateMethod command = new CommandHandledByAPrivateMethod();
 
@@ -272,7 +273,7 @@ public class SynchronousEventBusTest {
     try {
       commandDispatcher.dispatch(command);
     } catch (Exception ex) {
-      assertThat(ex, instanceOf(InvocationException.class));
+      assertThat(ex, instanceOf(HandlerNotFoundException.class));
       assertThat(eventHandler.isCommandHandledByAPrivateMethodCalled, is(false));
     }
   }

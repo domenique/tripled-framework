@@ -73,7 +73,7 @@ public class FutureEventCallbackTest {
   @Test
   public void whenGetWithTimeoutCalled_shouldNotTimeoutIfResponseAvailable() throws Exception {
     // given
-    FutureEventCallback<String> future = new FutureEventCallback();
+    FutureEventCallback<String> future = new FutureEventCallback<>();
     future.onSuccess("response");
 
     // when

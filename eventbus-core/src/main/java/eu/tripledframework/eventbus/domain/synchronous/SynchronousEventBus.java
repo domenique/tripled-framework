@@ -23,10 +23,10 @@ import eu.tripledframework.eventbus.domain.callback.FutureEventCallback;
 import eu.tripledframework.eventbus.domain.dispatcher.CommandDispatcher;
 import eu.tripledframework.eventbus.domain.dispatcher.EventDispatcher;
 import eu.tripledframework.eventbus.domain.interceptor.InterceptorChainFactory;
+import eu.tripledframework.eventbus.domain.invoker.InstanceInvokerFactory;
 import eu.tripledframework.eventbus.domain.invoker.Invoker;
 import eu.tripledframework.eventbus.domain.invoker.InvokerFactory;
 import eu.tripledframework.eventbus.domain.invoker.InvokerRepository;
-import eu.tripledframework.eventbus.domain.invoker.InstanceInvokerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,11 @@ public class SynchronousEventBus implements eu.tripledframework.eventbus.domain.
 
   @Override
   public void subscribe(Object eventHandler) {
-    eventHandlerInvokerFactories.stream().filter(cur -> cur.supports(eventHandler)).findFirst().ifPresent(f -> f.create(eventHandler).forEach(this::subscribeInternal));
+    eventHandlerInvokerFactories.stream()
+                                .filter(cur -> cur.supports(eventHandler))
+                                .findFirst()
+                                .ifPresent(f -> f.create(eventHandler)
+                                                 .forEach(this::subscribeInternal));
   }
 
   protected void subscribeInternal(Invoker eventHandler) {

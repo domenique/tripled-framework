@@ -15,17 +15,16 @@
  */
 package eu.tripledframework.eventbus.domain.invoker;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import eu.tripledframework.eventbus.domain.annotation.Handler;
-import org.reflections.ReflectionUtils;
-
 import eu.tripledframework.eventbus.domain.annotation.Handles;
 
-import static org.reflections.ReflectionUtils.withAnnotation;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class InstanceInvokerFactory implements InvokerFactory {
 
@@ -33,8 +32,7 @@ public class InstanceInvokerFactory implements InvokerFactory {
   public List<Invoker> create(Object eventHandler) {
     List<Invoker> invokers = new ArrayList<>();
 
-    Set<Method> methods = ReflectionUtils.getAllMethods(eventHandler.getClass(),
-        withAnnotation(Handles.class));
+    Set<Method> methods = getMethodsWithAnotation(eventHandler.getClass(), Handles.class);
 
     for (Method method : methods) {
       Handles annotation = method.getAnnotation(Handles.class);
@@ -50,5 +48,11 @@ public class InstanceInvokerFactory implements InvokerFactory {
     Handler annotation = object.getClass().getAnnotation(Handler.class);
 
     return annotation != null;
+  }
+
+  private Set<Method> getMethodsWithAnotation(Class<?> clazz, Class<? extends Annotation> annotation) {
+    return Arrays.stream(clazz.getMethods())
+                 .filter(c -> c.isAnnotationPresent(annotation))
+                 .collect(Collectors.toSet());
   }
 }
