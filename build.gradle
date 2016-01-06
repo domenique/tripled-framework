@@ -61,24 +61,12 @@ subprojects {
   apply plugin: 'java'
   apply plugin: 'signing'
   apply plugin: 'maven'
-  apply plugin: 'io.spring.dependency-management'
 
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
   group = 'eu.tripled-framework'
   version = '0.0.2'
-
-  // we can override version provided by the spring platform-bom here.
-  dependencyManagement {
-    imports {
-      mavenBom "io.spring.platform:platform-bom:${springBomVersion}"
-    }
-    dependencies {
-      // platform bom provides 17.0 but we want 18.0.
-      dependency 'com.google.guava:guava:18.0'
-    }
-  }
 
   //set build variables based on build type (release, continuous integration, development)
   sonatypeUsername = System.getenv('OSSRH_USERNAME')

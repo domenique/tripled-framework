@@ -15,6 +15,7 @@
  */
 apply plugin: 'spring-boot'
 apply plugin: 'war'
+apply plugin: 'io.spring.dependency-management'
 
 war {
   baseName = 'eventbus-demo'
@@ -23,6 +24,13 @@ war {
 
 configurations {
   providedRuntime
+}
+
+// we can override version provided by the spring platform-bom here.
+dependencyManagement {
+  imports {
+    mavenBom "io.spring.platform:platform-bom:${springBomVersion}"
+  }
 }
 
 dependencies {

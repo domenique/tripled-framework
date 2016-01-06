@@ -20,12 +20,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.jxpath.JXPathContext;
-import org.reflections.ReflectionUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +36,6 @@ import eu.tripledframework.eventstore.domain.DomainEvent;
 import eu.tripledframework.eventstore.domain.ObjectConstructor;
 import eu.tripledframework.eventstore.domain.annotation.ConstructionHandler;
 import eu.tripledframework.eventstore.domain.annotation.EP;
-
-import static org.reflections.ReflectionUtils.withAnnotation;
 
 /**
  * A Class which is capable of reconstructing  objects using events.
@@ -93,10 +93,12 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
         Object[] parameters = getParametersValues(constructor.getParameterAnnotations(), event);
         return (T) constructor.newInstance(parameters);
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-        throw new AggregateRootReconstructionException(String.format("Could not create object using constructor %s", constructor), e);
+        throw new AggregateRootReconstructionException(
+            String.format("Could not create object using constructor %s", constructor), e);
       }
     } else {
-      throw new AggregateRootReconstructionException(String.format("Could not find a suitable constructor for event %s", event));
+      throw new AggregateRootReconstructionException(
+          String.format("Could not find a suitable constructor for event %s", event));
     }
   }
 
@@ -109,15 +111,19 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
         method.invoke(instance, parameters);
         LOGGER.debug("Applied {}", event);
       } catch (IllegalAccessException | InvocationTargetException e) {
-        throw new AggregateRootReconstructionException(String.format("Could not apply event %s to instance %s", event, instance), e);
+        throw new AggregateRootReconstructionException(
+            String.format("Could not apply event %s to instance %s", event, instance), e);
       }
     } else {
-      throw new AggregateRootReconstructionException(String.format("Could not find a suitable method for event %s", event));
+      throw new AggregateRootReconstructionException(
+          String.format("Could not find a suitable method for event %s", event));
     }
   }
 
   private Method getEventHandlerMethods(DomainEvent event) {
-    Set<Method> methods = ReflectionUtils.getAllMethods(targetClass, withAnnotation(ConstructionHandler.class));
+    Set<Method> methods = Arrays.stream(targetClass.getMethods())
+        .filter(c -> c.isAnnotationPresent(ConstructionHandler.class))
+        .collect(Collectors.toSet());
     for (Method method : methods) {
       ConstructionHandler annotation = method.getAnnotation(ConstructionHandler.class);
       if (annotation.value().equals(event.getClass())) {
@@ -128,16 +134,18 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
   }
 
   private Constructor getEventHandlerConstructor(DomainEvent event) {
-    Set<Constructor> constructors = ReflectionUtils.getConstructors(targetClass, withAnnotation(ConstructionHandler.class));
+    Set<Constructor> constructors = Arrays.stream(targetClass.getConstructors())
+        .filter(c -> c.isAnnotationPresent(ConstructionHandler.class))
+        .collect(Collectors.toSet());
     for (Constructor constructor : constructors) {
-      ConstructionHandler constructionHandlerAnnotation = (ConstructionHandler) constructor.getAnnotation(ConstructionHandler.class);
+      ConstructionHandler constructionHandlerAnnotation =
+          (ConstructionHandler) constructor.getAnnotation(ConstructionHandler.class);
       if (constructionHandlerAnnotation.value().equals(event.getClass())) {
         return constructor;
       }
     }
     return null;
   }
-
 
   private Object[] getParametersValues(Annotation[][] parameterAnnotations, DomainEvent event) {
     List<Object> params = new ArrayList<>();
