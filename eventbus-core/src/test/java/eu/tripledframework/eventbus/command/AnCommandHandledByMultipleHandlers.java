@@ -13,20 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.handler;
+package eu.tripledframework.eventbus.command;
 
-import eu.tripledframework.eventbus.Handler;
-import eu.tripledframework.eventbus.Handles;
-import eu.tripledframework.eventbus.event.TestEvent;
-
-@Handler
-public class TestEventHandler {
-
-  public boolean testEventHandled;
-
-  @Handles(TestEvent.class)
-  public void handleTestEvent(TestEvent testEvent) {
-    this.testEventHandled = true;
-  }
+public class AnCommandHandledByMultipleHandlers {
 
 }

@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.autoconfigure;
+package eu.tripledframework.eventbus.internal.infrastructure.callback;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class EventHandlerSupportConfiguration {
+import eu.tripledframework.eventbus.CommandCallback;
 
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
+public class ExceptionThrowingCommandCallback<ReturnType> implements CommandCallback<ReturnType> {
+
+  private ReturnType result;
+
+  @Override
+  public void onSuccess(ReturnType result) {
+    this.result = result;
+  }
+
+  @Override
+  public void onFailure(RuntimeException exception) {
+    throw exception;
+  }
+
+  public ReturnType getResult() {
+    return result;
   }
 }

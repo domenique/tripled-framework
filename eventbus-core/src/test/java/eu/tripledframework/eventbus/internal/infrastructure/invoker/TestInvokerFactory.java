@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.autoconfigure;
+package eu.tripledframework.eventbus.internal.infrastructure.invoker;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import eu.tripledframework.eventbus.internal.domain.Invoker;
+import eu.tripledframework.eventbus.internal.domain.InvokerFactory;
 
-@Configuration
-public class EventHandlerSupportConfiguration {
+import java.util.Collections;
+import java.util.List;
 
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
+public class TestInvokerFactory implements InvokerFactory {
+
+  public boolean isCreateCalled;
+
+  @Override
+  public List<Invoker> create(Object eventHandler) {
+    isCreateCalled = true;
+    return Collections.emptyList();
+  }
+
+  @Override
+  public boolean supports(Object object) {
+    return true;
   }
 }

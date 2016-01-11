@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.handler;
+package eu.tripledframework.eventbus.internal.domain;
 
-import eu.tripledframework.eventbus.Handler;
-import eu.tripledframework.eventbus.Handles;
-import eu.tripledframework.eventbus.event.TestEvent;
+import eu.tripledframework.eventbus.EventPublisher;
 
-@Handler
-public class TestEventHandler {
+/**
+ * A unit of work is created when executing a command. It can be used to hold contextual information about the running command and
+ * will be used to delay the processing of events which are published during the execution of a command.
+ */
+public interface UnitOfWork {
 
-  public boolean testEventHandled;
+  void commit(EventPublisher eventPublisher);
 
-  @Handles(TestEvent.class)
-  public void handleTestEvent(TestEvent testEvent) {
-    this.testEventHandled = true;
-  }
+  void rollback();
 
+  boolean isRunning();
+
+  void addData(String key, Object value);
+
+  void scheduleEvent(Object event);
 }

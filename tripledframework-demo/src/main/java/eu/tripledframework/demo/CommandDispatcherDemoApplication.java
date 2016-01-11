@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 
-import eu.tripledframework.eventbus.domain.annotation.EnableEventHandlerSupport;
+import eu.tripledframework.eventbus.autoconfigure.EnableEventHandlerSupport;
 
 @SpringBootApplication
 @EnableEventHandlerSupport(basePackage = "eu.tripledframework.demo")

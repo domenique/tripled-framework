@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.handler;
+package eu.tripledframework.eventbus.internal.domain;
 
-import eu.tripledframework.eventbus.Handler;
-import eu.tripledframework.eventbus.Handles;
-import eu.tripledframework.eventbus.event.TestEvent;
+import java.util.List;
 
-@Handler
-public class TestEventHandler {
+/**
+ * Created by domenique on 14/01/16.
+ */
+public interface InvokerRepository {
+  void add(Invoker invoker);
 
-  public boolean testEventHandled;
+  List<Invoker> findAtLeastOneByEventType(Class<?> eventType);
 
-  @Handles(TestEvent.class)
-  public void handleTestEvent(TestEvent testEvent) {
-    this.testEventHandled = true;
-  }
-
+  Invoker getByEventType(Class<?> eventType);
 }

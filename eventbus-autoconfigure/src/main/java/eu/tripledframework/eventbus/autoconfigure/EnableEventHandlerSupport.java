@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 TripleD framework.
+ * Copyright 2016 TripleD framework.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,19 @@
  */
 package eu.tripledframework.eventbus.autoconfigure;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import eu.tripledframework.eventbus.autoconfigure.EventHandlerSupportConfiguration;
+import org.springframework.context.annotation.Import;
 
-@Configuration
-public class EventHandlerSupportConfiguration {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
-  }
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Import(EventHandlerSupportConfiguration.class)
+public @interface EnableEventHandlerSupport {
+
+  String basePackage();
+
 }

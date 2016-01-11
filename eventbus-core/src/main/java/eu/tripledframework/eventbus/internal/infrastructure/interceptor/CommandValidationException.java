@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.autoconfigure;
+package eu.tripledframework.eventbus.internal.infrastructure.interceptor;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import javax.validation.ConstraintViolation;
+import java.util.Set;
 
-@Configuration
-public class EventHandlerSupportConfiguration {
+public class CommandValidationException extends RuntimeException {
 
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
+  private final Set<ConstraintViolation<Object>> constraintViolations;
+
+  public CommandValidationException(String message, Set<ConstraintViolation<Object>> constraintViolations) {
+    super(message);
+    this.constraintViolations = constraintViolations;
+  }
+
+  public Set<ConstraintViolation<Object>> getConstraintViolations() {
+    return constraintViolations;
   }
 }

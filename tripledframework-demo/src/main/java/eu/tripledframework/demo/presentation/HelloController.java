@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import eu.tripledframework.demo.application.HelloCommand;
 import eu.tripledframework.demo.application.HelloResponse;
-import eu.tripledframework.eventbus.domain.CommandDispatcher;
+import eu.tripledframework.eventbus.CommandDispatcher;
 
 @RestController
 public class HelloController {
