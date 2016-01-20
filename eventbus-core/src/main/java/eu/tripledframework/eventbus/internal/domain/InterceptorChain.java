@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.handler;
+package eu.tripledframework.eventbus.internal.domain;
 
-import eu.tripledframework.eventbus.Handler;
-import eu.tripledframework.eventbus.Handles;
-import eu.tripledframework.eventbus.event.TestEvent;
+/**
+ * The interceptorChain is used by an interceptor to proceed the chain.
+ *
+ * @param <ReturnType> The Type of the return object of the command.
+ */
+public interface InterceptorChain<ReturnType> {
 
-@Handler
-public class TestEventHandler {
-
-  public boolean testEventHandled;
-
-  @Handles(TestEvent.class)
-  public void handleTestEvent(TestEvent testEvent) {
-    this.testEventHandled = true;
-  }
-
+  /**
+   * Method which is supposed to be called by the interceptor the advance in the chain.
+   *
+   * @return The return object of the command.
+   */
+  ReturnType proceed();
 }

@@ -38,7 +38,7 @@ public class HelloController {
 
   @RequestMapping(value = "/hello/{name}", method = RequestMethod.GET)
     public HelloResponse sayHi(@PathVariable String name) throws ExecutionException, InterruptedException {
-      Future<HelloResponse> future = dispatcher.dispatch(new HelloCommand(name), future);
+      Future<HelloResponse> future = dispatcher.dispatch(new HelloCommand(name));
 
       return future.get();
     }
@@ -57,7 +57,7 @@ public class HelloCommandHandler {
   @Handles(HelloCommand.class)
   public HelloResponse handleHelloCommand(HelloCommand helloCommand) {
     if (helloCommand.getName().equals("The devil")) {
-      throw new IllegalArgumentException("I'm not saying hi to the devil! :P");
+      throw new IllegalArgumentException("I'm not saying hi to you! :P");
     }
     HelloResponse helloResponse = new HelloResponse("Hello " + helloCommand.getName());
 

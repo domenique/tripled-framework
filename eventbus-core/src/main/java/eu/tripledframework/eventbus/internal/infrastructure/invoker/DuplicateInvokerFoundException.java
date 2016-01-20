@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.autoconfigure;
+package eu.tripledframework.eventbus.internal.infrastructure.invoker;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+public class DuplicateInvokerFoundException extends RuntimeException {
 
-@Configuration
-public class EventHandlerSupportConfiguration {
-
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
+  public DuplicateInvokerFoundException(String message) {
+    super(message);
   }
 }

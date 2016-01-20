@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 TripleD framework.
+ * Copyright 2016 TripleD framework.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.autoconfigure;
+package eu.tripledframework.eventbus.internal.infrastructure.invoker;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+public class InvokerNotFoundException extends RuntimeException {
 
-@Configuration
-public class EventHandlerSupportConfiguration {
-
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
+  public InvokerNotFoundException(String message) {
+    super(message);
   }
 }

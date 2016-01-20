@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 TripleD framework.
+ * Copyright 2016 TripleD framework.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.autoconfigure;
+package eu.tripledframework.eventbus.internal.domain;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.List;
 
-@Configuration
-public class EventHandlerSupportConfiguration {
+/**
+ * Created by domenique on 13/01/16.
+ */
+public interface InterceptorChainFactory {
+  <ReturnType> InterceptorChain<ReturnType> createChain(Object event, List<Invoker> invokers);
 
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
-  }
+  <ReturnType> InterceptorChain<ReturnType> createChain(Object event, Invoker invoker);
 }

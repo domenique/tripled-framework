@@ -16,9 +16,18 @@
 package eu.tripledframework.eventbus.autoconfigure;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import eu.tripledframework.eventbus.EventBusInterceptor;
+import eu.tripledframework.eventbus.internal.domain.AsynchronousEventBus;
+import eu.tripledframework.eventbus.internal.infrastructure.interceptor.LoggingEventBusInterceptor;
+import eu.tripledframework.eventbus.internal.infrastructure.interceptor.SimpleInterceptorChainFactory;
+import eu.tripledframework.eventbus.internal.infrastructure.interceptor.ValidatingEventBusInterceptor;
+import eu.tripledframework.eventbus.internal.infrastructure.invoker.InMemoryInvokerRepository;
+import eu.tripledframework.eventbus.internal.infrastructure.invoker.SimpleInvokerFactory;
+import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.DefaultUnitOfWorkFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,11 +36,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import eu.tripledframework.eventbus.domain.EventBusInterceptor;
-import eu.tripledframework.eventbus.domain.asynchronous.AsynchronousEventBus;
-import eu.tripledframework.eventbus.domain.interceptor.LoggingEventBusInterceptor;
-import eu.tripledframework.eventbus.domain.interceptor.ValidatingEventBusInterceptor;
-import eu.tripledframework.eventbus.domain.synchronous.SynchronousEventBus;
+import eu.tripledframework.eventbus.internal.domain.SynchronousEventBus;
 
 @Configuration
 @EnableConfigurationProperties(EventBusProperties.class)
@@ -44,7 +49,8 @@ public class EventBusAutoConfiguration {
         Arrays.asList(new LoggingEventBusInterceptor(),
             new ValidatingEventBusInterceptor(localValidatorFactoryBean().getValidator()));
 
-    return new SynchronousEventBus(interceptors);
+    return new SynchronousEventBus(new InMemoryInvokerRepository(), new SimpleInterceptorChainFactory(interceptors), Collections
+        .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory());
   }
 
   @Bean
@@ -54,7 +60,8 @@ public class EventBusAutoConfiguration {
         Arrays.asList(new LoggingEventBusInterceptor(),
             new ValidatingEventBusInterceptor(localValidatorFactoryBean().getValidator()));
 
-    return new AsynchronousEventBus(interceptors, taskExecutor());
+    return new AsynchronousEventBus(new InMemoryInvokerRepository(), new SimpleInterceptorChainFactory(interceptors), Collections
+        .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory(), taskExecutor());
   }
 
   @Bean

@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.handler;
+package eu.tripledframework.eventbus;
 
-import eu.tripledframework.eventbus.Handler;
-import eu.tripledframework.eventbus.Handles;
-import eu.tripledframework.eventbus.event.TestEvent;
+import java.lang.annotation.*;
 
-@Handler
-public class TestEventHandler {
+/**
+ * Method to indicate that the annotated method is capable of handling an Event.
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+public @interface Handles {
 
-  public boolean testEventHandled;
-
-  @Handles(TestEvent.class)
-  public void handleTestEvent(TestEvent testEvent) {
-    this.testEventHandled = true;
-  }
+  Class<?> value();
 
 }

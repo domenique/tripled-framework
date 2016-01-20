@@ -13,35 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.demo.infrastructure;
-
-import java.util.ArrayList;
-import java.util.List;
+package eu.tripledframework.eventbus.handler;
 
 import eu.tripledframework.eventbus.Handler;
 import eu.tripledframework.eventbus.Handles;
-import org.springframework.stereotype.Component;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.tripledframework.demo.SaidHelloDomainEvent;
+import eu.tripledframework.eventbus.command.HelloCommand;
 
 @Handler
-@Component
-public class InMemoryHelloEventStore {
+public class SecondTestCommandHandler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(InMemoryHelloEventStore.class);
+  public boolean isHelloCommandHandled;
 
-  private List<Object> events;
-
-  public InMemoryHelloEventStore() {
-    this.events = new ArrayList<>();
+  @Handles(HelloCommand.class)
+  public String stringReturning(HelloCommand command) {
+    isHelloCommandHandled = true;
+    return "Hello " + command.getName();
   }
 
-  @Handles(SaidHelloDomainEvent.class)
-  public void handleSaidHelloDomainEvent(SaidHelloDomainEvent event) {
-    LOGGER.info("Received SaidHelloDomainEvent.");
-    this.events.add(event);
-  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 TripleD framework.
+ * Copyright 2016 TripleD framework.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.autoconfigure;
+package eu.tripledframework.eventbus.internal.infrastructure.unitofwork;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
+import eu.tripledframework.eventbus.internal.domain.UnitOfWorkFactory;
 
-@Configuration
-public class EventHandlerSupportConfiguration {
+public class TestingUnitOfWorkFactory implements UnitOfWorkFactory {
 
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
+  private TestUnitOfWork createdUnitOfWork;
+
+  @Override
+  public UnitOfWork create() {
+    createdUnitOfWork = new TestUnitOfWork();
+    return createdUnitOfWork;
+  }
+
+  public TestUnitOfWork getCreatedUoW() {
+    return createdUnitOfWork;
   }
 }

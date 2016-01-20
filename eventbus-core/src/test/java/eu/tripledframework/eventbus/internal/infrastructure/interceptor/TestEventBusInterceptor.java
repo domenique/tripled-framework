@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.eventbus.autoconfigure;
+package eu.tripledframework.eventbus.internal.infrastructure.interceptor;
 
-import eu.tripledframework.eventbus.EventSubscriber;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import eu.tripledframework.eventbus.EventBusInterceptor;
+import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
 
-@Configuration
-public class EventHandlerSupportConfiguration {
+public class TestEventBusInterceptor implements EventBusInterceptor {
 
-  @Bean
-  public BeanPostProcessor eventHandlerSupportBeanPostProcessor(EventSubscriber eventSubscriber) {
-    return new EventHandlerRegistrationBeanPostProcessor(eventSubscriber);
+  public boolean isInterceptorCalled = false;
+
+  @Override
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) {
+    isInterceptorCalled = true;
+    return chain.proceed();
   }
 }
