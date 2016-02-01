@@ -15,34 +15,8 @@
  */
 package eu.tripledframework.eventbus.internal.domain;
 
-import eu.tripledframework.eventbus.CommandCallback;
-
 import java.util.function.Supplier;
 
-public class CallbackTemplate<ReturnType> {
-
-  private CommandCallback<ReturnType> eventCallback;
-
-  public CallbackTemplate(CommandCallback<ReturnType> eventCallback) {
-    this.eventCallback = eventCallback;
-  }
-
-  public void doWithCallback(Supplier<ReturnType> supplier) {
-    ReturnType response = null;
-    RuntimeException thrownException = null;
-    try {
-      response = supplier.get();
-    } catch (RuntimeException exception) {
-      thrownException = exception;
-    }
-    invokeAppropriateCallbackMethod(response, thrownException);
-  }
-
-  private void invokeAppropriateCallbackMethod(ReturnType response, RuntimeException thrownException) {
-    if (thrownException != null) {
-      eventCallback.onFailure(thrownException);
-    } else {
-      eventCallback.onSuccess(response);
-    }
-  }
+public interface CallbackTemplate<ReturnType> {
+  void doWithCallback(Supplier<ReturnType> supplier);
 }

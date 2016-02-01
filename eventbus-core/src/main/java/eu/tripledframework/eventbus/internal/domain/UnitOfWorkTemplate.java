@@ -15,34 +15,8 @@
  */
 package eu.tripledframework.eventbus.internal.domain;
 
-import eu.tripledframework.eventbus.EventPublisher;
-import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.UnitOfWorkManager;
-
 import java.util.function.Supplier;
 
-public class UnitOfWorkTemplate {
-
-  private EventPublisher eventPublisher;
-  private UnitOfWork unitOfWork;
-
-  public UnitOfWorkTemplate(EventPublisher eventPublisher, UnitOfWork unitOfWork) {
-    this.eventPublisher = eventPublisher;
-    this.unitOfWork = unitOfWork;
-  }
-
-  public <ReturnType> ReturnType doWithUnitOfWork(Supplier<ReturnType> supplier) {
-    UnitOfWorkManager.store(unitOfWork);
-
-    try {
-      ReturnType response = supplier.get();
-      UnitOfWorkManager.get().commit(eventPublisher);
-      return response;
-    } catch (RuntimeException exception) {
-      UnitOfWorkManager.get().rollback();
-      throw exception;
-    } finally {
-      UnitOfWorkManager.clear();
-    }
-
-  }
+public interface UnitOfWorkTemplate {
+  <ReturnType> ReturnType doWithUnitOfWork(Supplier<ReturnType> supplier);
 }

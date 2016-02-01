@@ -20,6 +20,8 @@ import eu.tripledframework.eventbus.CommandDispatcher;
 import eu.tripledframework.eventbus.EventPublisher;
 import eu.tripledframework.eventbus.EventSubscriber;
 import eu.tripledframework.eventbus.internal.infrastructure.callback.FutureCommandCallback;
+import eu.tripledframework.eventbus.internal.infrastructure.callback.SimpleCallbackTemplate;
+import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.SimpleUnitOfWorkTemplate;
 import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.UnitOfWorkManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,8 +94,8 @@ public class SynchronousEventBus implements CommandDispatcher, EventPublisher, E
     Invoker invoker = invokerRepository.getByEventType(event.getClass());
     InterceptorChain<ReturnType> interceptorChain = interceptorChainFactory.createChain(event, invoker);
 
-    UnitOfWorkTemplate unitOfWorkTemplate = new UnitOfWorkTemplate(this, unitOfWork);
-    new CallbackTemplate<>(callback).doWithCallback(() -> unitOfWorkTemplate.doWithUnitOfWork(interceptorChain::proceed));
+    SimpleUnitOfWorkTemplate unitOfWorkTemplate = new SimpleUnitOfWorkTemplate(this, unitOfWork);
+    new SimpleCallbackTemplate<>(callback).doWithCallback(() -> unitOfWorkTemplate.doWithUnitOfWork(interceptorChain::proceed));
   }
 
   // publish methods
