@@ -17,11 +17,11 @@ package eu.tripledframework.eventbus.internal.infrastructure.unitofwork;
 
 import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
 
-public final class UnitOfWorkManager {
+public final class UnitOfWorkRepository {
 
   private static final ThreadLocal<UnitOfWork> holder = new ThreadLocal<>();
 
-  private UnitOfWorkManager() {
+  private UnitOfWorkRepository() {
     // cannot be instantiated.
   }
 

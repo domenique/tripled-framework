@@ -20,9 +20,7 @@ import eu.tripledframework.eventbus.CommandDispatcher;
 import eu.tripledframework.eventbus.EventPublisher;
 import eu.tripledframework.eventbus.EventSubscriber;
 import eu.tripledframework.eventbus.internal.infrastructure.callback.FutureCommandCallback;
-import eu.tripledframework.eventbus.internal.infrastructure.callback.SimpleCallbackTemplate;
-import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.SimpleUnitOfWorkTemplate;
-import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.UnitOfWorkManager;
+import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.UnitOfWorkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +92,29 @@ public class SynchronousEventBus implements CommandDispatcher, EventPublisher, E
     Invoker invoker = invokerRepository.getByEventType(event.getClass());
     InterceptorChain<ReturnType> interceptorChain = interceptorChainFactory.createChain(event, invoker);
 
-    SimpleUnitOfWorkTemplate unitOfWorkTemplate = new SimpleUnitOfWorkTemplate(this, unitOfWork);
-    new SimpleCallbackTemplate<>(callback).doWithCallback(() -> unitOfWorkTemplate.doWithUnitOfWork(interceptorChain::proceed));
+    ReturnType response = null;
+    RuntimeException thrownException = null;
+    try {
+      UnitOfWorkRepository.store(unitOfWork);
+      response = interceptorChain.proceed();
+      UnitOfWorkRepository.get().commit(this);
+    } catch (RuntimeException exception) {
+      UnitOfWorkRepository.get().rollback();
+      thrownException = exception;
+    }
+
+    invokeAppropriateCallbackMethod(callback, response, thrownException);
+    UnitOfWorkRepository.clear();
+  }
+
+
+  private <ReturnType> void invokeAppropriateCallbackMethod(CommandCallback<ReturnType> eventCallback,
+                                                            ReturnType response, RuntimeException thrownException) {
+    if (thrownException != null) {
+      eventCallback.onFailure(thrownException);
+    } else {
+      eventCallback.onSuccess(response);
+    }
   }
 
   // publish methods
@@ -105,8 +124,8 @@ public class SynchronousEventBus implements CommandDispatcher, EventPublisher, E
     Objects.requireNonNull(event, "The event should not be null.");
     getLogger().debug("Received an event to publish. {}", event);
 
-    if (UnitOfWorkManager.isRunning()) {
-      UnitOfWorkManager.get().scheduleEvent(event);
+    if (UnitOfWorkRepository.isRunning()) {
+      UnitOfWorkRepository.get().scheduleEvent(event);
       getLogger().debug("Scheduled event to be published later because a UnitOfWork exists for this thread.");
     } else {
       publishInternal(event);

@@ -48,7 +48,7 @@ import eu.tripledframework.eventbus.internal.infrastructure.invoker.TestInvokerF
 import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.DefaultUnitOfWorkFactory;
 import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.TestUnitOfWork;
 import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.TestingUnitOfWorkFactory;
-import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.UnitOfWorkManager;
+import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.UnitOfWorkRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -398,7 +398,7 @@ public class EventBusTest {
       // given
       TestEvent testEvent = new TestEvent();
       TestUnitOfWork unitOfWork = new TestUnitOfWork();
-      UnitOfWorkManager.store(unitOfWork);
+      UnitOfWorkRepository.store(unitOfWork);
 
       // when
       eventPublisher.publish(testEvent);
