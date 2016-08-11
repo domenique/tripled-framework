@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.jxpath.JXPathContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,8 +76,7 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
     if (events == null || events.isEmpty()) {
       return instance;
     }
-    events.stream()
-        .forEach(event -> applyDomainEvent(instance, event));
+    events.forEach(event -> applyDomainEvent(instance, event));
 
     invokePostConstructIfNeeded(instance);
 
@@ -87,42 +85,40 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
 
   private T createInstance(DomainEvent event) {
     Constructor constructor = getEventHandlerConstructor(event);
-    if (constructor != null) {
-      try {
-        constructor.setAccessible(true);
-        Object[] parameters = getParametersValues(constructor.getParameterAnnotations(), event);
-        return (T) constructor.newInstance(parameters);
-      } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-        throw new AggregateRootReconstructionException(
-            String.format("Could not create object using constructor %s", constructor), e);
-      }
-    } else {
+    if (constructor == null) {
       throw new AggregateRootReconstructionException(
           String.format("Could not find a suitable constructor for event %s", event));
+    }
+    try {
+      constructor.setAccessible(true);
+      Object[] parameters = getParametersValues(constructor.getParameterAnnotations(), event);
+      return (T) constructor.newInstance(parameters);
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+      throw new AggregateRootReconstructionException(
+          String.format("Could not create object using constructor %s", constructor), e);
     }
   }
 
   private void applyDomainEvent(T instance, DomainEvent event) {
     Method method = getEventHandlerMethods(event);
-    if (method != null) {
-      try {
-        method.setAccessible(true);
-        Object[] parameters = getParametersValues(method.getParameterAnnotations(), event);
-        method.invoke(instance, parameters);
-        LOGGER.debug("Applied {}", event);
-      } catch (IllegalAccessException | InvocationTargetException e) {
-        throw new AggregateRootReconstructionException(
-            String.format("Could not apply event %s to instance %s", event, instance), e);
-      }
-    } else {
+    if (method == null) {
       throw new AggregateRootReconstructionException(
           String.format("Could not find a suitable method for event %s", event));
+    }
+    try {
+      method.setAccessible(true);
+      Object[] parameters = getParametersValues(method.getParameterAnnotations(), event);
+      method.invoke(instance, parameters);
+      LOGGER.debug("Applied {}", event);
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new AggregateRootReconstructionException(
+          String.format("Could not apply event %s to instance %s", event, instance), e);
     }
   }
 
   private Method getEventHandlerMethods(DomainEvent event) {
     Set<Method> methods = Arrays.stream(targetClass.getMethods())
-        .filter(c -> c.isAnnotationPresent(ConstructionHandler.class))
+        .filter(constructor -> constructor.isAnnotationPresent(ConstructionHandler.class))
         .collect(Collectors.toSet());
     for (Method method : methods) {
       ConstructionHandler annotation = method.getAnnotation(ConstructionHandler.class);
@@ -135,7 +131,7 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
 
   private Constructor getEventHandlerConstructor(DomainEvent event) {
     Set<Constructor> constructors = Arrays.stream(targetClass.getConstructors())
-        .filter(c -> c.isAnnotationPresent(ConstructionHandler.class))
+        .filter(contructor -> contructor.isAnnotationPresent(ConstructionHandler.class))
         .collect(Collectors.toSet());
     for (Constructor constructor : constructors) {
       ConstructionHandler constructionHandlerAnnotation =
