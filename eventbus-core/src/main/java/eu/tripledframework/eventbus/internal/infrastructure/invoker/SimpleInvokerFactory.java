@@ -36,6 +36,7 @@ public class SimpleInvokerFactory implements InvokerFactory {
 
     Set<Method> methods = getMethodsWithAnotation(eventHandler.getClass(), Handles.class);
 
+
     for (Method method : methods) {
       Handles annotation = method.getAnnotation(Handles.class);
       Invoker invoker = new SimpleInvoker(annotation.value(), eventHandler, method);
@@ -53,8 +54,17 @@ public class SimpleInvokerFactory implements InvokerFactory {
   }
 
   private Set<Method> getMethodsWithAnotation(Class<?> clazz, Class<? extends Annotation> annotation) {
-    return Arrays.stream(clazz.getMethods())
-                 .filter(c -> c.isAnnotationPresent(annotation))
-                 .collect(Collectors.toSet());
+    Set<Method> methods = Arrays.stream(clazz.getMethods())
+                                .filter(c -> c.isAnnotationPresent(annotation))
+                                .collect(Collectors.toSet());
+
+    // If we are dealing with a proxied object, we should look at the superClass
+    // as well because cglib does not propagate annotations.
+    if (methods == null || methods.isEmpty()) {
+      methods = Arrays.stream(clazz.getSuperclass().getMethods())
+                      .filter(c -> c.isAnnotationPresent(annotation))
+                      .collect(Collectors.toSet());
+    }
+    return methods;
   }
 }

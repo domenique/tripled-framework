@@ -32,4 +32,6 @@ public interface UnitOfWork {
   void addData(String key, Object value);
 
   void scheduleEvent(Object event);
+
+  Object getData(String key);
 }

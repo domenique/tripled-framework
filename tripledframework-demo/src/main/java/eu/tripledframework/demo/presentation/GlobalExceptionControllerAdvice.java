@@ -16,6 +16,8 @@
 package eu.tripledframework.demo.presentation;
 
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.CommandValidationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +32,8 @@ import java.util.concurrent.ExecutionException;
 @ControllerAdvice
 public class GlobalExceptionControllerAdvice {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionControllerAdvice.class);
+
   @ExceptionHandler
   @ResponseStatus(HttpStatus.CONFLICT)
   @ResponseBody
@@ -39,6 +43,7 @@ public class GlobalExceptionControllerAdvice {
     if (exception.getCause() instanceof CommandValidationException) {
       errorMessages.addAll(handleValidationError((CommandValidationException) exception.getCause()));
     } else {
+      LOGGER.error("The execution failed with an uncaught exception.", exception);
       errorMessages.add(new ErrorMessage("The execution failed with an uncaught exception."));
     }
     return errorMessages;

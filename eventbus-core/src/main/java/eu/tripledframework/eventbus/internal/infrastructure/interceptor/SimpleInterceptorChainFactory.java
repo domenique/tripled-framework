@@ -19,6 +19,7 @@ import eu.tripledframework.eventbus.EventBusInterceptor;
 import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
 import eu.tripledframework.eventbus.internal.domain.InterceptorChainFactory;
 import eu.tripledframework.eventbus.internal.domain.Invoker;
+import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,13 +37,13 @@ public class SimpleInterceptorChainFactory implements InterceptorChainFactory {
   }
 
   @Override
-  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, List<Invoker> invokers) {
-    return new SimpleInterceptorChain<>(event, invokers.iterator(), interceptors.iterator());
+  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, UnitOfWork unitOfWork, List<Invoker> invokers) {
+    return new SimpleInterceptorChain<>(event, unitOfWork, invokers.iterator(), interceptors.iterator());
   }
 
   @Override
-  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, Invoker invoker) {
-    return new SimpleInterceptorChain<>(event, Collections.singletonList(invoker).iterator(), interceptors.iterator());
+  public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, UnitOfWork unitOfWork, Invoker invoker) {
+    return new SimpleInterceptorChain<>(event, unitOfWork, Collections.singletonList(invoker).iterator(), interceptors.iterator());
   }
 
 }

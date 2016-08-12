@@ -17,13 +17,14 @@ package eu.tripledframework.eventbus.internal.infrastructure.interceptor;
 
 import eu.tripledframework.eventbus.EventBusInterceptor;
 import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
+import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
 
 public class TestEventBusInterceptor implements EventBusInterceptor {
 
   public boolean isInterceptorCalled = false;
 
   @Override
-  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) {
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event, UnitOfWork unitOfWork) {
     isInterceptorCalled = true;
     return chain.proceed();
   }

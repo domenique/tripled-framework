@@ -17,11 +17,8 @@ package eu.tripledframework.eventbus.internal.domain;
 
 import java.util.List;
 
-/**
- * Created by domenique on 13/01/16.
- */
 public interface InterceptorChainFactory {
-  <ReturnType> InterceptorChain<ReturnType> createChain(Object event, List<Invoker> invokers);
+  <ReturnType> InterceptorChain<ReturnType> createChain(Object event, UnitOfWork unitOfWork, List<Invoker> invokers);
 
-  <ReturnType> InterceptorChain<ReturnType> createChain(Object event, Invoker invoker);
+  <ReturnType> InterceptorChain<ReturnType> createChain(Object event, UnitOfWork unitOfWork, Invoker invoker);
 }

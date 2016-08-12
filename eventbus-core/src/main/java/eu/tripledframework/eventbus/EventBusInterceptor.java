@@ -16,6 +16,7 @@
 package eu.tripledframework.eventbus;
 
 import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
+import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
 
 /**
  * Interface which defines an interceptor which is being called by the EventBus when executing a command.
@@ -38,9 +39,10 @@ public interface EventBusInterceptor {
    * @param chain        The InterceptorChain which is being applied. The implementation is supposed to call the proceed()
    *                     method when it wishes to advance in the chain
    * @param event        The event which will eventually be executed.
+   * @param unitOfWork   The unit of work associated with the execution of this event.
    * @param <ReturnType> The return type of the event execution and by consequence this Interceptor.
    * @return The return object from the chain.proceed() command or, depending on the implementation, some other instance of the ReturnType.
    */
-  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event);
+  <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event, UnitOfWork unitOfWork);
 
 }

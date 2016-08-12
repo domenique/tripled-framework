@@ -52,6 +52,11 @@ public class TestUnitOfWork implements UnitOfWork {
   }
 
   @Override
+  public Object getData(String key) {
+    return null;
+  }
+
+  @Override
   public void scheduleEvent(Object event) {
     delayedEvents.add(event);
   }

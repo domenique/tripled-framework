@@ -64,4 +64,12 @@ public class DefaultUnitOfWork implements UnitOfWork {
   public void scheduleEvent(Object event) {
     delayedEvents.add(event);
   }
+
+  @Override
+  public Object getData(String key) {
+    if (contextualData != null) {
+      return contextualData.get(key);
+    }
+    return null;
+  }
 }
