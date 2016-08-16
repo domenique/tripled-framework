@@ -20,16 +20,19 @@ import java.util.Iterator;
 import eu.tripledframework.eventbus.EventBusInterceptor;
 import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
 import eu.tripledframework.eventbus.internal.domain.Invoker;
+import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
 
 public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<ReturnType> {
 
   private final Object event;
+  private final UnitOfWork unitOfWork;
   private final Iterator<EventBusInterceptor> interceptors;
   private final Iterator<Invoker> invokers;
 
-  public SimpleInterceptorChain(Object event, Iterator<Invoker> invokers,
+  public SimpleInterceptorChain(Object event, UnitOfWork unitOfWork, Iterator<Invoker> invokers,
                                 Iterator<EventBusInterceptor> interceptors) {
     this.event = event;
+    this.unitOfWork = unitOfWork;
     this.invokers = invokers;
     this.interceptors = interceptors;
   }
@@ -38,7 +41,7 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
   public ReturnType proceed() {
     if (interceptors.hasNext()) {
       EventBusInterceptor nextInterceptor = interceptors.next();
-      return nextInterceptor.intercept(this, event);
+      return nextInterceptor.intercept(this, event, unitOfWork);
     } else {
       return invokeEventHandlers();
     }

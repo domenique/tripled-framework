@@ -15,13 +15,9 @@
  */
 package eu.tripledframework.eventbus.autoconfigure;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Executor;
-
 import eu.tripledframework.eventbus.EventBusInterceptor;
 import eu.tripledframework.eventbus.internal.domain.AsynchronousEventBus;
+import eu.tripledframework.eventbus.internal.domain.SynchronousEventBus;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.LoggingEventBusInterceptor;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.SimpleInterceptorChainFactory;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.ValidatingEventBusInterceptor;
@@ -36,13 +32,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import eu.tripledframework.eventbus.internal.domain.SynchronousEventBus;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 @Configuration
 @EnableConfigurationProperties(EventBusProperties.class)
 public class EventBusAutoConfiguration {
 
   @Bean
+  @ConditionalOnMissingBean({SynchronousEventBus.class, AsynchronousEventBus.class})
   @ConditionalOnProperty(value = "eu.tripledframework.eventbus.mode", havingValue = "sync")
   public SynchronousEventBus synchronousEventBus() {
     List<EventBusInterceptor> interceptors =
@@ -54,6 +54,7 @@ public class EventBusAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean({SynchronousEventBus.class, AsynchronousEventBus.class})
   @ConditionalOnProperty(value = "eu.tripledframework.eventbus.mode", matchIfMissing = true, havingValue = "async")
   public AsynchronousEventBus asynchronousEventBus() {
     List<EventBusInterceptor> interceptors =
@@ -64,9 +65,9 @@ public class EventBusAutoConfiguration {
         .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory(), taskExecutor());
   }
 
-  @Bean
-  @ConditionalOnProperty(value = "eu.tripledframework.eventbus.mode", matchIfMissing = true, havingValue = "async")
-  public Executor taskExecutor() {
+//  @Bean
+//  @ConditionalOnProperty(value = "eu.tripledframework.eventbus.mode", matchIfMissing = true, havingValue = "async")
+  private Executor taskExecutor() {
     ThreadPoolTaskExecutor executorService = new ThreadPoolTaskExecutor();
     executorService.setCorePoolSize(5);
     executorService.setMaxPoolSize(10);

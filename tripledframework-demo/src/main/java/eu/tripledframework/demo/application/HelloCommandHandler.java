@@ -15,11 +15,12 @@
  */
 package eu.tripledframework.demo.application;
 
-import eu.tripledframework.demo.SaidHelloDomainEvent;
+import eu.tripledframework.demo.model.SaidHelloDomainEvent;
 import eu.tripledframework.eventbus.EventPublisher;
 import eu.tripledframework.eventbus.Handler;
 import eu.tripledframework.eventbus.Handles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 @Handler
@@ -29,6 +30,7 @@ public class HelloCommandHandler {
   @Autowired
   private EventPublisher eventPublisher;
 
+  @PreAuthorize("hasRole('TEST')")
   @Handles(HelloCommand.class)
   public HelloResponse handleHelloCommand(HelloCommand helloCommand) {
     if (helloCommand.getName().equals("The devil")) {

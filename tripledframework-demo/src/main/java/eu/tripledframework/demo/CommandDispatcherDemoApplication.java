@@ -15,15 +15,29 @@
  */
 package eu.tripledframework.demo;
 
+import eu.tripledframework.demo.security.SpringSecurityAwareUnitOfWorkFactory;
+import eu.tripledframework.demo.security.SpringSecurityInitializationEventBusInterceptor;
+import eu.tripledframework.eventbus.EventBusInterceptor;
+import eu.tripledframework.eventbus.autoconfigure.EnableEventHandlerSupport;
+import eu.tripledframework.eventbus.internal.domain.AsynchronousEventBus;
+import eu.tripledframework.eventbus.internal.infrastructure.interceptor.LoggingEventBusInterceptor;
+import eu.tripledframework.eventbus.internal.infrastructure.interceptor.SimpleInterceptorChainFactory;
+import eu.tripledframework.eventbus.internal.infrastructure.invoker.InMemoryInvokerRepository;
+import eu.tripledframework.eventbus.internal.infrastructure.invoker.SimpleInvokerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import eu.tripledframework.eventbus.autoconfigure.EnableEventHandlerSupport;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 @SpringBootApplication
-@EnableEventHandlerSupport(basePackage = "eu.tripledframework.demo")
+
 public class CommandDispatcherDemoApplication extends SpringBootServletInitializer {
 
   public static void main(String[] args) {

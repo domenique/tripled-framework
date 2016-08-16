@@ -22,6 +22,7 @@ import javax.validation.Validator;
 
 import eu.tripledframework.eventbus.EventBusInterceptor;
 import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
+import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
 
 public class ValidatingEventBusInterceptor implements EventBusInterceptor {
 
@@ -32,7 +33,7 @@ public class ValidatingEventBusInterceptor implements EventBusInterceptor {
   }
 
   @Override
-  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event) {
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event, UnitOfWork unitOfWork) {
     validate(event);
     return chain.proceed();
   }

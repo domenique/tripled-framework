@@ -90,7 +90,7 @@ public class SynchronousEventBus implements CommandDispatcher, EventPublisher, E
 
   protected <ReturnType> void dispatchInternal(Object event, CommandCallback<ReturnType> callback, UnitOfWork unitOfWork) {
     Invoker invoker = invokerRepository.getByEventType(event.getClass());
-    InterceptorChain<ReturnType> interceptorChain = interceptorChainFactory.createChain(event, invoker);
+    InterceptorChain<ReturnType> interceptorChain = interceptorChainFactory.createChain(event, unitOfWork, invoker);
 
     ReturnType response = null;
     RuntimeException thrownException = null;
@@ -128,16 +128,16 @@ public class SynchronousEventBus implements CommandDispatcher, EventPublisher, E
       UnitOfWorkRepository.get().scheduleEvent(event);
       getLogger().debug("Scheduled event to be published later because a UnitOfWork exists for this thread.");
     } else {
-      publishInternal(event);
+      publishInternal(event, UnitOfWorkRepository.get());
 
       getLogger().debug("Published event {}", event);
     }
 
   }
 
-  protected void publishInternal(Object event) {
+  protected void publishInternal(Object event, UnitOfWork unitOfWork) {
     List<Invoker> invokers = invokerRepository.findAtLeastOneByEventType(event.getClass());
-    InterceptorChain<?> interceptorChain = interceptorChainFactory.createChain(event, invokers);
+    InterceptorChain<?> interceptorChain = interceptorChainFactory.createChain(event, unitOfWork, invokers);
 
     interceptorChain.proceed();
   }

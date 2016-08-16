@@ -16,7 +16,7 @@
 package eu.tripledframework.demo.presentation;
 
 import eu.tripledframework.demo.CommandDispatcherDemoApplication;
-import eu.tripledframework.demo.SaidHelloDomainEvent;
+import eu.tripledframework.demo.model.SaidHelloDomainEvent;
 import eu.tripledframework.demo.infrastructure.InMemoryHelloEventStore;
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +40,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,7 +60,9 @@ public class HelloControllerTest {
 
   @Before
   public void setUpMockMvc() throws Exception {
-    mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                         .apply(springSecurity())
+                         .build();
   }
 
   @After
@@ -111,8 +115,31 @@ public class HelloControllerTest {
     result.andExpect(jsonPath("$.[0].message", equalTo("The execution failed with an uncaught exception.")));
   }
 
+  @Test
+  public void whenSayingHiWithoutName_shouldReturnWithUsername() throws Exception {
+
+    // when
+    ResultActions result = sayHi();
+
+    // then
+    result.andExpect(status().is2xxSuccessful());
+    result.andExpect(jsonPath("$.message", equalTo("Hello authenticated user testuser")));
+  }
+
   private ResultActions sayHiTo(String name) throws Exception {
-    return mvc.perform(get("/hello/{name}", name).accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
+    return mvc
+        .perform(get("/hello/{name}", name)
+            .with(httpBasic("testuser","password"))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON));
+  }
+
+  private ResultActions sayHi() throws Exception {
+    return mvc
+        .perform(get("/hello")
+            .with(httpBasic("testuser","password"))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON));
   }
 
 

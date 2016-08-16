@@ -15,9 +15,12 @@
  */
 package eu.tripledframework.demo.presentation;
 
+import java.security.Principal;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +34,8 @@ import eu.tripledframework.eventbus.CommandDispatcher;
 @RestController
 public class HelloController {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(HelloController.class);
+
   @Autowired
   private CommandDispatcher commandDispatcher;
 
@@ -39,5 +44,12 @@ public class HelloController {
     Future<HelloResponse> future = commandDispatcher.dispatch(new HelloCommand(name));
 
     return future.get();
+  }
+
+  @RequestMapping(value = "/hello", method = RequestMethod.GET)
+  public HelloResponse sayHiAuthenticated(Principal principal) throws ExecutionException, InterruptedException {
+    LOGGER.debug("Saying hi to authenticated user {}", principal);
+
+    return new HelloResponse("Hello authenticated user " + principal.getName());
   }
 }
