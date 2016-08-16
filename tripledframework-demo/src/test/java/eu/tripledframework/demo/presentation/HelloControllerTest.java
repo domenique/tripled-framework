@@ -115,9 +115,28 @@ public class HelloControllerTest {
     result.andExpect(jsonPath("$.[0].message", equalTo("The execution failed with an uncaught exception.")));
   }
 
+  @Test
+  public void whenSayingHiWithoutName_shouldReturnWithUsername() throws Exception {
+
+    // when
+    ResultActions result = sayHi();
+
+    // then
+    result.andExpect(status().is2xxSuccessful());
+    result.andExpect(jsonPath("$.message", equalTo("Hello authenticated user testuser")));
+  }
+
   private ResultActions sayHiTo(String name) throws Exception {
     return mvc
         .perform(get("/hello/{name}", name)
+            .with(httpBasic("testuser","password"))
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON));
+  }
+
+  private ResultActions sayHi() throws Exception {
+    return mvc
+        .perform(get("/hello")
             .with(httpBasic("testuser","password"))
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON));
