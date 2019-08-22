@@ -15,37 +15,28 @@
  */
 package eu.tripledframework.demo;
 
-import eu.tripledframework.demo.security.SpringSecurityAwareUnitOfWorkFactory;
-import eu.tripledframework.demo.security.SpringSecurityInitializationEventBusInterceptor;
-import eu.tripledframework.eventbus.EventBusInterceptor;
-import eu.tripledframework.eventbus.autoconfigure.EnableEventHandlerSupport;
-import eu.tripledframework.eventbus.internal.domain.AsynchronousEventBus;
-import eu.tripledframework.eventbus.internal.infrastructure.interceptor.LoggingEventBusInterceptor;
-import eu.tripledframework.eventbus.internal.infrastructure.interceptor.SimpleInterceptorChainFactory;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.InMemoryInvokerRepository;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.SimpleInvokerFactory;
+import eu.tripledframework.demo.application.HelloCommandHandler;
+import eu.tripledframework.eventbus.EventPublisher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Executor;
 
 @SpringBootApplication
-
 public class CommandDispatcherDemoApplication extends SpringBootServletInitializer {
 
-  public static void main(String[] args) {
-    SpringApplication.run(CommandDispatcherDemoApplication.class, args);
-  }
+    public static void main(String[] args) {
+        SpringApplication.run(CommandDispatcherDemoApplication.class, args);
+    }
 
-  @Override
-  protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-    return application.sources(CommandDispatcherDemoApplication.class);
-  }
+    @Bean
+    public HelloCommandHandler helloCommandHandler(EventPublisher eventPublisher) {
+        return new HelloCommandHandler(eventPublisher);
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(CommandDispatcherDemoApplication.class);
+    }
 }

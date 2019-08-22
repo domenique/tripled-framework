@@ -19,16 +19,16 @@ import eu.tripledframework.demo.model.SaidHelloDomainEvent;
 import eu.tripledframework.eventbus.EventPublisher;
 import eu.tripledframework.eventbus.Handler;
 import eu.tripledframework.eventbus.Handles;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
 
 @Handler
-@Component
 public class HelloCommandHandler {
 
-  @Autowired
   private EventPublisher eventPublisher;
+
+  public HelloCommandHandler(EventPublisher eventPublisher) {
+    this.eventPublisher = eventPublisher;
+  }
 
   @PreAuthorize("hasRole('TEST')")
   @Handles(HelloCommand.class)

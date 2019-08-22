@@ -15,8 +15,9 @@
  */
 buildscript {
   ext {
-    springBootVersion = '1.4.0.RELEASE'
-    springBomVersion = '2.0.7.RELEASE'
+    springBootVersion = '2.1.7.RELEASE'
+    springBomVersion = '2.0.8.RELEASE'
+    springDepMgmtVersion = '1.0.8.RELEASE'
   }
   repositories {
     mavenCentral()
@@ -24,10 +25,8 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath("io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE")
     classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1")
     classpath("org.springframework.build.gradle:propdeps-plugin:0.0.7")
-    classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
   }
 }
 

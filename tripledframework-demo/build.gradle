@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-apply plugin: 'spring-boot'
-apply plugin: 'war'
-apply plugin: 'io.spring.dependency-management'
+plugins {
+  id 'org.springframework.boot' version "${springBootVersion}"
+  id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
+  id 'war'
+}
 
 war {
   baseName = 'eventbus-demo'
@@ -26,19 +28,11 @@ configurations {
   providedRuntime
 }
 
-// we can override version provided by the spring platform-bom here.
-dependencyManagement {
-  imports {
-    mavenBom "io.spring.platform:platform-bom:${springBomVersion}"
-  }
-}
-
 dependencies {
   compile project(":spring-boot-eventbus-starter")
   compile project(":eventstore-core")
   compile("org.springframework.boot:spring-boot-starter-web")
   compile("org.springframework.boot:spring-boot-starter-security")
-  compile("org.hibernate:hibernate-validator")
   runtime("org.hsqldb:hsqldb")
 
   testCompile("org.springframework.boot:spring-boot-starter-test")
