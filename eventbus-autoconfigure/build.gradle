@@ -34,6 +34,8 @@ dependencies {
   compile("org.springframework.boot:spring-boot")
   compile("org.springframework.boot:spring-boot-autoconfigure")
   optional("org.springframework.boot:spring-boot-configuration-processor")
+
+  testCompile("junit:junit:4.11")
 }
 
 uploadArchives {
