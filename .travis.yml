@@ -1,6 +1,6 @@
 language: java
 jdk:
-- oraclejdk8
+- openjdk11
 after_success:
 - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && gradle uploadArchives -Pci
 - gradle coveralls

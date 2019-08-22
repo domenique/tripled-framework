@@ -50,10 +50,6 @@ allprojects {
     mavenCentral()
     jcenter()
   }
-
-  jacoco {
-    toolVersion = '0.7.1.201405082137'
-  }
 }
 
 subprojects {
@@ -83,12 +79,12 @@ subprojects {
   }
 
   task javadocJar(type: Jar) {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from javadoc
   }
 
   task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
   }
 
@@ -107,9 +103,9 @@ subprojects {
   }
 
   jacocoTestReport {
-    additionalSourceDirs = files(sourceSets.main.allSource.srcDirs)
-    sourceDirectories = files(sourceSets.main.allSource.srcDirs)
-    classDirectories = files(sourceSets.main.output)
+    getAdditionalSourceDirs().from(sourceSets.main.allSource.srcDirs)
+    getSourceDirectories().from(sourceSets.main.allSource.srcDirs)
+    getClassDirectories().from(sourceSets.main.output)
     reports {
       html.enabled = true
       xml.enabled = true
@@ -118,12 +114,12 @@ subprojects {
   }
 }
 
-task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+task jacocoRootReport(type: JacocoReport) {
   dependsOn = subprojects.test
-  additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
-  sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-  classDirectories = files(subprojects.sourceSets.main.output)
-  executionData = files(subprojects.jacocoTestReport.executionData)
+  getAdditionalSourceDirs().from(subprojects.sourceSets.main.allSource.srcDirs)
+  getSourceDirectories().from(subprojects.sourceSets.main.allSource.srcDirs)
+  getClassDirectories().from(subprojects.sourceSets.main.output)
+  getExecutionData().from(subprojects.jacocoTestReport.executionData)
   reports {
     html.enabled = true
     xml.enabled = true
@@ -133,7 +129,7 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
     true
   }
   doFirst {
-    executionData = files(executionData.findAll {
+    getExecutionData().from(executionData.findAll {
       it.exists()
     })
   }
