@@ -115,10 +115,11 @@ subprojects {
 
 task jacocoRootReport(type: JacocoReport) {
   dependsOn = subprojects.test
-  getAdditionalSourceDirs().from(subprojects.sourceSets.main.allSource.srcDirs)
-  getSourceDirectories().from(subprojects.sourceSets.main.allSource.srcDirs)
-  getClassDirectories().from(subprojects.sourceSets.main.output)
-  getExecutionData().from(subprojects.jacocoTestReport.executionData)
+
+  getAdditionalSourceDirs().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
+  getSourceDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
+  getClassDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.output)
+  getExecutionData().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.jacocoTestReport.executionData)
   reports {
     html.enabled = true
     xml.enabled = true

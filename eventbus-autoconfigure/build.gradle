@@ -17,7 +17,6 @@ plugins {
     id "cn.bestwu.propdeps" version "0.0.10"
     id "cn.bestwu.propdeps-idea" version "0.0.10"
     id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
-    id 'java'
 }
 
 compileJava.dependsOn(processResources)
@@ -25,6 +24,13 @@ compileJava.dependsOn(processResources)
 dependencyManagement {
     imports {
         mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
     }
 }
 
