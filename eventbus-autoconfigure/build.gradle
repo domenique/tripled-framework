@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 plugins {
-    id 'propdeps'
-    id 'propdeps-idea'
+    id "cn.bestwu.propdeps" version "0.0.10"
+    id "cn.bestwu.propdeps-idea" version "0.0.10"
     id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
     id 'java'
 }

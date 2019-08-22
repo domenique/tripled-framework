@@ -25,10 +25,9 @@ buildscript {
     maven { url 'http://repo.spring.io/plugins-release' }
     jcenter()
   }
-  dependencies {
-    classpath("org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.4")
-    classpath("org.springframework.build.gradle:propdeps-plugin:0.0.7")
-  }
+}
+plugins {
+  id "com.github.kt3k.coveralls" version "2.8.4"
 }
 
 // some global vars to determine the type of build.
@@ -41,7 +40,6 @@ ext {
   sonatypePassword = null
 }
 
-apply plugin: 'com.github.kt3k.coveralls'
 
 allprojects {
   apply plugin: 'jacoco'
