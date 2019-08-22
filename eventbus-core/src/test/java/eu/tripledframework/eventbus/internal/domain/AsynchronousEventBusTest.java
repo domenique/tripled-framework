@@ -26,8 +26,8 @@ import eu.tripledframework.eventbus.internal.infrastructure.interceptor.Validati
 import eu.tripledframework.eventbus.internal.infrastructure.invoker.InMemoryInvokerRepository;
 import eu.tripledframework.eventbus.internal.infrastructure.invoker.SimpleInvokerFactory;
 import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.DefaultUnitOfWorkFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,20 +37,19 @@ import java.util.concurrent.Future;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+class AsynchronousEventBusTest {
 
-public class AsynchronousEventBusTest {
-
-  public static final String THREAD_POOL_PREFIX = "CDForTest-pool-";
-  public static final String THREAD_POOL_WITH_VALIDATION_PREFIX = "CDForTest-Val-pool-";
+  private static final String THREAD_POOL_PREFIX = "CDForTest-pool-";
+  private static final String THREAD_POOL_WITH_VALIDATION_PREFIX = "CDForTest-Val-pool-";
   private CommandDispatcher asynchronousDispatcher;
   private CommandDispatcher dispatcherWithValidation;
   private TestCommandHandler eventHandler;
   private TestValidator validator;
 
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     eventHandler = new TestCommandHandler();
     ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory(THREAD_POOL_PREFIX));
     AsynchronousEventBus eventBus = new AsynchronousEventBus(new InMemoryInvokerRepository(),
@@ -70,7 +69,7 @@ public class AsynchronousEventBusTest {
   }
 
   @Test
-  public void whenNotGivenAnExecutor_shouldCreateADefaultOneAndExecuteCommands() throws Exception {
+  void whenNotGivenAnExecutor_shouldCreateADefaultOneAndExecuteCommands() throws Exception {
     // given
     AsynchronousEventBus defaultPublisher = new AsynchronousEventBus(new InMemoryInvokerRepository(),
         new SimpleInterceptorChainFactory(), Collections
@@ -89,7 +88,7 @@ public class AsynchronousEventBusTest {
   }
 
   @Test
-  public void whenGivenAValidCommand_shouldBeExecutedAsynchronous() throws Exception {
+  void whenGivenAValidCommand_shouldBeExecutedAsynchronous() throws Exception {
     // given
     HelloCommand command = new HelloCommand("Domenique");
 
@@ -103,7 +102,7 @@ public class AsynchronousEventBusTest {
   }
 
   @Test
-  public void whenGivenAValidCommandAndFutureCallback_waitForExecutionToFinish() throws Exception {
+  void whenGivenAValidCommandAndFutureCallback_waitForExecutionToFinish() throws Exception {
     // given
     HelloCommand command = new HelloCommand("Domenique");
 
@@ -118,7 +117,7 @@ public class AsynchronousEventBusTest {
   }
 
   @Test
-  public void whenUsingADispatcherWithValidator_validationShouldBeDoneAsynchronous() throws Exception {
+  void whenUsingADispatcherWithValidator_validationShouldBeDoneAsynchronous() throws Exception {
     // given
     ValidatingCommand command = new ValidatingCommand("should pass");
     validator.shouldFailNextCall(false);

@@ -17,20 +17,19 @@ package eu.tripledframework.eventstore.domain;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import eu.tripledframework.eventstore.domain.snapshot.Snapshot;
 import eu.tripledframework.eventstore.event.AddressUpdatedEvent;
 import eu.tripledframework.eventstore.event.MyAggregateRootCreatedEvent;
 import eu.tripledframework.eventstore.infrastructure.InMemoryEventRepository;
 import eu.tripledframework.eventstore.infrastructure.snapshot.InMemorySnapshotRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class EventStoreTest {
 
@@ -38,7 +37,7 @@ public class EventStoreTest {
   private InMemoryEventRepository inMemoryEventRepository;
   private InMemorySnapshotRepository<MyAggregateRoot> inMemorySnapshotRepository;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     inMemoryEventRepository = new InMemoryEventRepository();
     inMemorySnapshotRepository = new InMemorySnapshotRepository<>();

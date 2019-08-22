@@ -17,17 +17,17 @@ package eu.tripledframework.eventbus.internal.domain;
 
 import eu.tripledframework.eventbus.handler.TestCommandHandler;
 import eu.tripledframework.eventbus.internal.infrastructure.invoker.TestInvokerFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class EventBusTest extends AbstractEventBusTest {
+class EventBusTest extends AbstractEventBusTest {
 
   @Test
-  public void whenGivenAnEventHandlerInvokerFactory_shouldUseIt() throws Exception {
+  void whenGivenAnEventHandlerInvokerFactory_shouldUseIt() throws Exception {
     // given
     TestInvokerFactory invokerFactory = new TestInvokerFactory();
     SynchronousEventBus eventBus = createSynchronousEventBus(Collections.emptyList(), Collections.singletonList(invokerFactory));

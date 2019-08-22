@@ -24,7 +24,7 @@ import java.util.List;
 public class TestUnitOfWork implements UnitOfWork {
 
   public List<Object> delayedEvents;
-  public boolean isRollbackCalled = false;
+  private boolean isRollbackCalled = false;
   public boolean isCommitCalled = false;
 
   public TestUnitOfWork() {

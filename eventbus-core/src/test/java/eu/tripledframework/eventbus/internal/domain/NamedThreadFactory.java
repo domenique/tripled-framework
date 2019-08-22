@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * It provides a way to define the prefix of a threadName.
  */
-public class NamedThreadFactory implements ThreadFactory {
+class NamedThreadFactory implements ThreadFactory {
   private final AtomicInteger threadNumber = new AtomicInteger(0);
   private final ThreadGroup group;
   private final String namePrefix;

@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
+}
+
 dependencies {
   compile("org.slf4j:slf4j-api:1.7.12")
   compile("javax.validation:validation-api:1.1.0.Final")
 
-  testCompile("junit:junit:4.11")
+  testCompile("org.junit.jupiter:junit-jupiter:5.5.1")
+  testCompile("org.hamcrest:hamcrest:2.1")
   testCompile("ch.qos.logback:logback-classic:1.1.3")
-  testCompile("nl.jqno.equalsverifier:equalsverifier:1.7.5")
 }
 
 uploadArchives {

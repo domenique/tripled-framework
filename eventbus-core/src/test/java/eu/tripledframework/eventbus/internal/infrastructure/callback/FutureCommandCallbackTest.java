@@ -15,72 +15,67 @@
  */
 package eu.tripledframework.eventbus.internal.infrastructure.callback;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
-public class FutureCommandCallbackTest {
+class FutureCommandCallbackTest {
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+    @Test
+    void whenCancelCalled_shouldReturnFalse() throws Exception {
+        // given
+        FutureCommandCallback future = new FutureCommandCallback();
 
-  @Test
-  public void whenCancelCalled_shouldReturnFalse() throws Exception {
-    // given
-    FutureCommandCallback future = new FutureCommandCallback();
+        // when
+        boolean cancel = future.cancel(true);
 
-    // when
-    boolean cancel = future.cancel(true);
+        // then
+        assertThat(cancel, is(false));
+    }
 
-    // then
-    assertThat(cancel, is(false));
-  }
+    @Test
+    void whenIsCancelledCalled_shouldReturnFalse() throws Exception {
+        // given
+        FutureCommandCallback future = new FutureCommandCallback();
 
-  @Test
-  public void whenIsCancelledCalled_shouldReturnFalse() throws Exception {
-    // given
-    FutureCommandCallback future = new FutureCommandCallback();
+        // when
+        boolean cancel = future.isCancelled();
 
-    // when
-    boolean cancel = future.isCancelled();
+        // then
+        assertThat(cancel, is(false));
+    }
 
-    // then
-    assertThat(cancel, is(false));
-  }
+    @Test
+    void whenGetWithTimeoutCalled_shouldTimeout() {
+        // given
+        FutureCommandCallback future = new FutureCommandCallback();
 
-  @Test
-  public void whenGetWithTimeoutCalled_shouldTimeout() throws Exception {
-    // given
-    FutureCommandCallback future = new FutureCommandCallback();
+        // when
+        Assertions.assertThrows(TimeoutException.class, () -> future.get(1, TimeUnit.MILLISECONDS));
 
-    expectedException.expect(TimeoutException.class);
+        // then -> Exception
 
-    // when
-    future.get(1, TimeUnit.MILLISECONDS);
+    }
 
-    // then -> Exception
+    @Test
+    void whenGetWithTimeoutCalled_shouldNotTimeoutIfResponseAvailable() throws Exception {
+        // given
+        FutureCommandCallback<String> future = new FutureCommandCallback<>();
+        future.onSuccess("response");
 
-  }
+        // when
+        String response = future.get(1, TimeUnit.MILLISECONDS);
 
-  @Test
-  public void whenGetWithTimeoutCalled_shouldNotTimeoutIfResponseAvailable() throws Exception {
-    // given
-    FutureCommandCallback<String> future = new FutureCommandCallback<>();
-    future.onSuccess("response");
+        // then
+        assertThat(response, equalTo("response"));
 
-    // when
-    String response = future.get(1, TimeUnit.MILLISECONDS);
-
-    // then
-    assertThat(response, equalTo("response"));
-
-  }
+    }
 }

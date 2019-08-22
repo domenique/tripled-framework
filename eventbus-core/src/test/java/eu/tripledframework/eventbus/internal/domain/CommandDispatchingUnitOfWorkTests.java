@@ -9,15 +9,15 @@ import eu.tripledframework.eventbus.handler.TestEventHandler;
 import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.TestUnitOfWork;
 import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.TestingUnitOfWorkFactory;
 import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.UnitOfWorkRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class CommandDispatchingUnitOfWorkTests extends AbstractEventBusTest {
+class CommandDispatchingUnitOfWorkTests extends AbstractEventBusTest {
 
   private CommandDispatcher commandDispatcher;
   private EventPublisher eventPublisher;
@@ -25,8 +25,8 @@ public class CommandDispatchingUnitOfWorkTests extends AbstractEventBusTest {
   private TestingUnitOfWorkFactory unitOfWorkFactory;
   private TestEventHandler eventHandler;
 
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     unitOfWorkFactory = new TestingUnitOfWorkFactory();
     SynchronousEventBus eventBus = createSynchronousEventBus(Collections.emptyList(), unitOfWorkFactory);
 
@@ -40,7 +40,7 @@ public class CommandDispatchingUnitOfWorkTests extends AbstractEventBusTest {
   }
 
   @Test
-  public void whenDispatching_shouldCreateAUnitOfWork() {
+  void whenDispatching_shouldCreateAUnitOfWork() {
     // given
     HelloCommand helloCommand = new HelloCommand("Domenique");
 
@@ -54,7 +54,7 @@ public class CommandDispatchingUnitOfWorkTests extends AbstractEventBusTest {
   }
 
   @Test
-  public void whenAUnitOfWorkExists_eventsShouldBeStoredInAUnitOfWork() {
+  void whenAUnitOfWorkExists_eventsShouldBeStoredInAUnitOfWork() {
     // given
     TestEvent testEvent = new TestEvent();
     TestUnitOfWork unitOfWork = new TestUnitOfWork();

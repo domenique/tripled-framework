@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class TestValidator implements Validator {
 
-  public boolean isValidateCalled;
+  private boolean isValidateCalled;
   private boolean shouldFail;
 
   public void shouldFailNextCall(boolean shouldFail) {

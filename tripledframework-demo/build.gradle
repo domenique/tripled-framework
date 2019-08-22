@@ -14,28 +14,37 @@
  * limitations under the License.
  */
 plugins {
-  id 'org.springframework.boot' version "${springBootVersion}"
-  id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
-  id 'war'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
+    id 'war'
 }
 
 war {
-  baseName = 'eventbus-demo'
-  version = '0.0.1-SNAPSHOT'
+    baseName = 'eventbus-demo'
+    version = '0.0.1-SNAPSHOT'
 }
 
 configurations {
-  providedRuntime
+    providedRuntime
 }
-
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
 dependencies {
-  compile project(":spring-boot-eventbus-starter")
-  compile project(":eventstore-core")
-  compile("org.springframework.boot:spring-boot-starter-web")
-  compile("org.springframework.boot:spring-boot-starter-security")
-  runtime("org.hsqldb:hsqldb")
+    compile project(":spring-boot-eventbus-starter")
+    compile project(":eventstore-core")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    runtime("org.hsqldb:hsqldb")
 
-  testCompile("org.springframework.boot:spring-boot-starter-test")
-  testCompile("org.springframework.security:spring-security-test")
-  testCompile("com.jayway.jsonpath:json-path")
+    testCompile("org.junit.jupiter:junit-jupiter:5.5.1")
+    testCompile("org.hamcrest:hamcrest:2.1")
+    testCompile("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "junit", module: "junit"
+    }
+    testCompile("org.springframework.security:spring-security-test")
+    testCompile("com.jayway.jsonpath:json-path")
 }

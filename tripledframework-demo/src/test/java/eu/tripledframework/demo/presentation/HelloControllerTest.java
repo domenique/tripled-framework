@@ -18,13 +18,14 @@ package eu.tripledframework.demo.presentation;
 import eu.tripledframework.demo.CommandDispatcherDemoApplication;
 import eu.tripledframework.demo.model.SaidHelloDomainEvent;
 import eu.tripledframework.demo.infrastructure.InMemoryHelloEventStore;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -36,10 +37,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -47,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = CommandDispatcherDemoApplication.class)
 @WebAppConfiguration
 public class HelloControllerTest {
@@ -58,14 +59,14 @@ public class HelloControllerTest {
   private InMemoryHelloEventStore eventStore;
   private MockMvc mvc;
 
-  @Before
+  @BeforeEach
   public void setUpMockMvc() throws Exception {
     mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                          .apply(springSecurity())
                          .build();
   }
 
-  @After
+  @AfterEach
   public void clearEvents() throws Exception {
     ReflectionTestUtils.setField(eventStore, "events", new ArrayList<Object>());
   }

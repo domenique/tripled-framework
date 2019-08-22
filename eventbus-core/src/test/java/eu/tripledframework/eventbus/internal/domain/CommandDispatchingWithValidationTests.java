@@ -9,24 +9,24 @@ import eu.tripledframework.eventbus.internal.infrastructure.interceptor.CommandV
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.LoggingEventBusInterceptor;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.TestValidator;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.ValidatingEventBusInterceptor;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class CommandDispatchingWithValidationTests extends AbstractEventBusTest {
+class CommandDispatchingWithValidationTests extends AbstractEventBusTest {
 
   private CommandDispatcher commandDispatcher;
   private TestCommandHandler eventHandler;
   private TestValidator validator;
 
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     validator = new TestValidator();
     List<EventBusInterceptor> interceptors = new ArrayList<>();
     interceptors.add(0, new LoggingEventBusInterceptor());
@@ -41,7 +41,7 @@ public class CommandDispatchingWithValidationTests extends AbstractEventBusTest 
   }
 
   @Test
-  public void whenGivenCommandThatFailsValidation_shouldInvokeCallback() throws Exception {
+  void whenGivenCommandThatFailsValidation_shouldInvokeCallback() throws Exception {
     // given
     ValidatingCommand validatingCommand = new ValidatingCommand(null);
     validator.shouldFailNextCall(true);
@@ -65,7 +65,7 @@ public class CommandDispatchingWithValidationTests extends AbstractEventBusTest 
   }
 
   @Test
-  public void whenGivenCommandThatFailsValidation_shouldThrowException() throws Exception {
+  void whenGivenCommandThatFailsValidation_shouldThrowException() throws Exception {
     // given
     ValidatingCommand validatingCommand = new ValidatingCommand(null);
     validator.shouldFailNextCall(true);

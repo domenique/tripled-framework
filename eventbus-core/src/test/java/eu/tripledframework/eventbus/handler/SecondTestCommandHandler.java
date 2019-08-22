@@ -22,7 +22,7 @@ import eu.tripledframework.eventbus.command.HelloCommand;
 @Handler
 public class SecondTestCommandHandler {
 
-  public boolean isHelloCommandHandled;
+  private boolean isHelloCommandHandled;
 
   @Handles(HelloCommand.class)
   public String stringReturning(HelloCommand command) {
