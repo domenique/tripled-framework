@@ -1,12 +1,13 @@
 package eu.tripledframework.eventbus.autoconfigure;
 
-import org.junit.Assert;
-import org.junit.Test;
 
-public class TestTheTest {
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+class TestTheTest {
 
     @Test
-    public void name() {
-        Assert.assertEquals(true, true);
+    void name() {
+        Assertions.assertEquals(true, true);
     }
 }

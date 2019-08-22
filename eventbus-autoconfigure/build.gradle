@@ -14,72 +14,72 @@
  * limitations under the License.
  */
 plugins {
-  id 'propdeps'
-  id 'propdeps-idea'
-  id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
-  id 'java'
+    id 'propdeps'
+    id 'propdeps-idea'
+    id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
+    id 'java'
 }
 
 compileJava.dependsOn(processResources)
 
-// we can override version provided by the spring platform-bom here.
-  dependencyManagement {
+dependencyManagement {
     imports {
-      mavenBom "io.spring.platform:platform-bom:${springBomVersion}"
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
     }
-  }
+}
 
 dependencies {
-  compile project(":eventbus-core")
-  compile("org.springframework.boot:spring-boot")
-  compile("org.springframework.boot:spring-boot-autoconfigure")
-  optional("org.springframework.boot:spring-boot-configuration-processor")
+    compile project(":eventbus-core")
+    compile("org.springframework.boot:spring-boot")
+    compile("org.springframework.boot:spring-boot-autoconfigure")
+    optional("org.springframework.boot:spring-boot-configuration-processor")
 
-  testCompile("junit:junit:4.11")
+    testCompile("org.junit.jupiter:junit-jupiter:5.5.1")
+    testCompile("org.hamcrest:hamcrest:2.1")
 }
 
 uploadArchives {
-  repositories {
-    if (isDevBuild) {
-      mavenLocal()
-    } else if (isReleaseBuild || isCiBuild) {
-      mavenDeployer {
-        if (isReleaseBuild) {
-          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-        }
+    repositories {
+        if (isDevBuild) {
+            mavenLocal()
+        } else if (isReleaseBuild || isCiBuild) {
+            mavenDeployer {
+                if (isReleaseBuild) {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                }
 
-        repository(url: sonatypeRepositoryUrl) {
-          authentication(userName: sonatypeUsername, password: sonatypePassword)
-        }
+                repository(url: sonatypeRepositoryUrl) {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
 
-        pom.project {
-          name 'TripleD framework'
-          packaging 'jar'
-          description 'TripleD is a framework to create CQRS based application using Java.'
-          url 'http://www.tripled-framework.eu/'
+                pom.project {
+                    name 'TripleD framework'
+                    packaging 'jar'
+                    description 'TripleD is a framework to create CQRS based application using Java.'
+                    url 'http://www.tripled-framework.eu/'
 
-          scm {
-            url 'scm:git@github.com:domenique/tripled-framework.git'
-            connection 'scm:git@github.com:domenique/tripled-framework.git'
-            developerConnection 'scm:git@github.com:domenique/tripled-framework.git'
-          }
+                    scm {
+                        url 'scm:git@github.com:domenique/tripled-framework.git'
+                        connection 'scm:git@github.com:domenique/tripled-framework.git'
+                        developerConnection 'scm:git@github.com:domenique/tripled-framework.git'
+                    }
 
-          licenses {
-            license {
-              name 'The Apache Software License, Version 2.0'
-              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-              distribution 'repo'
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'domenique'
+                            name 'Domenique Tilleuil'
+                        }
+                    }
+                }
             }
-          }
-
-          developers {
-            developer {
-              id 'domenique'
-              name 'Domenique Tilleuil'
-            }
-          }
         }
-      }
     }
-  }
 }

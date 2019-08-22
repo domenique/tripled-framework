@@ -18,6 +18,7 @@ buildscript {
     springBootVersion = '2.1.7.RELEASE'
     springBomVersion = '2.0.8.RELEASE'
     springDepMgmtVersion = '1.0.8.RELEASE'
+    slf4jVersion = '1.7.26'
   }
   repositories {
     mavenCentral()
