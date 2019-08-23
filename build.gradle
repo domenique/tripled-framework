@@ -60,7 +60,7 @@ subprojects {
   targetCompatibility = 1.8
 
   group = 'eu.tripled-framework'
-  version = '0.0.2'
+  version = '0.0.3'
 
   //set build variables based on build type (release, continuous integration, development)
   sonatypeUsername = System.getenv('OSSRH_USERNAME')
