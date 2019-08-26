@@ -32,22 +32,41 @@ public class AsynchronousEventBus extends SynchronousEventBus {
   private final Logger logger = LoggerFactory.getLogger(AsynchronousEventBus.class);
 
   private Executor executor;
+  private final boolean asyncEventHandling;
 
   public AsynchronousEventBus(InvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory,
                               List<InvokerFactory> invokerFactories, UnitOfWorkFactory unitOfWorkFactory) {
     super(invokerRepository, interceptorChainFactory, invokerFactories, unitOfWorkFactory);
-    this.executor = Executors.newCachedThreadPool();
+    executor = Executors.newCachedThreadPool();
+    asyncEventHandling = false;
   }
 
   public AsynchronousEventBus(InvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory,
                               List<InvokerFactory> invokerFactories, UnitOfWorkFactory unitOfWorkFactory, Executor executor) {
     super(invokerRepository, interceptorChainFactory, invokerFactories, unitOfWorkFactory);
     this.executor = executor;
+    asyncEventHandling = false;
+  }
+
+  public AsynchronousEventBus(InvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory,
+                              List<InvokerFactory> invokerFactories, UnitOfWorkFactory unitOfWorkFactory, Executor executor, boolean asyncEventHandling) {
+    super(invokerRepository, interceptorChainFactory, invokerFactories, unitOfWorkFactory);
+    this.executor = executor;
+    this.asyncEventHandling = asyncEventHandling;
   }
 
   @Override
   protected <ReturnType> void dispatchInternal(Object message, CommandCallback<ReturnType> callback, UnitOfWork unitOfWork) {
     executor.execute(new RunnableCommand<>(message, callback, unitOfWork));
+  }
+
+  @Override
+  protected void publishInternal(Object event, UnitOfWork unitOfWork) {
+    if (asyncEventHandling) {
+      executor.execute(new RunnablePublish(event, unitOfWork));
+    } else {
+      super.publishInternal(event, unitOfWork);
+    }
   }
 
   private class RunnableCommand<ReturnType> implements Runnable {
@@ -67,6 +86,23 @@ public class AsynchronousEventBus extends SynchronousEventBus {
       AsynchronousEventBus.super.dispatchInternal(message, callback, unitOfWork);
     }
   }
+
+  private class RunnablePublish implements Runnable {
+
+    private UnitOfWork unitOfWork;
+    private Object event;
+
+    private RunnablePublish(Object event, UnitOfWork unitOfWork) {
+      this.unitOfWork = unitOfWork;
+      this.event = event;
+    }
+
+    @Override
+    public void run() {
+      AsynchronousEventBus.super.publishInternal(event, unitOfWork);
+    }
+  }
+
 
   @Override
   protected Logger getLogger() {
