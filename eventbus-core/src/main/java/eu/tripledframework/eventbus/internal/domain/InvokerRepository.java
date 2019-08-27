@@ -17,13 +17,10 @@ package eu.tripledframework.eventbus.internal.domain;
 
 import java.util.List;
 
-/**
- * Created by domenique on 14/01/16.
- */
 public interface InvokerRepository {
-  void add(Invoker invoker);
+    void add(Invoker invoker);
 
-  List<Invoker> findAtLeastOneByEventType(Class<?> eventType);
+    Invoker getByEventType(Class<?> eventType);
 
-  Invoker getByEventType(Class<?> eventType);
+    List<Invoker> findAllByEventType(Class<?> eventType);
 }

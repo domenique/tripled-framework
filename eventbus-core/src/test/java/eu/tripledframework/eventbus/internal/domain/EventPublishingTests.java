@@ -5,8 +5,6 @@ import eu.tripledframework.eventbus.command.AnCommandHandledByMultipleHandlers;
 import eu.tripledframework.eventbus.event.UnhandledEvent;
 import eu.tripledframework.eventbus.handler.TestCommandHandler;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.LoggingEventBusInterceptor;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.InvokerNotFoundException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,14 +42,15 @@ class EventPublishingTests extends EventBusTest {
     }
 
     @Test
-    void whenGivenAnEventWithNoHandlers_shouldThrowException() {
+    void whenGivenAnEventWithNoHandlers_shouldNotThrowException() {
         // given
         UnhandledEvent unhandledEvent = new UnhandledEvent();
 
         // when
-        Assertions.assertThrows(InvokerNotFoundException.class, () -> eventPublisher.publish(unhandledEvent));
+        eventPublisher.publish(unhandledEvent);
 
-        // then -> exception
+        // then -> no exception, warning is logged.
+
     }
 
 }
