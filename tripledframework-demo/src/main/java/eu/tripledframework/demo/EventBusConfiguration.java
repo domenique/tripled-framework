@@ -38,7 +38,8 @@ public class EventBusConfiguration {
         taskExecutor());
   }
 
-  private Executor taskExecutor() {
+  @Bean
+  public Executor taskExecutor() {
     ThreadPoolTaskExecutor executorService = new ThreadPoolTaskExecutor();
     executorService.setCorePoolSize(5);
     executorService.setMaxPoolSize(10);

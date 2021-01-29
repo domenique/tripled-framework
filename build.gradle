@@ -14,136 +14,136 @@
  * limitations under the License.
  */
 buildscript {
-  ext {
-    springBootVersion = '2.1.7.RELEASE'
-    springBomVersion = '2.0.8.RELEASE'
-    springDepMgmtVersion = '1.0.8.RELEASE'
-    slf4jVersion = '1.7.26'
-  }
-  repositories {
-    mavenCentral()
-    maven { url 'http://repo.spring.io/plugins-release' }
-    jcenter()
-  }
+    ext {
+        springBootVersion = '2.4.2'
+        springDepMgmtVersion = '1.0.11.RELEASE'
+        slf4jVersion = '1.7.+'
+        junitVersion = '5.7.+'
+    }
+    repositories {
+        mavenCentral()
+        maven { url 'http://repo.spring.io/plugins-release' }
+        jcenter()
+    }
 }
 plugins {
-  id "com.github.kt3k.coveralls" version "2.8.4"
+    id "com.github.kt3k.coveralls" version "2.8.4"
 }
 
 // some global vars to determine the type of build.
 ext {
-  isDevBuild = false
-  isCiBuild = false
-  isReleaseBuild = false
-  sonatypeRepositoryUrl = null
-  sonatypeUsername = null
-  sonatypePassword = null
+    isDevBuild = false
+    isCiBuild = false
+    isReleaseBuild = false
+    sonatypeRepositoryUrl = null
+    sonatypeUsername = null
+    sonatypePassword = null
 }
 
 
 allprojects {
-  apply plugin: 'jacoco'
+    apply plugin: 'jacoco'
 
-  repositories {
-    mavenLocal()
-    mavenCentral()
-    jcenter()
-  }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
 }
 
 subprojects {
-  apply plugin: 'java'
-  apply plugin: 'signing'
-  apply plugin: 'maven'
+    apply plugin: 'java'
+    apply plugin: 'signing'
+    apply plugin: 'maven'
 
-  sourceCompatibility = 1.8
-  targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-  group = 'eu.tripled-framework'
-  version = '0.0.3'
+    group = 'eu.tripled-framework'
+    version = '0.0.3'
 
-  //set build variables based on build type (release, continuous integration, development)
-  sonatypeUsername = System.getenv('OSSRH_USERNAME')
-  sonatypePassword = System.getenv('OSSRH_PASSWD')
-  if (project.hasProperty("release")) {
-    isReleaseBuild = true
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-  } else if (project.hasProperty("ci")) {
-    isCiBuild = true
-    version += "-SNAPSHOT"
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-  } else {
-    version += "-DEV"
-    isDevBuild = true
-  }
-
-  task javadocJar(type: Jar) {
-    archiveClassifier = 'javadoc'
-    from javadoc
-  }
-
-  task sourcesJar(type: Jar) {
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
-  }
-
-  artifacts {
-    archives javadocJar, sourcesJar
-  }
-
-  if (isReleaseBuild) {
-    signing {
-      sign configurations.archives
+    //set build variables based on build type (release, continuous integration, development)
+    sonatypeUsername = System.getenv('OSSRH_USERNAME')
+    sonatypePassword = System.getenv('OSSRH_PASSWD')
+    if (project.hasProperty("release")) {
+        isReleaseBuild = true
+        sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+    } else if (project.hasProperty("ci")) {
+        isCiBuild = true
+        version += "-SNAPSHOT"
+        sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+    } else {
+        version += "-DEV"
+        isDevBuild = true
     }
-  } else {
-    task signArchives {
-      // do nothing
-    }
-  }
 
-  jacocoTestReport {
-    getAdditionalSourceDirs().from(sourceSets.main.allSource.srcDirs)
-    getSourceDirectories().from(sourceSets.main.allSource.srcDirs)
-    getClassDirectories().from(sourceSets.main.output)
-    reports {
-      html.enabled = true
-      xml.enabled = true
-      csv.enabled = false
+    task javadocJar(type: Jar) {
+        archiveClassifier = 'javadoc'
+        from javadoc
     }
-  }
+
+    task sourcesJar(type: Jar) {
+        archiveClassifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
+    if (isReleaseBuild) {
+        signing {
+            sign configurations.archives
+        }
+    } else {
+        task signArchives {
+            // do nothing
+        }
+    }
+
+    jacocoTestReport {
+        getAdditionalSourceDirs().from(sourceSets.main.allSource.srcDirs)
+        getSourceDirectories().from(sourceSets.main.allSource.srcDirs)
+        getClassDirectories().from(sourceSets.main.output)
+        reports {
+            html.enabled = true
+            xml.enabled = true
+            csv.enabled = false
+        }
+    }
 }
 
 task jacocoRootReport(type: JacocoReport) {
-  dependsOn = subprojects.test
+    dependsOn = subprojects.test
 
-  getAdditionalSourceDirs().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
-  getSourceDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
-  getClassDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.output)
-  getExecutionData().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.jacocoTestReport.executionData)
-  reports {
-    html.enabled = true
-    xml.enabled = true
-    csv.enabled = false
-  }
-  onlyIf = {
-    true
-  }
-  doFirst {
-    getExecutionData().from(executionData.findAll {
-      it.exists()
-    })
-  }
+    getAdditionalSourceDirs().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
+    getSourceDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
+    getClassDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.output)
+    getExecutionData().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.jacocoTestReport.executionData)
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+    onlyIf = {
+        true
+    }
+    doFirst {
+        getExecutionData().from(executionData.findAll {
+            it.exists()
+        })
+    }
 }
 
 
 coveralls {
-  sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
-  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+    sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
 
 tasks.coveralls {
-  group = 'Coverage reports'
-  description = 'Uploads the aggregated coverage report to Coveralls'
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
 
-  dependsOn jacocoRootReport
+    dependsOn jacocoRootReport
 }

@@ -19,12 +19,10 @@ import eu.tripledframework.demo.application.HelloCommandHandler;
 import eu.tripledframework.eventbus.EventPublisher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class CommandDispatcherDemoApplication extends SpringBootServletInitializer {
+public class CommandDispatcherDemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CommandDispatcherDemoApplication.class, args);
@@ -35,8 +33,4 @@ public class CommandDispatcherDemoApplication extends SpringBootServletInitializ
         return new HelloCommandHandler(eventPublisher);
     }
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(CommandDispatcherDemoApplication.class);
-    }
 }

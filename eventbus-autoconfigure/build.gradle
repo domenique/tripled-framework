@@ -16,16 +16,11 @@
 plugins {
     id "cn.bestwu.propdeps" version "0.0.10"
     id "cn.bestwu.propdeps-idea" version "0.0.10"
+    id 'org.springframework.boot' version "${springBootVersion}" apply false
     id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
 }
 
 compileJava.dependsOn(processResources)
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
-    }
-}
 
 test {
     useJUnitPlatform()
@@ -35,13 +30,14 @@ test {
 }
 
 dependencies {
-    compile project(":eventbus-core")
-    compile("org.springframework.boot:spring-boot")
-    compile("org.springframework.boot:spring-boot-autoconfigure")
-    optional("org.springframework.boot:spring-boot-configuration-processor")
+    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+    implementation project(":eventbus-core")
+    implementation("org.springframework.boot:spring-boot")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("org.springframework.boot:spring-boot-configuration-processor")
 
-    testCompile("org.junit.jupiter:junit-jupiter:5.5.1")
-    testCompile("org.hamcrest:hamcrest:2.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
+    testImplementation("org.hamcrest:hamcrest:2.1")
 }
 
 uploadArchives {

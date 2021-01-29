@@ -16,9 +16,6 @@
 package eu.tripledframework.demo.presentation;
 
 import eu.tripledframework.demo.CommandDispatcherDemoApplication;
-import eu.tripledframework.demo.model.SaidHelloDomainEvent;
-import eu.tripledframework.demo.infrastructure.InMemoryHelloEventStore;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,21 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,95 +42,84 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class HelloControllerTest {
 
-  @Autowired
-  private WebApplicationContext webApplicationContext;
-  @Autowired
-  private InMemoryHelloEventStore eventStore;
-  private MockMvc mvc;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+    private MockMvc mvc;
 
-  @BeforeEach
-  public void setUpMockMvc() throws Exception {
-    mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                         .apply(springSecurity())
-                         .build();
-  }
+    @BeforeEach
+    public void setUpMockMvc() throws Exception {
+        mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(springSecurity())
+                .build();
+    }
 
-  @AfterEach
-  public void clearEvents() throws Exception {
-    ReflectionTestUtils.setField(eventStore, "events", new ArrayList<Object>());
-  }
+    @Test
+    public void whenGivenAValidName_shouldSayHi() throws Exception {
+        // given
+        String name = "John Doe";
 
-  @Test
-  public void whenGivenAValidName_shouldSayHi() throws Exception {
-    // given
-    String name = "John Doe";
+        // when
+        ResultActions result = sayHiTo(name);
 
-    // when
-    ResultActions result = sayHiTo(name);
+        // then
+        result.andExpect(status().is2xxSuccessful());
+        result.andExpect(jsonPath("$.message", equalTo("Hello " + name)));
+    }
 
-    // then
-    result.andExpect(status().is2xxSuccessful());
-    result.andExpect(jsonPath("$.message", equalTo("Hello " + name)));
-    List<Object> events = (List<Object>) ReflectionTestUtils.getField(eventStore, "events");
-    assertThat(events, hasSize(1));
-    assertThat(events.get(0), instanceOf(SaidHelloDomainEvent.class));
-    assertThat(((SaidHelloDomainEvent)events.get(0)).getName(), equalTo(name));
-  }
+    @Test
+    public void whenGivenAnInValidName_shouldBarf() throws Exception {
+        // given
+        String name = "dj";
 
-  @Test
-  public void whenGivenAnInValidName_shouldBarf() throws Exception {
-    // given
-    String name = "dj";
+        // when
+        ResultActions result = sayHiTo(name);
 
-    // when
-    ResultActions result = sayHiTo(name);
+        // then
+        result.andDo(print());
+        result.andExpect(status().is4xxClientError());
+        result.andExpect(jsonPath("$.[0].message", equalTo("size must be between 3 and 2147483647")));
+    }
 
-    // then
-    result.andDo(print());
-    result.andExpect(status().is4xxClientError());
-    result.andExpect(jsonPath("$.[0].message", equalTo("size must be between 3 and 2147483647")));
-  }
+    @Test
+    public void whenSayingHiToTheDevil_shouldBarf() throws Exception {
+        // given
+        String name = "The devil";
 
-  @Test
-  public void whenSayingHiToTheDevil_shouldBarf() throws Exception {
-    // given
-    String name = "The devil";
+        // when
+        ResultActions result = sayHiTo(name);
 
-    // when
-    ResultActions result = sayHiTo(name);
+        // then
+        result.andDo(print());
+        result.andExpect(status().is4xxClientError());
+        result.andExpect(jsonPath("$.[0].message", equalTo("The execution failed with an uncaught exception.")));
+    }
 
-    // then
-    result.andDo(print());
-    result.andExpect(status().is4xxClientError());
-    result.andExpect(jsonPath("$.[0].message", equalTo("The execution failed with an uncaught exception.")));
-  }
+    @Test
+    public void whenSayingHiWithoutName_shouldReturnWithUsername() throws Exception {
 
-  @Test
-  public void whenSayingHiWithoutName_shouldReturnWithUsername() throws Exception {
+        // when
+        ResultActions result = sayHi();
 
-    // when
-    ResultActions result = sayHi();
+        // then
+        result.andExpect(status().is2xxSuccessful());
+        result.andExpect(jsonPath("$.message", equalTo("Hello authenticated user testuser")));
+    }
 
-    // then
-    result.andExpect(status().is2xxSuccessful());
-    result.andExpect(jsonPath("$.message", equalTo("Hello authenticated user testuser")));
-  }
+    private ResultActions sayHiTo(String name) throws Exception {
+        return mvc
+                .perform(get("/hello/{name}", name)
+                        .with(httpBasic("testuser", "password"))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON));
+    }
 
-  private ResultActions sayHiTo(String name) throws Exception {
-    return mvc
-        .perform(get("/hello/{name}", name)
-            .with(httpBasic("testuser","password"))
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON));
-  }
-
-  private ResultActions sayHi() throws Exception {
-    return mvc
-        .perform(get("/hello")
-            .with(httpBasic("testuser","password"))
-            .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON));
-  }
+    private ResultActions sayHi() throws Exception {
+        return mvc
+                .perform(get("/hello")
+                        .with(httpBasic("testuser", "password"))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON));
+    }
 
 
 }

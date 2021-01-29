@@ -25,7 +25,7 @@ dependencies {
   compile("org.slf4j:slf4j-api:${slf4jVersion}")
   compile("javax.validation:validation-api:2.0.1.Final")
 
-  testCompile("org.junit.jupiter:junit-jupiter:5.5.1")
+  testCompile("org.junit.jupiter:junit-jupiter:${junitVersion}")
   testCompile("org.hamcrest:hamcrest:2.1")
   testCompile("ch.qos.logback:logback-classic:1.2.3")
 }
