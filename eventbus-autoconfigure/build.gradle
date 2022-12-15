@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    id 'org.springframework.boot' version "${springBootVersion}" apply false
-    id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
-}
+//plugins {
+//    id 'java'
+//    id 'org.springframework.boot' version "${springBootVersion}" apply false
+//    id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
+//}
 
 compileJava.dependsOn(processResources)
 
@@ -28,11 +29,11 @@ test {
 }
 
 dependencies {
-    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
+//    implementation platform(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
     implementation project(":eventbus-core")
-    implementation("org.springframework.boot:spring-boot")
-    implementation("org.springframework.boot:spring-boot-autoconfigure")
-    implementation("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("org.springframework.boot:spring-boot:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
     implementation("javax.validation:validation-api:2.0.1.Final")
 
     testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")

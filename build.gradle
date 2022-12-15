@@ -17,8 +17,8 @@ buildscript {
     ext {
         springBootVersion = '2.7.6'
         springDepMgmtVersion = '1.1.0'
-        slf4jVersion = '2.+'
-        junitVersion = '5.9.+'
+        slf4jVersion = '2.0.6'
+        junitVersion = '5.9.1'
     }
     repositories {
         mavenCentral()
@@ -44,6 +44,9 @@ ext {
 allprojects {
     apply plugin: 'jacoco'
 
+    group = 'eu.tripled-framework'
+    version = '0.0.3'
+
     repositories {
         mavenLocal()
         mavenCentral()
@@ -59,8 +62,10 @@ subprojects {
     sourceCompatibility = 17
     targetCompatibility = 17
 
-    group = 'eu.tripled-framework'
-    version = '0.0.3'
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
 
     //set build variables based on build type (release, continuous integration, development)
     sonatypePassword = System.getenv('OSSRH_PASSWD')
@@ -78,35 +83,9 @@ subprojects {
         isDevBuild = true
     }
 
-    task javadocJar(type: Jar) {
-        archiveClassifier = 'javadoc'
-        from javadoc
-    }
-
-    task sourcesJar(type: Jar) {
-        archiveClassifier = 'sources'
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives javadocJar, sourcesJar
-    }
-
     if (isReleaseBuild) {
         signing {
             sign publishing.publications.mavenJava
-        }
-    }
-
-        jacocoTestReport {
-            getAdditionalSourceDirs().from(sourceSets.main.allSource.srcDirs)
-            getSourceDirectories().from(sourceSets.main.allSource.srcDirs)
-            getClassDirectories().from(sourceSets.main.output)
-            reports {
-                html.enabled = true
-                xml.enabled = true
-                csv.enabled = false
-            }
         }
     }
 
@@ -123,9 +102,10 @@ subprojects {
 
         publications {
             mavenJava(MavenPublication) {
+                from components.java
+
                 pom {
                     name = 'TripleD framework'
-                    packaging = 'jar'
                     description = 'TripleD is a framework to create CQRS based application using Java.'
                     url = 'http://www.tripled-framework.eu'
                     licenses {
@@ -150,37 +130,49 @@ subprojects {
         }
     }
 
-    task jacocoRootReport(type: JacocoReport) {
-        dependsOn = subprojects.test
-
-        getAdditionalSourceDirs().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
-        getSourceDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
-        getClassDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.output)
-        getExecutionData().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.jacocoTestReport.executionData)
+    jacocoTestReport {
+        getAdditionalSourceDirs().from(sourceSets.main.allSource.srcDirs)
+        getSourceDirectories().from(sourceSets.main.allSource.srcDirs)
+        getClassDirectories().from(sourceSets.main.output)
         reports {
             html.enabled = true
             xml.enabled = true
             csv.enabled = false
         }
-        onlyIf = {
-            true
-        }
-        doFirst {
-            getExecutionData().from(executionData.findAll {
-                it.exists()
-            })
-        }
     }
+}
 
+task jacocoRootReport(type: JacocoReport) {
+    dependsOn = subprojects.test
 
-    coveralls {
-        sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
-        jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+    getAdditionalSourceDirs().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
+    getSourceDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
+    getClassDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.output)
+    getExecutionData().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.jacocoTestReport.executionData)
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
     }
-
-    tasks.coveralls {
-        group = 'Coverage reports'
-        description = 'Uploads the aggregated coverage report to Coveralls'
-
-        dependsOn jacocoRootReport
+    onlyIf = {
+        true
     }
+    doFirst {
+        getExecutionData().from(executionData.findAll {
+            it.exists()
+        })
+    }
+}
+
+
+coveralls {
+    sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+
+    dependsOn jacocoRootReport
+}

@@ -2,7 +2,7 @@ language: java
 jdk:
 - openjdk17
 after_success:
-- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && ./gradlew uploadArchives -Pci -x :tripledframework-demo:uploadArchives
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && ./gradlew publish -Pci -x :tripledframework-demo:publish
 - ./gradlew coveralls
 env:
   global:
