@@ -27,7 +27,8 @@ buildscript {
     }
 }
 plugins {
-    id "com.github.kt3k.coveralls" version "2.8.4"
+    id "com.github.kt3k.coveralls" version "2.12.0"
+    id 'jacoco-report-aggregation'
 }
 
 // some global vars to determine the type of build.
@@ -154,14 +155,7 @@ task jacocoRootReport(type: JacocoReport) {
         xml.enabled = true
         csv.enabled = false
     }
-    onlyIf = {
-        true
-    }
-    doFirst {
-        getExecutionData().from(executionData.findAll {
-            it.exists()
-        })
-    }
+
 }
 
 
@@ -169,6 +163,7 @@ coveralls {
     sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
     jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
+
 
 tasks.coveralls {
     group = 'Coverage reports'
