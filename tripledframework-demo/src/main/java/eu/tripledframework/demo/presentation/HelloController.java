@@ -47,7 +47,7 @@ public class HelloController {
   }
 
   @RequestMapping(value = "/hello", method = RequestMethod.GET)
-  public HelloResponse sayHiAuthenticated(Principal principal) throws ExecutionException, InterruptedException {
+  public HelloResponse sayHiToPrincipal(Principal principal) throws ExecutionException, InterruptedException {
     LOGGER.debug("Saying hi to authenticated user {}", principal);
 
     return new HelloResponse("Hello authenticated user " + principal.getName());

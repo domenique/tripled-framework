@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 plugins {
-    id "cn.bestwu.propdeps" version "0.0.10"
-    id "cn.bestwu.propdeps-idea" version "0.0.10"
     id 'org.springframework.boot' version "${springBootVersion}" apply false
     id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
 }
@@ -35,53 +33,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.boot:spring-boot-autoconfigure")
     implementation("org.springframework.boot:spring-boot-configuration-processor")
+    implementation("javax.validation:validation-api:2.0.1.Final")
 
     testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
     testImplementation("org.hamcrest:hamcrest:2.1")
-}
-
-uploadArchives {
-    repositories {
-        if (isDevBuild) {
-            mavenLocal()
-        } else if (isReleaseBuild || isCiBuild) {
-            mavenDeployer {
-                if (isReleaseBuild) {
-                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                }
-
-                repository(url: sonatypeRepositoryUrl) {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
-                }
-
-                pom.project {
-                    name 'TripleD framework'
-                    packaging 'jar'
-                    description 'TripleD is a framework to create CQRS based application using Java.'
-                    url 'http://www.tripled-framework.eu/'
-
-                    scm {
-                        url 'scm:git@github.com:domenique/tripled-framework.git'
-                        connection 'scm:git@github.com:domenique/tripled-framework.git'
-                        developerConnection 'scm:git@github.com:domenique/tripled-framework.git'
-                    }
-
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id 'domenique'
-                            name 'Domenique Tilleuil'
-                        }
-                    }
-                }
-            }
-        }
-    }
 }

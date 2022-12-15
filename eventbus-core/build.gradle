@@ -22,56 +22,10 @@ test {
 }
 
 dependencies {
-  compile("org.slf4j:slf4j-api:${slf4jVersion}")
-  compile("javax.validation:validation-api:2.0.1.Final")
+  implementation("org.slf4j:slf4j-api:${slf4jVersion}")
+  implementation("javax.validation:validation-api:2.0.1.Final")
 
-  testCompile("org.junit.jupiter:junit-jupiter:${junitVersion}")
-  testCompile("org.hamcrest:hamcrest:2.1")
-  testCompile("ch.qos.logback:logback-classic:1.2.3")
-}
-
-uploadArchives {
-  repositories {
-    if (isDevBuild) {
-      mavenLocal()
-    } else if (isReleaseBuild || isCiBuild) {
-      mavenDeployer {
-        if (isReleaseBuild) {
-          beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-        }
-
-        repository(url: sonatypeRepositoryUrl) {
-          authentication(userName: sonatypeUsername, password: sonatypePassword)
-        }
-
-        pom.project {
-          name 'TripleD framework'
-          packaging 'jar'
-          description 'TripleD is a framework to create CQRS based application using Java.'
-          url 'http://www.tripled-framework.eu/'
-
-          scm {
-            url 'scm:git@github.com:domenique/tripled-framework.git'
-            connection 'scm:git@github.com:domenique/tripled-framework.git'
-            developerConnection 'scm:git@github.com:domenique/tripled-framework.git'
-          }
-
-          licenses {
-            license {
-              name 'The Apache Software License, Version 2.0'
-              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-              distribution 'repo'
-            }
-          }
-
-          developers {
-            developer {
-              id 'domenique'
-              name 'Domenique Tilleuil'
-            }
-          }
-        }
-      }
-    }
-  }
+  testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
+  testImplementation("org.hamcrest:hamcrest:2.2")
+  testImplementation("ch.qos.logback:logback-classic:1.2.11")
 }

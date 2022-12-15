@@ -41,7 +41,7 @@ dependencies {
     runtimeClasspath("org.hsqldb:hsqldb")
 
     testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
-    testImplementation("org.hamcrest:hamcrest:2.1")
+    testImplementation("org.hamcrest:hamcrest:2.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude group: "junit", module: "junit"
     }
