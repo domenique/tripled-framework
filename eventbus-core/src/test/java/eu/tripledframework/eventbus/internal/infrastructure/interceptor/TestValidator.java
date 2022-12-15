@@ -15,12 +15,12 @@
  */
 package eu.tripledframework.eventbus.internal.infrastructure.interceptor;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.Validator;
-import javax.validation.executable.ExecutableValidator;
-import javax.validation.metadata.BeanDescriptor;
-import javax.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import jakarta.validation.Validator;
+import jakarta.validation.executable.ExecutableValidator;
+import jakarta.validation.metadata.BeanDescriptor;
+import jakarta.validation.metadata.ConstraintDescriptor;
 import java.util.HashSet;
 import java.util.Set;
 

@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//plugins {
-//    id 'java'
-//    id 'org.springframework.boot' version "${springBootVersion}" apply false
-//    id 'io.spring.dependency-management' version "${springDepMgmtVersion}"
-//}
 
 compileJava.dependsOn(processResources)
 
@@ -34,8 +29,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}")
-    implementation("javax.validation:validation-api:2.0.1.Final")
+    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
-    testImplementation("org.hamcrest:hamcrest:2.1")
+    testImplementation('org.hamcrest:hamcrest:2.2')
 }

@@ -15,7 +15,7 @@
  */
 package eu.tripledframework.eventbus.command;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class ValidatingCommand {
 

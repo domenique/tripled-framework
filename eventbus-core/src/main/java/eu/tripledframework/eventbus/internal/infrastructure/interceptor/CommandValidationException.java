@@ -15,7 +15,9 @@
  */
 package eu.tripledframework.eventbus.internal.infrastructure.interceptor;
 
-import javax.validation.ConstraintViolation;
+
+import jakarta.validation.ConstraintViolation;
+
 import java.util.Set;
 
 public class CommandValidationException extends RuntimeException {

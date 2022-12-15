@@ -15,7 +15,7 @@
  */
 package eu.tripledframework.demo.application;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 public class HelloCommand {
 

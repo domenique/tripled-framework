@@ -17,12 +17,12 @@ package eu.tripledframework.eventbus.internal.infrastructure.interceptor;
 
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 
 import eu.tripledframework.eventbus.EventBusInterceptor;
 import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
 import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 
 public class ValidatingEventBusInterceptor implements EventBusInterceptor {
 

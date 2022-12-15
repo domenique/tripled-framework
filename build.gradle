@@ -15,7 +15,7 @@
  */
 buildscript {
     ext {
-        springBootVersion = '2.7.6'
+        springBootVersion = '3.0.0'
         springDepMgmtVersion = '1.1.0'
         slf4jVersion = '2.0.6'
         junitVersion = '5.9.1'
@@ -28,7 +28,6 @@ buildscript {
 }
 plugins {
     id "com.github.kt3k.coveralls" version "2.12.0"
-    id 'jacoco-report-aggregation'
 }
 
 // some global vars to determine the type of build.

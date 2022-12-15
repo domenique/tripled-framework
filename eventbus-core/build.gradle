@@ -23,9 +23,9 @@ test {
 
 dependencies {
   implementation("org.slf4j:slf4j-api:${slf4jVersion}")
-  implementation("javax.validation:validation-api:2.0.1.Final")
+  implementation("jakarta.validation:jakarta.validation-api:3.0.2")
 
   testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
   testImplementation("org.hamcrest:hamcrest:2.2")
-  testImplementation("ch.qos.logback:logback-classic:1.2.11")
+  testImplementation('ch.qos.logback:logback-classic:1.4.5')
 }
