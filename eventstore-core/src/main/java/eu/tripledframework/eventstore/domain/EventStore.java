@@ -36,16 +36,16 @@ public class EventStore<AggregateRootType> {
   }
 
   public Optional<AggregateRootType> findById(String identifier) {
-    Optional<Snapshot<AggregateRootType>> retrievedSnapshot = retrieveSnapshot(identifier);
+    var retrievedSnapshot = retrieveSnapshot(identifier);
 
     if (retrievedSnapshot.isPresent()) {
-      Snapshot<AggregateRootType> snapshot = retrievedSnapshot.get();
-      Collection<DomainEvent> allEvents =
+      var snapshot = retrievedSnapshot.get();
+      var allEvents =
           eventRepository.findAllByIdAndAfterRevision(identifier, snapshot.getRevision());
 
       return Optional.ofNullable(objectConstructor.applyDomainEvents(snapshot.getAggregateRoot(), allEvents));
     } else {
-      Collection<DomainEvent> allEvents = eventRepository.findAllById(identifier);
+      var allEvents = eventRepository.findAllById(identifier);
 
       return Optional.ofNullable(objectConstructor.construct(allEvents));
     }

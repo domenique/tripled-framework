@@ -49,11 +49,11 @@ public final class SimpleInvoker implements Invoker {
 
   @Override
   public Object invoke(Object object) {
-    LOGGER.debug("About to invoke {}.{}() with event {}", eventHandler.getClass().getSimpleName(), method.getName(), object);
+    LOGGER.debug("Invoking {}.{}({})", eventHandler.getClass().getSimpleName(), method.getName(), object);
     try {
       return method.invoke(eventHandler, object);
     } catch (IllegalAccessException e) {
-      String errorMsg = String.format("Could not invoke Handler method %s on %s", method.getName(), eventHandler.getClass().getSimpleName());
+      var errorMsg = String.format("Could not invoke Handler method %s on %s", method.getName(), eventHandler.getClass().getSimpleName());
       throw new InvocationException(errorMsg, e);
     } catch (InvocationTargetException e) {
       if (e.getCause() instanceof RuntimeException) {
@@ -67,11 +67,7 @@ public final class SimpleInvoker implements Invoker {
 
   @Override
   public String toString() {
-    return "Invoker{" +
-           "eventType=" + eventType +
-           ", eventHandler=" + eventHandler +
-           ", method=" + method +
-           '}';
+    return method.getDeclaringClass().getSimpleName() + "." + method.getName() + "(" + eventType.getSimpleName() + ")";
   }
 
   @Override
@@ -87,7 +83,7 @@ public final class SimpleInvoker implements Invoker {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    final SimpleInvoker other = (SimpleInvoker) obj;
+    final var other = (SimpleInvoker) obj;
     return Objects.equals(this.eventType, other.eventType)
         && Objects.equals(this.eventHandler, other.eventHandler)
         && Objects.equals(this.method, other.method);

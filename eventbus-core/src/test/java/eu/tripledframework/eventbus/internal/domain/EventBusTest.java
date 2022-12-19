@@ -29,8 +29,8 @@ class EventBusTest extends AbstractEventBusTest {
   @Test
   void whenGivenAnEventHandlerInvokerFactory_shouldUseIt() throws Exception {
     // given
-    TestInvokerFactory invokerFactory = new TestInvokerFactory();
-    SynchronousEventBus eventBus = createSynchronousEventBus(Collections.emptyList(), Collections.singletonList(invokerFactory));
+    var invokerFactory = new TestInvokerFactory();
+    var eventBus = createSynchronousEventBus(Collections.emptyList(), Collections.emptyList(), Collections.singletonList(invokerFactory));
 
     // when
     eventBus.subscribe(new TestCommandHandler());

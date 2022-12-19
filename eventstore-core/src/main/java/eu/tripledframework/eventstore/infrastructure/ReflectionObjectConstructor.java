@@ -58,8 +58,8 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
       return null;
     }
 
-    DomainEvent firstEvent = events.stream().findFirst().get();
-    T instance = createInstance(firstEvent);
+    var firstEvent = events.stream().findFirst().get();
+    var instance = createInstance(firstEvent);
     LOGGER.debug("Created new {} with event {}", instance.getClass().getSimpleName(), firstEvent);
 
     events.stream()
@@ -84,14 +84,14 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
   }
 
   private T createInstance(DomainEvent event) {
-    Constructor constructor = getEventHandlerConstructor(event);
+    var constructor = getEventHandlerConstructor(event);
     if (constructor == null) {
       throw new AggregateRootReconstructionException(
           String.format("Could not find a suitable constructor for event %s", event));
     }
     try {
       constructor.setAccessible(true);
-      Object[] parameters = getParametersValues(constructor.getParameterAnnotations(), event);
+      var parameters = getParametersValues(constructor.getParameterAnnotations(), event);
       return (T) constructor.newInstance(parameters);
     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
       throw new AggregateRootReconstructionException(
@@ -100,14 +100,14 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
   }
 
   private void applyDomainEvent(T instance, DomainEvent event) {
-    Method method = getEventHandlerMethods(event);
+    var method = getEventHandlerMethods(event);
     if (method == null) {
       throw new AggregateRootReconstructionException(
           String.format("Could not find a suitable method for event %s", event));
     }
     try {
       method.setAccessible(true);
-      Object[] parameters = getParametersValues(method.getParameterAnnotations(), event);
+      var parameters = getParametersValues(method.getParameterAnnotations(), event);
       method.invoke(instance, parameters);
       LOGGER.debug("Applied {}", event);
     } catch (IllegalAccessException | InvocationTargetException e) {
@@ -117,11 +117,11 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
   }
 
   private Method getEventHandlerMethods(DomainEvent event) {
-    Set<Method> methods = Arrays.stream(targetClass.getMethods())
+    var methods = Arrays.stream(targetClass.getMethods())
         .filter(constructor -> constructor.isAnnotationPresent(ConstructionHandler.class))
         .collect(Collectors.toSet());
-    for (Method method : methods) {
-      ConstructionHandler annotation = method.getAnnotation(ConstructionHandler.class);
+    for (var method : methods) {
+      var annotation = method.getAnnotation(ConstructionHandler.class);
       if (annotation.value().equals(event.getClass())) {
         return method;
       }
@@ -133,8 +133,8 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
     Set<Constructor> constructors = Arrays.stream(targetClass.getConstructors())
         .filter(contructor -> contructor.isAnnotationPresent(ConstructionHandler.class))
         .collect(Collectors.toSet());
-    for (Constructor constructor : constructors) {
-      ConstructionHandler constructionHandlerAnnotation =
+    for (var constructor : constructors) {
+      var constructionHandlerAnnotation =
           (ConstructionHandler) constructor.getAnnotation(ConstructionHandler.class);
       if (constructionHandlerAnnotation.value().equals(event.getClass())) {
         return constructor;
@@ -146,10 +146,10 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
   private Object[] getParametersValues(Annotation[][] parameterAnnotations, DomainEvent event) {
     List<Object> params = new ArrayList<>();
 
-    for (Annotation[] annotations : parameterAnnotations) {
-      for (Annotation annotation : annotations) {
+    for (var annotations : parameterAnnotations) {
+      for (var annotation : annotations) {
         if (annotation.annotationType().equals(EP.class)) {
-          EP eventParam = (EP) annotation;
+          var eventParam = (EP) annotation;
           params.add(getValue(eventParam.value(), event));
         }
       }
@@ -165,7 +165,7 @@ public class ReflectionObjectConstructor<T> implements ObjectConstructor<T> {
   }
 
   private Object getValue(String expr, DomainEvent event) {
-    JXPathContext context = JXPathContext.newContext(event);
+    var context = JXPathContext.newContext(event);
     return context.getValue(expr);
   }
 }

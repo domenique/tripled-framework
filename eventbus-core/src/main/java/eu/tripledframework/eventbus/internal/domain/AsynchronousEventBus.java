@@ -19,9 +19,7 @@ import eu.tripledframework.eventbus.CommandCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * An Implementation of the CommandDispatcher which executes the command and events in an asynchronous fashion.
@@ -29,69 +27,62 @@ import java.util.concurrent.Executors;
  */
 public class AsynchronousEventBus extends SynchronousEventBus {
 
-    private final Logger logger = LoggerFactory.getLogger(AsynchronousEventBus.class);
+  private final Logger logger = LoggerFactory.getLogger(AsynchronousEventBus.class);
 
-    private Executor executor;
+  private Executor executor;
 
-    public AsynchronousEventBus(InvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory,
-                                List<InvokerFactory> invokerFactories, UnitOfWorkFactory unitOfWorkFactory) {
-        super(invokerRepository, interceptorChainFactory, invokerFactories, unitOfWorkFactory);
-        executor = Executors.newCachedThreadPool();
-    }
+  AsynchronousEventBus(DefaultEventBusBuilder builder) {
+    super(builder);
+    executor = builder.executor;
+  }
 
-    public AsynchronousEventBus(InvokerRepository invokerRepository, InterceptorChainFactory interceptorChainFactory,
-                                List<InvokerFactory> invokerFactories, UnitOfWorkFactory unitOfWorkFactory, Executor executor) {
-        super(invokerRepository, interceptorChainFactory, invokerFactories, unitOfWorkFactory);
-        this.executor = executor;
+  @Override
+  protected <ReturnType> void dispatchInternal(Object message, CommandCallback<ReturnType> callback, UnitOfWork unitOfWork) {
+    executor.execute(new RunnableDispatch<>(message, callback, unitOfWork));
+  }
+
+  @Override
+  protected void publishInternal(Object event, UnitOfWork unitOfWork) {
+    executor.execute(new RunnablePublish(event, unitOfWork));
+  }
+
+  private class RunnableDispatch<ReturnType> implements Runnable {
+
+    private final Object message;
+    private final CommandCallback<ReturnType> callback;
+    private final UnitOfWork unitOfWork;
+
+    public RunnableDispatch(Object message, CommandCallback<ReturnType> callback, UnitOfWork unitOfWork) {
+      this.message = message;
+      this.callback = callback;
+      this.unitOfWork = unitOfWork;
     }
 
     @Override
-    protected <ReturnType> void dispatchInternal(Object message, CommandCallback<ReturnType> callback, UnitOfWork unitOfWork) {
-        executor.execute(new RunnableDispatch<>(message, callback, unitOfWork));
+    public void run() {
+      AsynchronousEventBus.super.dispatchInternal(message, callback, unitOfWork);
+    }
+  }
+
+  private class RunnablePublish implements Runnable {
+
+    private UnitOfWork unitOfWork;
+    private Object event;
+
+    private RunnablePublish(Object event, UnitOfWork unitOfWork) {
+      this.unitOfWork = unitOfWork;
+      this.event = event;
     }
 
     @Override
-    protected void publishInternal(Object event, UnitOfWork unitOfWork) {
-        executor.execute(new RunnablePublish(event, unitOfWork));
+    public void run() {
+      AsynchronousEventBus.super.publishInternal(event, unitOfWork);
     }
-
-    private class RunnableDispatch<ReturnType> implements Runnable {
-
-        private final Object message;
-        private final CommandCallback<ReturnType> callback;
-        private final UnitOfWork unitOfWork;
-
-        public RunnableDispatch(Object message, CommandCallback<ReturnType> callback, UnitOfWork unitOfWork) {
-            this.message = message;
-            this.callback = callback;
-            this.unitOfWork = unitOfWork;
-        }
-
-        @Override
-        public void run() {
-            AsynchronousEventBus.super.dispatchInternal(message, callback, unitOfWork);
-        }
-    }
-
-    private class RunnablePublish implements Runnable {
-
-        private UnitOfWork unitOfWork;
-        private Object event;
-
-        private RunnablePublish(Object event, UnitOfWork unitOfWork) {
-            this.unitOfWork = unitOfWork;
-            this.event = event;
-        }
-
-        @Override
-        public void run() {
-            AsynchronousEventBus.super.publishInternal(event, unitOfWork);
-        }
-    }
+  }
 
 
-    @Override
-    protected Logger getLogger() {
-        return logger;
-    }
+  @Override
+  protected Logger getLogger() {
+    return logger;
+  }
 }

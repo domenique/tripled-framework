@@ -31,16 +31,16 @@ public class LoggingEventBusInterceptor implements EventBusInterceptor {
   @Override
   public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event, UnitOfWork unitOfWork) {
     LOGGER.debug("Executing command {}", event.getClass().getSimpleName());
-    Instant start = Instant.now();
+    var start = Instant.now();
     try {
-      ReturnType proceed = chain.proceed();
+      var proceed = chain.proceed();
       LOGGER.debug("Finished executing command {}.", event.getClass().getSimpleName());
       return proceed;
     } catch (Throwable ex) {
       LOGGER.debug("Command {} failed", event.getClass().getSimpleName());
       throw ex;
     } finally {
-      Instant end = Instant.now();
+      var end = Instant.now();
       LOGGER.debug("Execution of {} took {}ms", event.getClass().getSimpleName(),
           Duration.between(start, end).toMillis());
     }

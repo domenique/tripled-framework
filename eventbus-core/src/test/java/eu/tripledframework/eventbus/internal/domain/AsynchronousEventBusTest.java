@@ -16,22 +16,16 @@
 package eu.tripledframework.eventbus.internal.domain;
 
 import eu.tripledframework.eventbus.CommandDispatcher;
-import eu.tripledframework.eventbus.EventBusInterceptor;
+import eu.tripledframework.eventbus.EventBusBuilder;
 import eu.tripledframework.eventbus.command.HelloCommand;
 import eu.tripledframework.eventbus.command.ValidatingCommand;
 import eu.tripledframework.eventbus.handler.TestCommandHandler;
-import eu.tripledframework.eventbus.internal.infrastructure.interceptor.SimpleInterceptorChainFactory;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.TestValidator;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.ValidatingEventBusInterceptor;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.InMemoryInvokerRepository;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.SimpleInvokerFactory;
-import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.DefaultUnitOfWorkFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -41,29 +35,29 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class AsynchronousEventBusTest {
 
-  private static final String THREAD_POOL_PREFIX = "CDForTest-pool-";
-  private static final String THREAD_POOL_WITH_VALIDATION_PREFIX = "CDForTest-Val-pool-";
+  private static final String THREAD_POOL_NAME = "CDForTest-pool";
+  private static final String THREAD_POOL_WITH_VALIDATION_NAME = "CDForTest-Val-pool";
   private CommandDispatcher asynchronousDispatcher;
   private CommandDispatcher dispatcherWithValidation;
   private TestCommandHandler eventHandler;
   private TestValidator validator;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     eventHandler = new TestCommandHandler();
-    ExecutorService executor = Executors.newCachedThreadPool(new NamedThreadFactory(THREAD_POOL_PREFIX));
-    AsynchronousEventBus eventBus = new AsynchronousEventBus(new InMemoryInvokerRepository(),
-        new SimpleInterceptorChainFactory(), Collections
-        .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory(), executor);
+    var eventBus = EventBusBuilder.newBuilder()
+            .withExecutor(Executors.newCachedThreadPool(r -> new Thread(r, THREAD_POOL_NAME)))
+            .buildASynchronousEventBus();
+
     eventBus.subscribe(eventHandler);
     asynchronousDispatcher = eventBus;
 
-    ExecutorService executor2 = Executors.newCachedThreadPool(new NamedThreadFactory(THREAD_POOL_WITH_VALIDATION_PREFIX));
     validator = new TestValidator();
-    List<EventBusInterceptor> interceptors = Collections.singletonList(new ValidatingEventBusInterceptor(validator));
-    AsynchronousEventBus eventBus2 = new AsynchronousEventBus(new InMemoryInvokerRepository(),
-        new SimpleInterceptorChainFactory(interceptors), Collections
-        .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory(), executor2);
+    var eventBus2 = EventBusBuilder.newBuilder()
+            .withExecutor(Executors.newCachedThreadPool(r -> new Thread(r, THREAD_POOL_WITH_VALIDATION_NAME)))
+            .withInvokerInterceptors(List.of(new ValidatingEventBusInterceptor(validator)))
+            .buildASynchronousEventBus();
+
     eventBus2.subscribe(eventHandler);
     dispatcherWithValidation = eventBus2;
   }
@@ -71,12 +65,11 @@ class AsynchronousEventBusTest {
   @Test
   void whenNotGivenAnExecutor_shouldCreateADefaultOneAndExecuteCommands() throws Exception {
     // given
-    AsynchronousEventBus defaultPublisher = new AsynchronousEventBus(new InMemoryInvokerRepository(),
-        new SimpleInterceptorChainFactory(), Collections
-        .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory());
-    TestCommandHandler eventHandler = new TestCommandHandler();
+    var defaultPublisher = EventBusBuilder.newBuilder()
+            .buildASynchronousEventBus();
+    var eventHandler = new TestCommandHandler();
     defaultPublisher.subscribe(eventHandler);
-    HelloCommand command = new HelloCommand("domenique");
+    var command = new HelloCommand("domenique");
 
     // when
     Future<Void> future = defaultPublisher.dispatch(command);
@@ -90,7 +83,7 @@ class AsynchronousEventBusTest {
   @Test
   void whenGivenAValidCommand_shouldBeExecutedAsynchronous() throws Exception {
     // given
-    HelloCommand command = new HelloCommand("Domenique");
+    var command = new HelloCommand("Domenique");
 
     // when
     Future<Void> future = asynchronousDispatcher.dispatch(command);
@@ -98,13 +91,13 @@ class AsynchronousEventBusTest {
 
     // then
     assertThat(eventHandler.isHelloCommandHandled, is(true));
-    assertThat(eventHandler.threadNameForExecute, equalTo(THREAD_POOL_PREFIX + "0"));
+    assertThat(eventHandler.threadNameForExecute, equalTo(THREAD_POOL_NAME));
   }
 
   @Test
   void whenGivenAValidCommandAndFutureCallback_waitForExecutionToFinish() throws Exception {
     // given
-    HelloCommand command = new HelloCommand("Domenique");
+    var command = new HelloCommand("Domenique");
 
     // when
     Future<Void> future = asynchronousDispatcher.dispatch(command);
@@ -113,13 +106,13 @@ class AsynchronousEventBusTest {
     // then
     assertThat(future.isDone(), is(true));
     assertThat(eventHandler.isHelloCommandHandled, is(true));
-    assertThat(eventHandler.threadNameForExecute, equalTo(THREAD_POOL_PREFIX + "0"));
+    assertThat(eventHandler.threadNameForExecute, equalTo(THREAD_POOL_NAME));
   }
 
   @Test
   void whenUsingADispatcherWithValidator_validationShouldBeDoneAsynchronous() throws Exception {
     // given
-    ValidatingCommand command = new ValidatingCommand("should pass");
+    var command = new ValidatingCommand("should pass");
     validator.shouldFailNextCall(false);
 
     // when
@@ -129,6 +122,6 @@ class AsynchronousEventBusTest {
     // then
     assertThat(future.isDone(), is(true));
     assertThat(eventHandler.isValidatingCommandHandled, is(true));
-    assertThat(eventHandler.threadNameForExecute, equalTo(THREAD_POOL_WITH_VALIDATION_PREFIX + "0"));
+    assertThat(eventHandler.threadNameForExecute, equalTo(THREAD_POOL_WITH_VALIDATION_NAME));
   }
 }

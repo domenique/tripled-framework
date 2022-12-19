@@ -52,8 +52,8 @@ public class GlobalExceptionControllerAdvice {
 
   private List<ErrorMessage> handleValidationError(CommandValidationException exception) {
     List<ErrorMessage> errorMessages = new ArrayList<>();
-    for (ConstraintViolation<Object> objectConstraintViolation : exception.getConstraintViolations()) {
-      ErrorMessage errorMessage = new ErrorMessage(objectConstraintViolation.getMessage());
+    for (var objectConstraintViolation : exception.getConstraintViolations()) {
+      var errorMessage = new ErrorMessage(objectConstraintViolation.getMessage());
 
       errorMessages.add(errorMessage);
     }

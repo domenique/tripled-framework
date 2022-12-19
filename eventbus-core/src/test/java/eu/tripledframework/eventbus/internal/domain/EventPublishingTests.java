@@ -36,7 +36,7 @@ class EventPublishingTests extends EventBusTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        SynchronousEventBus eventBus = createSynchronousEventBus(Collections.singletonList(new LoggingEventBusInterceptor()));
+      var eventBus = createSynchronousEventBus(Collections.singletonList(new LoggingEventBusInterceptor()));
 
         eventHandler = new TestCommandHandler();
         eventBus.subscribe(eventHandler);
@@ -47,7 +47,7 @@ class EventPublishingTests extends EventBusTest {
     @Test
     void whenGivenAnEventWithMultipleHandlers_allHandlersShouldBeInvoked() throws Exception {
         // given
-        AnCommandHandledByMultipleHandlers event = new AnCommandHandledByMultipleHandlers();
+      var event = new AnCommandHandledByMultipleHandlers();
 
         // when
         eventPublisher.publish(event);
@@ -60,7 +60,7 @@ class EventPublishingTests extends EventBusTest {
     @Test
     void whenGivenAnEventWithNoHandlers_shouldNotThrowException() {
         // given
-        UnhandledEvent unhandledEvent = new UnhandledEvent();
+      var unhandledEvent = new UnhandledEvent();
 
         // when
         eventPublisher.publish(unhandledEvent);

@@ -13,24 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eu.tripledframework.demo.model;
 
-public class SaidHelloDomainEvent {
+package eu.tripledframework.eventbus.internal.infrastructure.invoker;
 
-  private String name;
+import eu.tripledframework.eventbus.internal.domain.Invoker;
 
-  public SaidHelloDomainEvent(String name) {
-    this.name = name;
-  }
+import java.util.function.Function;
 
-  public String getName() {
-    return name;
+public class FunctionInvoker implements Invoker {
+
+  private final Function<Object, Object> function;
+
+  public FunctionInvoker(Function<Object, Object> function) {
+    this.function = function;
   }
 
   @Override
+  public boolean handles(Class<?> eventTypeToHandle) {
+    return true;
+  }
+
+  @Override
+  public boolean hasReturnType() {
+    return false;
+  }
+
+  @Override
+  public Object invoke(Object object) {
+    return function.apply(object);
+  }
+
+
+  @Override
   public String toString() {
-    return "SaidHelloDomainEvent{" +
-            "name='" + name + '\'' +
-            '}';
+    return function.getClass().getSimpleName();
   }
 }

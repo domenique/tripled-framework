@@ -54,7 +54,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        SynchronousEventBus eventBus = createSynchronousEventBus(Collections.singletonList(new LoggingEventBusInterceptor()));
+      var eventBus = createSynchronousEventBus(Collections.singletonList(new LoggingEventBusInterceptor()));
 
         eventHandler = new TestCommandHandler();
         eventBus.subscribe(eventHandler);
@@ -65,9 +65,9 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenNotGivingAnyInterceptors_shouldBeAbleToExecuteCommand() throws Exception {
         // given
-        HelloCommand helloCommand = new HelloCommand("Domenique");
-        SynchronousEventBus publisherWithoutInterceptors = createSynchronousEventBus(Collections.emptyList());
-        TestCommandHandler myEventHandler = new TestCommandHandler();
+      var helloCommand = new HelloCommand("Domenique");
+      var publisherWithoutInterceptors = createSynchronousEventBus(Collections.emptyList());
+      var myEventHandler = new TestCommandHandler();
         publisherWithoutInterceptors.subscribe(myEventHandler);
 
         // when
@@ -77,10 +77,25 @@ class CommandDispatchingTests extends AbstractEventBusTest {
         assertThat(myEventHandler.isHelloCommandHandled, is(true));
     }
 
+  @Test
+  void whenGivingIncomingInterceptors_shouldBeAbleToExecuteCommand() throws Exception {
+    // given
+    var helloCommand = new HelloCommand("Domenique");
+    var publisherWithoutInterceptors = createSynchronousEventBus(Collections.emptyList(), Collections.singletonList(new LoggingEventBusInterceptor()));
+    var myEventHandler = new TestCommandHandler();
+    publisherWithoutInterceptors.subscribe(myEventHandler);
+
+    // when
+    publisherWithoutInterceptors.dispatch(helloCommand);
+
+    // then
+    assertThat(myEventHandler.isHelloCommandHandled, is(true));
+  }
+
     @Test
     void whenGivenAHelloCommand_shouldCallEventHandler() throws Exception {
         // given
-        HelloCommand helloCommand = new HelloCommand("Domenique");
+      var helloCommand = new HelloCommand("Domenique");
 
         // given
         commandDispatcher.dispatch(helloCommand);
@@ -92,7 +107,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenGivenCommandThatSucceeds_shouldInvokeCallback() throws Exception {
         // given
-        ValidatingCommand validatingCommand = new ValidatingCommand("message");
+      var validatingCommand = new ValidatingCommand("message");
 
         // when
         commandDispatcher.dispatch(validatingCommand, new CommandCallback<Void>() {
@@ -113,8 +128,8 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenGivenAHelloCommandAndCallback_shouldBeAbleToRetrieveResponse() throws Exception {
         // given
-        HelloCommand helloCommand = new HelloCommand("Domenique");
-        ExceptionThrowingCommandCallback<String> callback = new ExceptionThrowingCommandCallback<>();
+      var helloCommand = new HelloCommand("Domenique");
+      var callback = new ExceptionThrowingCommandCallback<String>();
 
         // given
         commandDispatcher.dispatch(helloCommand, callback);
@@ -127,7 +142,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenGivenACommandThatFails_exceptionShouldBeThrown() throws Exception {
         // given
-        FailingCommand command = new FailingCommand();
+      var command = new FailingCommand();
 
         // when
         Assertions.assertThrows(IllegalStateException.class, () -> commandDispatcher.dispatch(command, new ExceptionThrowingCommandCallback<>()));
@@ -138,7 +153,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenGivenACommandWhichFails_shouldFail() throws Exception {
         // given
-        FailingCommand command = new FailingCommand();
+      var command = new FailingCommand();
 
         // when
         Future<Void> future = commandDispatcher.dispatch(command);
@@ -155,7 +170,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenGivenACommandWhichFailsWithACheckedExceptionUsingAFuture_shouldFail() throws Exception {
         // given
-        FailingCommandWithCheckedException command = new FailingCommandWithCheckedException();
+      var command = new FailingCommandWithCheckedException();
 
         // when
         Future<Void> future = commandDispatcher.dispatch(command);
@@ -173,7 +188,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenGivenACommandWhichIsHandledByAPrivateMethod_shouldFailWithHandlerNotFound() throws Exception {
         // given
-        CommandHandledByAPrivateMethod command = new CommandHandledByAPrivateMethod();
+      var command = new CommandHandledByAPrivateMethod();
 
         // when
         try {
@@ -187,7 +202,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenGivenCommandForWhichNoHandlerExists_shouldThrowException() throws Exception {
         // given
-        UnhandledCommand command = new UnhandledCommand();
+      var command = new UnhandledCommand();
         Assertions.assertThrows(InvokerNotFoundException.class, () -> commandDispatcher.dispatch(command));
 
         // when
@@ -198,7 +213,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenRegisteringDuplicateEventHandlerWithReturnType_shouldNotFail() throws Exception {
         // given
-        SecondTestCommandHandler secondEventHandler = new SecondTestCommandHandler();
+      var secondEventHandler = new SecondTestCommandHandler();
 
         // when
         ((EventSubscriber) commandDispatcher).subscribe(secondEventHandler);
@@ -211,7 +226,7 @@ class CommandDispatchingTests extends AbstractEventBusTest {
     @Test
     void whenRegisteringADuplicateEventHandler_shouldNotInvokeAny() {
         // given
-        AnCommandHandledByMultipleHandlers command = new AnCommandHandledByMultipleHandlers();
+      var command = new AnCommandHandledByMultipleHandlers();
         ((EventSubscriber) commandDispatcher).subscribe(eventHandler);
 
         // when

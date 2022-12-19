@@ -14,159 +14,162 @@
  * limitations under the License.
  */
 buildscript {
-    ext {
-        springBootVersion = '3.0.0'
-        springDepMgmtVersion = '1.1.0'
-        slf4jVersion = '2.0.6'
-        junitVersion = '5.9.1'
-    }
-    repositories {
-        mavenCentral()
-        maven { url 'https://repo.spring.io/plugins-release' }
-        jcenter()
-    }
+  ext {
+    springBootVersion = '3.0.0'
+    springDepMgmtVersion = '1.1.0'
+    slf4jVersion = '2.0.6'
+    junitVersion = '5.9.1'
+  }
+  repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/plugins-release' }
+    jcenter()
+  }
 }
 plugins {
-    id "com.github.kt3k.coveralls" version "2.12.0"
+  id "com.github.kt3k.coveralls" version "2.12.0"
 }
 
 // some global vars to determine the type of build.
 ext {
-    isDevBuild = false
-    isCiBuild = false
-    isReleaseBuild = false
-    sonatypeRepositoryUrl = null
-    sonatypeUsername = null
-    sonatypePassword = null
+  isDevBuild = false
+  isCiBuild = false
+  isReleaseBuild = false
+  sonatypeRepositoryUrl = null
+  sonatypeUsername = null
+  sonatypePassword = null
 }
 
 
 allprojects {
-    apply plugin: 'jacoco'
+  apply plugin: 'jacoco'
 
-    group = 'eu.tripled-framework'
-    version = '0.0.3'
+  group = 'eu.tripled-framework'
+  version = '0.0.3'
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        jcenter()
-    }
+  repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+  }
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'signing'
-    apply plugin: 'maven-publish'
+  apply plugin: 'java'
+  apply plugin: 'signing'
+  apply plugin: 'maven-publish'
 
-    sourceCompatibility = 17
-    targetCompatibility = 17
+  sourceCompatibility = 17
+  targetCompatibility = 17
 
+
+  //set build variables based on build type (release, continuous integration, development)
+  sonatypePassword = System.getenv('OSSRH_PASSWD')
+  sonatypeUsername = System.getenv('OSSRH_USERNAME')
+
+  if (project.hasProperty("release")) {
+    isReleaseBuild = true
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+  } else if (project.hasProperty("ci")) {
+    isCiBuild = true
+    version += "-SNAPSHOT"
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+  } else {
+    version += "-DEV"
+    isDevBuild = true
+  }
+
+  if (isReleaseBuild | isCiBuild) {
     java {
-        withJavadocJar()
-        withSourcesJar()
+      withJavadocJar()
+      withSourcesJar()
     }
+  }
 
-    //set build variables based on build type (release, continuous integration, development)
-    sonatypePassword = System.getenv('OSSRH_PASSWD')
-    sonatypeUsername = System.getenv('OSSRH_USERNAME')
-
-    if (project.hasProperty("release")) {
-        isReleaseBuild = true
-        sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-    } else if (project.hasProperty("ci")) {
-        isCiBuild = true
-        version += "-SNAPSHOT"
-        sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-    } else {
-        version += "-DEV"
-        isDevBuild = true
+  if (isReleaseBuild) {
+    signing {
+      sign publishing.publications.mavenJava
     }
+  }
 
-    if (isReleaseBuild) {
-        signing {
-            sign publishing.publications.mavenJava
+  publishing {
+    repositories {
+      maven {
+        url = sonatypeRepositoryUrl
+        credentials {
+          username = sonatypeUsername
+          password = sonatypePassword
         }
+      }
     }
 
-    publishing {
-        repositories {
-            maven {
-                url = sonatypeRepositoryUrl
-                credentials {
-                    username = sonatypeUsername
-                    password = sonatypePassword
-                }
+    publications {
+      mavenJava(MavenPublication) {
+        from components.java
+
+        pom {
+          name = 'TripleD framework'
+          description = 'TripleD is a framework to create CQRS based application using Java.'
+          url = 'http://www.tripled-framework.eu'
+          licenses {
+            license {
+              name = 'The Apache License, Version 2.0'
+              url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
             }
-        }
-
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-
-                pom {
-                    name = 'TripleD framework'
-                    description = 'TripleD is a framework to create CQRS based application using Java.'
-                    url = 'http://www.tripled-framework.eu'
-                    licenses {
-                        license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    scm {
-                        url = 'scm:git@github.com:domenique/tripled-framework.git'
-                        connection = 'scm:git@github.com:domenique/tripled-framework.git'
-                        developerConnection = 'scm:git@github.com:domenique/tripled-framework.git'
-                    }
-                    developers {
-                        developer {
-                            id = 'domenique'
-                            name = 'Doménique Tilleuil'
-                        }
-                    }
-                }
+          }
+          scm {
+            url = 'scm:git@github.com:domenique/tripled-framework.git'
+            connection = 'scm:git@github.com:domenique/tripled-framework.git'
+            developerConnection = 'scm:git@github.com:domenique/tripled-framework.git'
+          }
+          developers {
+            developer {
+              id = 'domenique'
+              name = 'Doménique Tilleuil'
             }
+          }
         }
+      }
     }
+  }
 
-    jacocoTestReport {
-        getAdditionalSourceDirs().from(sourceSets.main.allSource.srcDirs)
-        getSourceDirectories().from(sourceSets.main.allSource.srcDirs)
-        getClassDirectories().from(sourceSets.main.output)
-        reports {
-            html.enabled = true
-            xml.enabled = true
-            csv.enabled = false
-        }
+  jacocoTestReport {
+    getAdditionalSourceDirs().from(sourceSets.main.allSource.srcDirs)
+    getSourceDirectories().from(sourceSets.main.allSource.srcDirs)
+    getClassDirectories().from(sourceSets.main.output)
+    reports {
+      html.enabled = true
+      xml.enabled = true
+      csv.enabled = false
     }
+  }
 }
 
 task jacocoRootReport(type: JacocoReport) {
-    dependsOn = subprojects.test
+  dependsOn = subprojects.test
 
-    getAdditionalSourceDirs().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
-    getSourceDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
-    getClassDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.output)
-    getExecutionData().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.jacocoTestReport.executionData)
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-    }
+  getAdditionalSourceDirs().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
+  getSourceDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.allSource.srcDirs)
+  getClassDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.output)
+  getExecutionData().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.jacocoTestReport.executionData)
+  reports {
+    html.enabled = true
+    xml.enabled = true
+    csv.enabled = false
+  }
 
 }
 
 
 coveralls {
-    sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
-    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+  sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
 
 
 tasks.coveralls {
-    group = 'Coverage reports'
-    description = 'Uploads the aggregated coverage report to Coveralls'
+  group = 'Coverage reports'
+  description = 'Uploads the aggregated coverage report to Coveralls'
 
-    dependsOn jacocoRootReport
+  dependsOn jacocoRootReport
 }

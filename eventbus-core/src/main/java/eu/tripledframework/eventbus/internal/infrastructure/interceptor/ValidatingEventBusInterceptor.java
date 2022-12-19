@@ -39,7 +39,7 @@ public class ValidatingEventBusInterceptor implements EventBusInterceptor {
   }
 
   private void validate(Object event) {
-    Set<ConstraintViolation<Object>> constraintViolations = validator.validate(event);
+    var constraintViolations = validator.validate(event);
     if (!constraintViolations.isEmpty()) {
       throw new CommandValidationException("The command failed the validation step.", constraintViolations);
     }

@@ -29,4 +29,11 @@ public class HelloCommand {
   public String getName() {
     return name;
   }
+
+  @Override
+  public String toString() {
+    return "HelloCommand{" +
+            "name='" + name + '\'' +
+            '}';
+  }
 }

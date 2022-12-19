@@ -48,7 +48,7 @@ class CommandDispatchingWithValidationTests extends AbstractEventBusTest {
     interceptors.add(0, new LoggingEventBusInterceptor());
     interceptors.add(1, new ValidatingEventBusInterceptor(validator));
 
-    SynchronousEventBus eventBus = createSynchronousEventBus(interceptors);
+    var eventBus = createSynchronousEventBus(interceptors);
 
     eventHandler = new TestCommandHandler();
     eventBus.subscribe(eventHandler);
@@ -59,7 +59,7 @@ class CommandDispatchingWithValidationTests extends AbstractEventBusTest {
   @Test
   void whenGivenCommandThatFailsValidation_shouldInvokeCallback() throws Exception {
     // given
-    ValidatingCommand validatingCommand = new ValidatingCommand(null);
+    var validatingCommand = new ValidatingCommand(null);
     validator.shouldFailNextCall(true);
 
     // when
@@ -83,7 +83,7 @@ class CommandDispatchingWithValidationTests extends AbstractEventBusTest {
   @Test
   void whenGivenCommandThatFailsValidation_shouldThrowException() throws Exception {
     // given
-    ValidatingCommand validatingCommand = new ValidatingCommand(null);
+    var validatingCommand = new ValidatingCommand(null);
     validator.shouldFailNextCall(true);
 
     // when

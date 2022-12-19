@@ -45,7 +45,7 @@ public class ReflectionObjectConstructorTest {
         ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
 
         // when
-        MyAggregateRoot object = objectConstructor.construct(Collections.emptyList());
+      var object = objectConstructor.construct(Collections.emptyList());
 
         // then
         assertThat(object, nullValue());
@@ -57,7 +57,7 @@ public class ReflectionObjectConstructorTest {
         ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
 
         // when
-        MyAggregateRoot object = objectConstructor.construct(null);
+      var object = objectConstructor.construct(null);
 
         // then
         assertThat(object, nullValue());
@@ -69,8 +69,8 @@ public class ReflectionObjectConstructorTest {
         ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
 
         // when
-        MyAggregateRoot instance = new MyAggregateRoot("id", "name");
-        MyAggregateRoot object = objectConstructor.applyDomainEvents(instance, Collections.emptyList());
+      var instance = new MyAggregateRoot("id", "name");
+      var object = objectConstructor.applyDomainEvents(instance, Collections.emptyList());
 
         // then
         assertThat(object, sameInstance(instance));
@@ -82,8 +82,8 @@ public class ReflectionObjectConstructorTest {
         ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
 
         // when
-        MyAggregateRoot instance = new MyAggregateRoot("id", "name");
-        MyAggregateRoot object = objectConstructor.applyDomainEvents(instance, null);
+      var instance = new MyAggregateRoot("id", "name");
+      var object = objectConstructor.applyDomainEvents(instance, null);
 
         // then
         assertThat(object, sameInstance(instance));
@@ -92,13 +92,13 @@ public class ReflectionObjectConstructorTest {
     @Test
     void whenGivenOneEvent_ShouldCreateInstance() {
         // given
-        String sourceIdentifier = UUID.randomUUID().toString();
-        MyAggregateRootCreatedEvent event = new MyAggregateRootCreatedEvent(sourceIdentifier, "Wallstreet");
+      var sourceIdentifier = UUID.randomUUID().toString();
+      var event = new MyAggregateRootCreatedEvent(sourceIdentifier, "Wallstreet");
 
         ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
 
         // when
-        MyAggregateRoot instance = objectConstructor.construct(Arrays.asList(event));
+      var instance = objectConstructor.construct(Arrays.asList(event));
 
         // then
         assertThat(instance.identifier, equalTo(sourceIdentifier));
@@ -113,14 +113,14 @@ public class ReflectionObjectConstructorTest {
     @Test
     void whenGivenTwoEvents_ShouldCreateInstanceWithEventsReplayed() {
         // given
-        String sourceIdentifier = UUID.randomUUID().toString();
-        MyAggregateRootCreatedEvent event = new MyAggregateRootCreatedEvent(sourceIdentifier, "Wallstreet");
-        AddressUpdatedEvent secondEvent = new AddressUpdatedEvent(sourceIdentifier, "streetName streetNumber");
+      var sourceIdentifier = UUID.randomUUID().toString();
+      var event = new MyAggregateRootCreatedEvent(sourceIdentifier, "Wallstreet");
+      var secondEvent = new AddressUpdatedEvent(sourceIdentifier, "streetName streetNumber");
 
         ObjectConstructor<MyAggregateRoot> objectConstructor = new ReflectionObjectConstructor<>(MyAggregateRoot.class);
 
         // when
-        MyAggregateRoot instance = objectConstructor.construct(Arrays.asList(event, secondEvent));
+      var instance = objectConstructor.construct(Arrays.asList(event, secondEvent));
 
         // then
         assertThat(instance.identifier, equalTo(sourceIdentifier));
@@ -132,7 +132,7 @@ public class ReflectionObjectConstructorTest {
     @Test
     void whenGivenTwoEventsOutOfOrder_ShouldThrowException() {
         // given
-        String identifier = UUID.randomUUID().toString();
+      var identifier = UUID.randomUUID().toString();
         DomainEvent event = new MyAggregateRootCreatedEvent(identifier, "Wallstreet");
         DomainEvent secondEvent = new AddressUpdatedEvent(identifier, "streetName streetNumber");
 
@@ -140,7 +140,7 @@ public class ReflectionObjectConstructorTest {
 
         // when
         Assertions.assertThrows(AggregateRootReconstructionException.class, () -> {
-            MyAggregateRoot instance = objectConstructor.construct(Arrays.asList(secondEvent, event));
+          var instance = objectConstructor.construct(Arrays.asList(secondEvent, event));
         });
 
         // then
@@ -156,7 +156,7 @@ public class ReflectionObjectConstructorTest {
 
         // when
         Assertions.assertThrows(AggregateRootReconstructionException.class, () -> {
-            MyAggregateRoot instance = objectConstructor.construct(Arrays.asList(unMappedEvent));
+          var instance = objectConstructor.construct(Arrays.asList(unMappedEvent));
         });
 
         // then
@@ -173,7 +173,7 @@ public class ReflectionObjectConstructorTest {
 
         // when
         Assertions.assertThrows(AggregateRootReconstructionException.class, () -> {
-            MyAggregateRoot instance = objectConstructor.construct(Arrays.asList(event, unMappedEvent));
+          var instance = objectConstructor.construct(Arrays.asList(event, unMappedEvent));
         });
 
         // then

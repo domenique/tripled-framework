@@ -75,7 +75,7 @@ public class DomainEvent {
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        final DomainEvent other = (DomainEvent) obj;
+        final var other = (DomainEvent) obj;
         return Objects.equals(this.id, other.id);
     }
 }

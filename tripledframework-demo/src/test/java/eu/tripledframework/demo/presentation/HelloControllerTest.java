@@ -56,10 +56,10 @@ public class HelloControllerTest {
     @Test
     public void whenGivenAValidName_shouldSayHi() throws Exception {
         // given
-        String name = "John Doe";
+      var name = "John Doe";
 
         // when
-        ResultActions result = sayHiTo(name);
+      var result = sayHiTo(name);
 
         // then
         result.andExpect(status().is2xxSuccessful());
@@ -69,10 +69,10 @@ public class HelloControllerTest {
     @Test
     public void whenGivenAnInValidName_shouldBarf() throws Exception {
         // given
-        String name = "dj";
+      var name = "dj";
 
         // when
-        ResultActions result = sayHiTo(name);
+      var result = sayHiTo(name);
 
         // then
         result.andDo(print());
@@ -83,10 +83,10 @@ public class HelloControllerTest {
     @Test
     public void whenSayingHiToTheDevil_shouldBarf() throws Exception {
         // given
-        String name = "The devil";
+      var name = "The devil";
 
         // when
-        ResultActions result = sayHiTo(name);
+      var result = sayHiTo(name);
 
         // then
         result.andDo(print());
@@ -98,7 +98,7 @@ public class HelloControllerTest {
     public void whenSayingHiWithoutName_shouldReturnWithUsername() throws Exception {
 
         // when
-        ResultActions result = sayHi();
+      var result = sayHi();
 
         // then
         result.andExpect(status().is2xxSuccessful());

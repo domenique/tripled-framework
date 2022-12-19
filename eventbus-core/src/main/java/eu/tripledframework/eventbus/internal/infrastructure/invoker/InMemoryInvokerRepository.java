@@ -53,7 +53,7 @@ public class InMemoryInvokerRepository implements InvokerRepository {
     }
 
     private Optional<Invoker> findByEventType(Class<?> eventType) {
-        List<Invoker> found = invokers.stream().filter(p -> p.handles(eventType)).collect(Collectors.toList());
+      var found = invokers.stream().filter(p -> p.handles(eventType)).collect(Collectors.toList());
         if (found.size() > 1) {
             throw new DuplicateInvokerFoundException(String
                     .format("Found multiple handlers for %s. Expected only one.", eventType.getSimpleName()));

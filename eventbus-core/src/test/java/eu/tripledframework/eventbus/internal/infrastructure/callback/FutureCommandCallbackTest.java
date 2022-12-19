@@ -32,10 +32,10 @@ class FutureCommandCallbackTest {
     @Test
     void whenCancelCalled_shouldReturnFalse() throws Exception {
         // given
-        FutureCommandCallback future = new FutureCommandCallback();
+      var future = new FutureCommandCallback();
 
         // when
-        boolean cancel = future.cancel(true);
+      var cancel = future.cancel(true);
 
         // then
         assertThat(cancel, is(false));
@@ -44,10 +44,10 @@ class FutureCommandCallbackTest {
     @Test
     void whenIsCancelledCalled_shouldReturnFalse() throws Exception {
         // given
-        FutureCommandCallback future = new FutureCommandCallback();
+      var future = new FutureCommandCallback();
 
         // when
-        boolean cancel = future.isCancelled();
+      var cancel = future.isCancelled();
 
         // then
         assertThat(cancel, is(false));
@@ -56,7 +56,7 @@ class FutureCommandCallbackTest {
     @Test
     void whenGetWithTimeoutCalled_shouldTimeout() {
         // given
-        FutureCommandCallback future = new FutureCommandCallback();
+      var future = new FutureCommandCallback();
 
         // when
         Assertions.assertThrows(TimeoutException.class, () -> future.get(1, TimeUnit.MILLISECONDS));
@@ -68,11 +68,11 @@ class FutureCommandCallbackTest {
     @Test
     void whenGetWithTimeoutCalled_shouldNotTimeoutIfResponseAvailable() throws Exception {
         // given
-        FutureCommandCallback<String> future = new FutureCommandCallback<>();
+      var future = new FutureCommandCallback<String>();
         future.onSuccess("response");
 
         // when
-        String response = future.get(1, TimeUnit.MILLISECONDS);
+      var response = future.get(1, TimeUnit.MILLISECONDS);
 
         // then
         assertThat(response, equalTo("response"));

@@ -44,7 +44,7 @@ class CommandDispatchingUnitOfWorkTests extends AbstractEventBusTest {
   @BeforeEach
   void setUp() throws Exception {
     unitOfWorkFactory = new TestingUnitOfWorkFactory();
-    SynchronousEventBus eventBus = createSynchronousEventBus(Collections.emptyList(), unitOfWorkFactory);
+    var eventBus = createSynchronousEventBus(Collections.emptyList(), unitOfWorkFactory);
 
     commandHandler = new TestCommandHandler();
     eventBus.subscribe(commandHandler);
@@ -58,7 +58,7 @@ class CommandDispatchingUnitOfWorkTests extends AbstractEventBusTest {
   @Test
   void whenDispatching_shouldCreateAUnitOfWork() {
     // given
-    HelloCommand helloCommand = new HelloCommand("Domenique");
+    var helloCommand = new HelloCommand("Domenique");
 
     // given
     commandDispatcher.dispatch(helloCommand);
@@ -72,8 +72,8 @@ class CommandDispatchingUnitOfWorkTests extends AbstractEventBusTest {
   @Test
   void whenAUnitOfWorkExists_eventsShouldBeStoredInAUnitOfWork() {
     // given
-    TestEvent testEvent = new TestEvent();
-    TestUnitOfWork unitOfWork = new TestUnitOfWork();
+    var testEvent = new TestEvent();
+    var unitOfWork = new TestUnitOfWork();
     UnitOfWorkRepository.store(unitOfWork);
 
     // when

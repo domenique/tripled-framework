@@ -50,7 +50,7 @@ public class EventStoreTest {
     // given
 
     // when
-    Optional<MyAggregateRoot> aggregateRoot = eventStore.findById("nonExisting");
+    var aggregateRoot = eventStore.findById("nonExisting");
 
     // then
     assertThat(aggregateRoot.orElse(null), nullValue());
@@ -59,11 +59,11 @@ public class EventStoreTest {
   @Test
   public void whenCallingFind_shouldReturnAggregateIfEventsAreFound() throws Exception {
     // given
-    MyAggregateRootCreatedEvent createdEvent = new MyAggregateRootCreatedEvent("id", "name");
+    var createdEvent = new MyAggregateRootCreatedEvent("id", "name");
     inMemoryEventRepository.save(createdEvent);
 
     // when
-    Optional<MyAggregateRoot> aggregate = eventStore.findById(createdEvent.getAggregateRootIdentifier());
+    var aggregate = eventStore.findById(createdEvent.getAggregateRootIdentifier());
 
     // then
     assertThat(aggregate.get().name, equalTo(createdEvent.getName()));
@@ -74,22 +74,22 @@ public class EventStoreTest {
     // given
     eventStore.setSnapshotRepository(inMemorySnapshotRepository);
 
-    String aggregateRootId = "id";
-    MyAggregateRootCreatedEvent createdEvent = new MyAggregateRootCreatedEvent(aggregateRootId, "name", 0);
+    var aggregateRootId = "id";
+    var createdEvent = new MyAggregateRootCreatedEvent(aggregateRootId, "name", 0);
     inMemoryEventRepository.save(createdEvent);
 
-    MyAggregateRoot myAggregateRoot = new MyAggregateRoot(aggregateRootId, "name");
-    Snapshot<MyAggregateRoot> snapshot = new Snapshot<>(myAggregateRoot, aggregateRootId, 0);
+    var myAggregateRoot = new MyAggregateRoot(aggregateRootId, "name");
+    var snapshot = new Snapshot<MyAggregateRoot>(myAggregateRoot, aggregateRootId, 0);
     inMemorySnapshotRepository.save(snapshot);
 
-    AddressUpdatedEvent updatedEvent = new AddressUpdatedEvent(aggregateRootId, 1, "theAddress");
+    var updatedEvent = new AddressUpdatedEvent(aggregateRootId, 1, "theAddress");
     inMemoryEventRepository.save(updatedEvent);
 
     // reset flags to be able to assert on them later.
     myAggregateRoot.reset();
 
     // when
-    Optional<MyAggregateRoot> aggregate = eventStore.findById(aggregateRootId);
+    var aggregate = eventStore.findById(aggregateRootId);
 
     // then
     assertThat(aggregate.isPresent(), is(true));

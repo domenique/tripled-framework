@@ -16,29 +16,40 @@
 
 package eu.tripledframework.eventbus.internal.domain;
 
+import eu.tripledframework.eventbus.EventBusBuilder;
 import eu.tripledframework.eventbus.EventBusInterceptor;
-import eu.tripledframework.eventbus.internal.infrastructure.interceptor.SimpleInterceptorChainFactory;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.InMemoryInvokerRepository;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.SimpleInvokerFactory;
-import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.DefaultUnitOfWorkFactory;
 
-import java.util.Collections;
 import java.util.List;
 
 abstract class AbstractEventBusTest {
 
   SynchronousEventBus createSynchronousEventBus(List<EventBusInterceptor> interceptors) {
-    return new SynchronousEventBus(new InMemoryInvokerRepository(), new SimpleInterceptorChainFactory(interceptors), Collections
-        .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory());
+    return EventBusBuilder.newBuilder()
+            .withInvokerInterceptors(interceptors)
+            .buildSynchronousEventBus();
+  }
+
+  SynchronousEventBus createSynchronousEventBus(List<EventBusInterceptor> invokerInterceptors, List<EventBusInterceptor> receiverInterceptors) {
+    return EventBusBuilder.newBuilder()
+            .withInvokerInterceptors(invokerInterceptors)
+            .withReceiverInterceptors(receiverInterceptors)
+            .buildSynchronousEventBus();
   }
 
   SynchronousEventBus createSynchronousEventBus(List<EventBusInterceptor> interceptors, UnitOfWorkFactory unitOfWorkFactory) {
-    return new SynchronousEventBus(new InMemoryInvokerRepository(), new SimpleInterceptorChainFactory(interceptors), Collections
-        .singletonList(new SimpleInvokerFactory()), unitOfWorkFactory);
+    return EventBusBuilder.newBuilder()
+            .withInvokerInterceptors(interceptors)
+            .withUnitOfWorkFactory(unitOfWorkFactory)
+            .buildSynchronousEventBus();
   }
 
-  SynchronousEventBus createSynchronousEventBus(List<EventBusInterceptor> interceptors, List<InvokerFactory> invokerFactories) {
-    return new SynchronousEventBus(new InMemoryInvokerRepository(), new SimpleInterceptorChainFactory(interceptors), invokerFactories,
-        new DefaultUnitOfWorkFactory());
+  SynchronousEventBus createSynchronousEventBus(List<EventBusInterceptor> interceptors, List<EventBusInterceptor> receiverInterceptors,
+                                                List<InvokerFactory> invokerFactories) {
+    return EventBusBuilder.newBuilder()
+            .withInvokerInterceptors(interceptors)
+            .withReceiverInterceptors(interceptors)
+            .withEventHandlerInvokerFactories(invokerFactories)
+            .buildSynchronousEventBus();
+
   }
 }

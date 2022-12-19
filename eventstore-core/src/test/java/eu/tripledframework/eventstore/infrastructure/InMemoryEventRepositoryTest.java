@@ -35,7 +35,7 @@ class InMemoryEventRepositoryTest {
     @Test
     void whenOneEventIsStored_shouldBeAbleToFindIt() {
         // given
-        DomainEvent domainEvent = new DomainEvent("rootIdentifier");
+      var domainEvent = new DomainEvent("rootIdentifier");
 
         // when
         eventRepository.save(domainEvent);

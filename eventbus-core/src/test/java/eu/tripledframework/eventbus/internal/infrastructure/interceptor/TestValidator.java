@@ -36,7 +36,7 @@ public class TestValidator implements Validator {
   @Override
   public <T> Set<ConstraintViolation<T>> validate(T object, Class<?>... groups) {
     isValidateCalled = true;
-    HashSet<ConstraintViolation<T>> constraintViolations = new HashSet<>();
+    var constraintViolations = new HashSet<ConstraintViolation<T>>();
     if (shouldFail) {
       constraintViolations.add(new ConstraintViolation<T>() {
         @Override

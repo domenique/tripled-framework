@@ -34,11 +34,11 @@ public class SimpleInvokerFactory implements InvokerFactory {
   public List<Invoker> create(Object eventHandler) {
     List<Invoker> invokers = new ArrayList<>();
 
-    Set<Method> methods = getMethodsWithAnotation(eventHandler.getClass(), Handles.class);
+    var methods = getMethodsWithAnotation(eventHandler.getClass(), Handles.class);
 
 
-    for (Method method : methods) {
-      Handles annotation = method.getAnnotation(Handles.class);
+    for (var method : methods) {
+      var annotation = method.getAnnotation(Handles.class);
       Invoker invoker = new SimpleInvoker(annotation.value(), eventHandler, method);
       invokers.add(invoker);
     }
@@ -48,13 +48,13 @@ public class SimpleInvokerFactory implements InvokerFactory {
 
   @Override
   public boolean supports(Object object) {
-    Handler annotation = object.getClass().getAnnotation(Handler.class);
+    var annotation = object.getClass().getAnnotation(Handler.class);
 
     return annotation != null;
   }
 
   private Set<Method> getMethodsWithAnotation(Class<?> clazz, Class<? extends Annotation> annotation) {
-    Set<Method> methods = Arrays.stream(clazz.getMethods())
+    var methods = Arrays.stream(clazz.getMethods())
                                 .filter(c -> c.isAnnotationPresent(annotation))
                                 .collect(Collectors.toSet());
 

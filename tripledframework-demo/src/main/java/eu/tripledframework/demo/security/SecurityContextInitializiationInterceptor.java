@@ -16,13 +16,20 @@
 
 package eu.tripledframework.demo.security;
 
-import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.DefaultUnitOfWork;
+import eu.tripledframework.eventbus.EventBusInterceptor;
+import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
+import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class SpringSecurityAwareUnitOfWork extends DefaultUnitOfWork {
+public class SecurityContextInitializiationInterceptor implements EventBusInterceptor {
+  @Override
+  public <ReturnType> ReturnType intercept(InterceptorChain<ReturnType> chain, Object event, UnitOfWork unitOfWork) {
+    SecurityContextHolder.setContext((SecurityContext) unitOfWork.getData("securityContext"));
 
-  public SpringSecurityAwareUnitOfWork() {
-    super();
-    addData("SecurityContext", SecurityContextHolder.getContext());
+    var retVal = chain.proceed();
+
+    SecurityContextHolder.clearContext();
+    return retVal;
   }
 }

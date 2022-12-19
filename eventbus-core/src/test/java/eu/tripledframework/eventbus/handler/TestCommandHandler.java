@@ -39,7 +39,7 @@ public class TestCommandHandler {
   public String stringReturning(HelloCommand command) {
     isHelloCommandHandled = true;
     threadNameForExecute = Thread.currentThread().getName();
-    return "Hello " + command.getName();
+    return "Hello " + command.name();
   }
 
   @Handles(FailingCommand.class)

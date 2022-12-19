@@ -15,5 +15,5 @@
  */
 package eu.tripledframework.eventbus.event;
 
-public class UnhandledEvent {
+public record UnhandledEvent() {
 }

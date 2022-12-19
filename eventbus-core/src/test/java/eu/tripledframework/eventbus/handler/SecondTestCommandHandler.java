@@ -27,7 +27,7 @@ public class SecondTestCommandHandler {
   @Handles(HelloCommand.class)
   public String stringReturning(HelloCommand command) {
     isHelloCommandHandled = true;
-    return "Hello " + command.getName();
+    return "Hello " + command.name();
   }
 
 }

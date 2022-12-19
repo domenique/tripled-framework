@@ -30,10 +30,10 @@ public class DomainEventTest {
     @Test
     public void whenCreating_shouldInstantiateTimestampAndId() throws Exception {
         // given
-        String sourceIdentifier = "sourceIdentifier";
+      var sourceIdentifier = "sourceIdentifier";
 
         // when
-        DomainEvent event = new DomainEvent(sourceIdentifier);
+      var event = new DomainEvent(sourceIdentifier);
 
         // then
         assertThat(event.getTimestamp(), notNullValue());
@@ -46,7 +46,7 @@ public class DomainEventTest {
         // given
 
         // when
-        DomainEvent event = new DomainEvent();
+      var event = new DomainEvent();
 
         // then
         assertThat(event.getTimestamp(), nullValue());
@@ -57,12 +57,12 @@ public class DomainEventTest {
     @Test
     public void whenCreating_ShouldNotBeEqual() throws Exception {
         // given
-        String sourceIdentifier = "sourceIdentifier";
-        DomainEvent event1 = new DomainEvent(sourceIdentifier);
-        DomainEvent event2 = new DomainEvent(sourceIdentifier);
+      var sourceIdentifier = "sourceIdentifier";
+      var event1 = new DomainEvent(sourceIdentifier);
+      var event2 = new DomainEvent(sourceIdentifier);
 
         // when
-        boolean response = event1.equals(event2);
+      var response = event1.equals(event2);
 
         // then
         assertThat(response, is(false));
@@ -71,11 +71,11 @@ public class DomainEventTest {
     @Test
     public void whenComparingWithNull_ShouldNotBeEqual() throws Exception {
         // given
-        String sourceIdentifier = "sourceIdentifier";
-        DomainEvent event1 = new DomainEvent(sourceIdentifier);
+      var sourceIdentifier = "sourceIdentifier";
+      var event1 = new DomainEvent(sourceIdentifier);
 
         // when
-        boolean response = event1.equals(null);
+      var response = event1.equals(null);
 
         // then
         assertThat(response, is(false));
@@ -84,11 +84,11 @@ public class DomainEventTest {
     @Test
     public void whenComparingSameInstance_ShouldBeEqual() throws Exception {
         // given
-        String sourceIdentifier = "sourceIdentifier";
-        DomainEvent event1 = new DomainEvent(sourceIdentifier);
+      var sourceIdentifier = "sourceIdentifier";
+      var event1 = new DomainEvent(sourceIdentifier);
 
         // when
-        boolean response = event1.equals(event1);
+      var response = event1.equals(event1);
 
         // then
         assertThat(response, is(true));
@@ -97,13 +97,13 @@ public class DomainEventTest {
     @Test
     public void whenCreatingHashOfTwoObject_ShouldNotBeEqual() throws Exception {
         // given
-        String sourceIdentifier = "sourceIdentifier";
-        DomainEvent event1 = new DomainEvent(sourceIdentifier);
-        DomainEvent event2 = new DomainEvent(sourceIdentifier);
+      var sourceIdentifier = "sourceIdentifier";
+      var event1 = new DomainEvent(sourceIdentifier);
+      var event2 = new DomainEvent(sourceIdentifier);
 
         // when
-        int hashForEvent1 = event1.hashCode();
-        int hashForEvent2 = event2.hashCode();
+      var hashForEvent1 = event1.hashCode();
+      var hashForEvent2 = event2.hashCode();
 
         // then
         assertThat(hashForEvent1, not(equalTo(hashForEvent2)));

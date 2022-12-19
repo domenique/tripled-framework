@@ -29,7 +29,7 @@ public class SimpleInterceptorChainFactory implements InterceptorChainFactory {
   private final List<EventBusInterceptor> interceptors;
 
   public SimpleInterceptorChainFactory() {
-    this.interceptors = Collections.unmodifiableList(Collections.emptyList());
+    this.interceptors = Collections.emptyList();
   }
 
   public SimpleInterceptorChainFactory(List<EventBusInterceptor> interceptors) {
@@ -43,7 +43,7 @@ public class SimpleInterceptorChainFactory implements InterceptorChainFactory {
 
   @Override
   public <ReturnType> InterceptorChain<ReturnType> createChain(Object event, UnitOfWork unitOfWork, Invoker invoker) {
-    return new SimpleInterceptorChain<>(event, unitOfWork, Collections.singletonList(invoker).iterator(), interceptors.iterator());
+    return createChain(event, unitOfWork, Collections.singletonList(invoker));
   }
 
 }

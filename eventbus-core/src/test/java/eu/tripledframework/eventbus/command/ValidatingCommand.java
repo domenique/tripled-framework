@@ -17,12 +17,6 @@ package eu.tripledframework.eventbus.command;
 
 import jakarta.validation.constraints.NotNull;
 
-public class ValidatingCommand {
+public record ValidatingCommand(@NotNull String message) {
 
-  @NotNull
-  private String message;
-
-  public ValidatingCommand(String message) {
-    this.message = message;
-  }
 }

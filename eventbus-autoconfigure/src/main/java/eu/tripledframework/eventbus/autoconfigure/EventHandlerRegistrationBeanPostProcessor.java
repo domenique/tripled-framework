@@ -38,7 +38,7 @@ public class EventHandlerRegistrationBeanPostProcessor implements BeanPostProces
 
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-    Handler annotation = bean.getClass().getAnnotation(Handler.class);
+    var annotation = bean.getClass().getAnnotation(Handler.class);
     if (annotation != null) {
       eventSubscriber.subscribe(bean);
     }

@@ -15,15 +15,6 @@
  */
 package eu.tripledframework.eventbus.command;
 
-public class HelloCommand {
+public record HelloCommand(String name) {
 
-  private String name;
-
-  public HelloCommand(String name) {
-    this.name = name;
-  }
-
-  public String getName() {
-    return name;
-  }
 }

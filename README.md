@@ -46,25 +46,27 @@ public class HelloController {
 ```
 
 A commandHandler would then be implemented as following
+
 ```java
+
 @Handler
 @Component
 public class HelloCommandHandler {
 
-  @Autowired
-  private EventPublisher eventPublisher;
+    @Autowired
+    private EventPublisher eventPublisher;
 
-  @Handles(HelloCommand.class)
-  public HelloResponse handleHelloCommand(HelloCommand helloCommand) {
-    if (helloCommand.getName().equals("The devil")) {
-      throw new IllegalArgumentException("I'm not saying hi to you! :P");
+    @Handles(HelloCommand.class)
+    public HelloResponse handleHelloCommand(HelloCommand helloCommand) {
+        if (helloCommand.getName().equals("The devil")) {
+            throw new IllegalArgumentException("I'm not saying hi to you! :P");
+        }
+        var helloResponse = new HelloResponse("Hello " + helloCommand.getName());
+
+        eventPublisher.publish(new SaidHelloDomainEvent(helloCommand.getName()));
+
+        return helloResponse;
     }
-    HelloResponse helloResponse = new HelloResponse("Hello " + helloCommand.getName());
-
-    eventPublisher.publish(new SaidHelloDomainEvent(helloCommand.getName()));
-
-    return helloResponse;
-  }
 
 }
 ```

@@ -21,8 +21,11 @@ import eu.tripledframework.eventbus.EventBusInterceptor;
 import eu.tripledframework.eventbus.internal.domain.InterceptorChain;
 import eu.tripledframework.eventbus.internal.domain.Invoker;
 import eu.tripledframework.eventbus.internal.domain.UnitOfWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<ReturnType> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleInterceptorChain.class);
 
   private final Object event;
   private final UnitOfWork unitOfWork;
@@ -40,8 +43,11 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
   @Override
   public ReturnType proceed() {
     if (interceptors.hasNext()) {
-      EventBusInterceptor nextInterceptor = interceptors.next();
-      return nextInterceptor.intercept(this, event, unitOfWork);
+      var nextInterceptor = interceptors.next();
+      LOGGER.debug(" --> {}.proceed()", nextInterceptor.getClass().getSimpleName());
+      var retVal = nextInterceptor.intercept(this, event, unitOfWork);
+      LOGGER.debug(" <-- {}.proceed()", nextInterceptor.getClass().getSimpleName());
+      return retVal;
     } else {
       return invokeEventHandlers();
     }
@@ -51,12 +57,14 @@ public class SimpleInterceptorChain<ReturnType> implements InterceptorChain<Retu
   private ReturnType invokeEventHandlers() {
     ReturnType response = null;
     while (invokers.hasNext()) {
-      Invoker current = invokers.next();
+      var current = invokers.next();
+      LOGGER.debug(" --> invoke {};", current.toString());
       if (current.hasReturnType()) {
         response = (ReturnType) current.invoke(event);
       } else {
         current.invoke(event);
       }
+      LOGGER.debug(" <-- invoke {};", current.toString());
     }
 
     return response;

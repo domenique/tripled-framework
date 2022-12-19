@@ -40,8 +40,9 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("deprecation")
     public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user = User.withDefaultPasswordEncoder()
+        var user = User.withDefaultPasswordEncoder()
                 .username("testuser")
                 .password("password")
                 .roles("TEST")

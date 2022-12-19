@@ -15,15 +15,12 @@
  */
 package eu.tripledframework.eventbus.autoconfigure;
 
+import eu.tripledframework.eventbus.EventBusBuilder;
 import eu.tripledframework.eventbus.EventBusInterceptor;
 import eu.tripledframework.eventbus.internal.domain.AsynchronousEventBus;
 import eu.tripledframework.eventbus.internal.domain.SynchronousEventBus;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.LoggingEventBusInterceptor;
-import eu.tripledframework.eventbus.internal.infrastructure.interceptor.SimpleInterceptorChainFactory;
 import eu.tripledframework.eventbus.internal.infrastructure.interceptor.ValidatingEventBusInterceptor;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.InMemoryInvokerRepository;
-import eu.tripledframework.eventbus.internal.infrastructure.invoker.SimpleInvokerFactory;
-import eu.tripledframework.eventbus.internal.infrastructure.unitofwork.DefaultUnitOfWorkFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,7 +30,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -45,30 +41,32 @@ public class EventBusAutoConfiguration {
   @ConditionalOnMissingBean({SynchronousEventBus.class, AsynchronousEventBus.class})
   @ConditionalOnProperty(value = "eu.tripledframework.eventbus.mode", havingValue = "sync")
   public SynchronousEventBus synchronousEventBus() {
-    List<EventBusInterceptor> interceptors =
-        Arrays.asList(new LoggingEventBusInterceptor(),
-            new ValidatingEventBusInterceptor(localValidatorFactoryBean().getValidator()));
+    var interceptors =
+            Arrays.asList(new LoggingEventBusInterceptor(),
+                    new ValidatingEventBusInterceptor(localValidatorFactoryBean().getValidator()));
 
-    return new SynchronousEventBus(new InMemoryInvokerRepository(), new SimpleInterceptorChainFactory(interceptors), Collections
-        .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory());
+    return EventBusBuilder.newBuilder()
+            .withInvokerInterceptors(interceptors)
+            .buildSynchronousEventBus();
   }
 
   @Bean
   @ConditionalOnMissingBean({SynchronousEventBus.class, AsynchronousEventBus.class})
   @ConditionalOnProperty(value = "eu.tripledframework.eventbus.mode", matchIfMissing = true, havingValue = "async")
   public AsynchronousEventBus asynchronousEventBus() {
-    List<EventBusInterceptor> interceptors =
-        Arrays.asList(new LoggingEventBusInterceptor(),
-            new ValidatingEventBusInterceptor(localValidatorFactoryBean().getValidator()));
+    var interceptors =
+            Arrays.asList(new LoggingEventBusInterceptor(),
+                    new ValidatingEventBusInterceptor(localValidatorFactoryBean().getValidator()));
 
-    return new AsynchronousEventBus(new InMemoryInvokerRepository(), new SimpleInterceptorChainFactory(interceptors), Collections
-        .singletonList(new SimpleInvokerFactory()), new DefaultUnitOfWorkFactory(), taskExecutor());
+    return EventBusBuilder.newBuilder()
+            .withInvokerInterceptors(interceptors)
+            .withExecutor(taskExecutor())
+            .buildASynchronousEventBus();
+
   }
 
-//  @Bean
-//  @ConditionalOnProperty(value = "eu.tripledframework.eventbus.mode", matchIfMissing = true, havingValue = "async")
   private Executor taskExecutor() {
-    ThreadPoolTaskExecutor executorService = new ThreadPoolTaskExecutor();
+    var executorService = new ThreadPoolTaskExecutor();
     executorService.setCorePoolSize(5);
     executorService.setMaxPoolSize(10);
 
