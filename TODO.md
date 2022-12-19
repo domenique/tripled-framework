@@ -1,62 +1,9 @@
 ## Todo
 
-### Prepare for introduction of transactional outbox pattern style eventing
+## Create an invoker that uses the outbox pattern.
 
-the EventBus should be able to use a persistent store so that it can leverage this pattern to guarantee event delivery. The basic idea is that 
-events are stored in an outbox table inside the same transaction as the command handling. An async process then iterates through the outbox to process the 
-events.
+The invoker should persist the event to an outbox table. A different thread should read from the outbox table to publish events.
+A Cleanup thread to check for unpublished, delayed events, which should be started at application start.
 
-In order for this to work, An Invoker should be responsible for creating an interceptor chain if it wants to. This will allow us to create an Invoker which 
-persists the events in the outbox table, and then, when processing processing it, wrap it inside the interceptor chain.
+A file based impl would be nice so that we can use it without DB.
 
-Thread 1
-incoming adapter
-  dispatch(command)
-    uowFactory.create()
-    uow.intialize()
-    dispatchInternal(command, uow)
-
-Thread 2
-  uow.start()
-  icFactory.create()
-  ic.proceed(command, uow)
-    ---> interceptors
-    calls each Invoker (which calls the CommandHandlers)
-      publish(event)
-        uow.scheduleDelayedEvent()
-    <--- interceptors
-  returns response
-  ouw.commit() or uow.rollback
-    publish(delayedEvent)
-  calls callback method
-
-Thread 1
-  receives result in Future.
-
-
--------
-
-Thread 1 
-incoming adapter
-  dispatch(command)
-    uowFactory.create()
-    uow.intialize()
-    dispatcherInterceptorChain.proceed(command, uow)
-      ---> interceptors (set uow data)
-        dispatchInternal(command, uow)
-      <--- interceptors (clear uow data)
-
-Thread 2
-  invokerInterceptorChain.proceed(command, uow)
-    ---> interceptors (set threadLocal info)
-      calls each Invoker (which calls the CommandHandlers)
-      publish(event)
-        uow.scheduleDelayedEvent()
-    <--- interceptors (clear threadLocal info)
-  returns response
-  ouw.commit() or uow.rollback
-    publish(delayedEvent)
-  calls callback method
-
-
-Cleanuop thread to check for unpublished, delayed events ?
