@@ -15,10 +15,10 @@
  */
 buildscript {
   ext {
-    springBootVersion = '3.0.0'
-    springDepMgmtVersion = '1.1.0'
-    slf4jVersion = '2.0.6'
-    junitVersion = '5.9.1'
+    springBootVersion = '3.4.0'
+    springDepMgmtVersion = '1.1.6'
+    slf4jVersion = '2.0.16'
+    junitVersion = '5.11.3'
   }
   repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ buildscript {
   }
 }
 plugins {
-  id "com.github.kt3k.coveralls" version "2.12.0"
+  id "com.github.kt3k.coveralls" version "2.12.2"
 }
 
 // some global vars to determine the type of build.
@@ -138,9 +138,9 @@ subprojects {
     getSourceDirectories().from(sourceSets.main.allSource.srcDirs)
     getClassDirectories().from(sourceSets.main.output)
     reports {
-      html.enabled = true
-      xml.enabled = true
-      csv.enabled = false
+      html.required = true
+      xml.required =  true
+      csv.required = false
     }
   }
 }
@@ -153,9 +153,9 @@ task jacocoRootReport(type: JacocoReport) {
   getClassDirectories().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.sourceSets.main.output)
   getExecutionData().from(subprojects.findAll { it.name != 'spring-boot-eventbus-starter' }.jacocoTestReport.executionData)
   reports {
-    html.enabled = true
-    xml.enabled = true
-    csv.enabled = false
+    html.required = true
+    xml.required = true
+    csv.required = false
   }
 
 }

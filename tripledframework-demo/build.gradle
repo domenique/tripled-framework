@@ -38,7 +38,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    runtimeClasspath("org.hsqldb:hsqldb")
+    runtimeOnly("org.hsqldb:hsqldb")
 
     testImplementation("org.junit.jupiter:junit-jupiter:${junitVersion}")
     testImplementation("org.hamcrest:hamcrest")

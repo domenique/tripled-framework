@@ -37,7 +37,6 @@ public class EventBusConfiguration {
 
   @Bean
   public AsynchronousEventBus asynchronousEventBus(LocalValidatorFactoryBean validatorFactoryBean) {
-
     return EventBusBuilder.newBuilder()
             .withReceiverInterceptors(List.of(new SecurityContextPropagationInterceptor()))
             .withInvokerInterceptors(List.of(new LoggingEventBusInterceptor(),
